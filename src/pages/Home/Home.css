@@ -1,0 +1,308 @@
+/* 전체 레이아웃 */
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* ================ 상단바 ================== */
+.header {
+  position: fixed; /* 화면 맨 위에 고정 */
+  top: 0;
+  left: 0;
+  width: 98%;
+  z-index: 1000; /* 다른 요소보다 위에 표시 */
+  display: flex;
+  height: 45px;
+  justify-content: space-between;
+  align-items: center;
+  background: #febbb3;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout-btn {
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #dd938a;
+  border-radius: 20px;
+  padding: 4px 15px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  width: 90px;
+}
+
+.notification-icon {
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+/* ================ 사이드바 & 메인 ================== */
+.body-wrapper {
+  display: flex;
+  flex: 1;
+}
+
+/* 사이드바 */
+.sidebar {
+  position: fixed; /* 화면 왼쪽에 고정 */
+  top: 45px; /* 상단바 높이만큼 아래로 */
+  left: 0;
+  height: calc(100vh - 45px); /* 상단바 제외한 높이 */
+  overflow-y: auto; /* 사이드바가 길면 내부 스크롤 */
+  z-index: 999; /* 내용 위에 표시 */
+  width: 200px;
+  background-color: #ffe7d9;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.profile-section {
+  background: #FFF9E7; /* 프로필 박스 배경색 */
+  border: 1px solid #ddd; /* 연한 테두리 */
+  padding: 15px; /* 내부 여백 */
+  text-align: center;
+  margin-bottom: 20px; /* 메뉴와 간격 벌리기 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 살짝 그림자 */
+}
+
+.profile-image {
+  width: 170px;
+  height: 170px;
+  background-color: #cacaca;
+  margin: 0 auto 10px;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.profile-status {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  width: 500px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu li:hover {
+  background-color: white;
+}
+
+/* 메인 컨텐츠 */
+.home-container {
+  flex: 1;
+  padding: 20px;
+  background-color: #fdfdfd;
+  overflow-y: auto;
+  margin-left: 245px; /* 사이드바 넓이만큼 밀어줌 */
+  padding-top: 65px;  /* 상단바 높이만큼 밀어줌 */
+}
+
+/* ===== 케이크 그래프 & 막대 그래프 ===== */
+.graph-section {
+  display: flex;
+  gap: 25px; /* 케이크와 막대 그래프 사이 간격 */
+  margin-top: 10px;
+  flex-wrap: nowrap; /* 박스들이 줄바꿈하지 않도록 고정 */
+  padding: 10px 20px;
+}
+
+.cake-graph-wrapper {
+  width: 30%;
+}
+
+.bar-graph-wrapper {
+  width: 70%;
+}
+
+.cake-graph {
+  background: #fff;
+  border: 1px solid #333;
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  border-left: 1px solid rgba(0, 0, 0, 0.3);
+
+  border-radius: 10px;
+  flex: 1; /* 부모 높이만큼 채우기 */
+  padding: 20px;
+  height: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 250px; /* 세로 찌그러짐 방지 */
+}
+
+.bar-graph {
+  background: #fff;
+  border: 1px solid #333;
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  border-left: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  flex: 2; /* 케이크 그래프보다 넓게 */
+  padding: 20px;
+  height: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 250px; /* 세로 찌그러짐 방지 */
+}
+
+.graph-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 8px 5px;
+  color: #e74d2e;
+}
+
+.cake-placeholder {
+  height: 220px;
+  background: linear-gradient(to bottom, #fffbe7, #f7e6c4);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.budget-info {
+  font-size: 0.85rem;
+  color: #777;
+  text-align: center;
+}
+
+.cake-graph,
+.bar-graph {
+  position: relative; /* 버튼을 절대위치로 놓기 위해 부모에 relative 지정 */
+}
+
+.edit-btn {
+  position: absolute; /* 버튼을 부모(.cake-graph/.bar-graph)의 기준으로 배치 */
+  bottom: 12px; /* 아래쪽 여백 */
+  right: 13px; /* 오른쪽 여백 */
+  width: 70px;
+  display: block;
+  margin: 10px auto 0;
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #db968e;
+  border-radius: 20px;
+  padding: 4px 10px;
+  width: 50px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* ===== 방명록 ===== */
+.guestbook-section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 방명록 제목을 박스 바깥 위쪽에 */
+.guestbook-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.guestbook-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #e74d2e;
+  margin: 20px 0 8px 5px; /* 박스 위쪽 왼쪽에 위치 */
+}
+
+.view-record {
+  color: #e74d2e;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.guestbook-list {
+  min-height: 100px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.guest-entry {
+  background: #eee;
+  padding: 6px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.guestbook-input {
+  display: flex;
+  gap: 8px;
+}
+
+.guestbook-input input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 12px;
+}
+
+.submit-btn {
+  background: linear-gradient(to right, #febbb3, #ffc3b3);
+  border: none;
+  border-radius: 20px;
+  padding: 0 14px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #fff;
+}
+
+
+/* ===== 달력 ===== */
+.calendar-section {
+  margin-top: 20px; /* 방명록과 달력 사이 간격 */
+}
+
+.calendar-placeholder {
+  width: 100%; /* 방명록과 같은 너비 */
+  aspect-ratio: 1.9 / 1; /* 정사각형 음 너무 크다 직사각형으로 */
+  background: linear-gradient(to bottom, #FFFFFF, #febbb3);
+  border: 1px solid #febbb3;
+  border-radius: 10px;
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #555;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
