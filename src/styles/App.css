@@ -1,0 +1,18 @@
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.body-wrapper {
+  display: flex;
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin-left: 245px; /* 사이드바 너비만큼 밀어줌 */
+  margin-top: 45px;  /* 상단바 높이만큼 밀어줌 */
+  overflow-y: auto;
+}

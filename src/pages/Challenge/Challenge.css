@@ -1,0 +1,148 @@
+.challenge-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.points-title,
+.history-title,
+.challenges-title {
+  color: #e74d2e;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 5px 0 10px 3px; /* 박스 바깥에 자연스럽게 붙이기 */
+}
+
+.points-section {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start; /* 제목-박스 상단 정렬 */
+}
+
+.my-points-wrapper {
+  flex: 3; /* 좌우 비율 3 */
+  display: flex;
+  flex-direction: column;
+}
+
+.points-history-wrapper {
+  flex: 7; /* 좌우 비율 7 */
+  display: flex;
+  flex-direction: column;
+}
+
+.my-points-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  height: 170px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.points-history-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  height: 170px;
+  padding: 20px 35px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.my-points-box h3,
+.points-history-box h3 {
+  color: #e74d2e;
+  margin-bottom: 10px;
+}
+
+.points-value {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.dropdown-btn {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.points-list {
+  margin-top: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.points-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+}
+
+.minus {
+  color: red;
+}
+
+.plus {
+  color: green;
+}
+
+.challenges-section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.challenge-actions {
+  display: flex;
+  gap: 15px; /* 포인트와 버튼 사이 간격 */
+  align-items: center;
+}
+
+.challenges-title {
+  color: #e74d2e;
+  margin-bottom: 1px;
+  font-size: 1rem;
+}
+
+.challenge-list {
+  list-style: none;
+  padding: 0;
+}
+
+.challenge-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+}
+
+.reward {
+  color: #e74d2e;
+  font-weight: bold;
+}
+
+.get-btn {
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #db968e;
+  border-radius: 20px;
+  padding: 3px 12px;
+  width: 60px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.get-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

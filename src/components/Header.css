@@ -1,0 +1,43 @@
+/* ================ 상단바 ================== */
+.header {
+  position: fixed; /* 화면 맨 위에 고정 */
+  top: 0;
+  left: 0;
+  width: 98%;
+  z-index: 1000; /* 다른 요소보다 위에 표시 */
+  display: flex;
+  height: 45px;
+  justify-content: space-between;
+  align-items: center;
+  background: #febbb3;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout-btn {
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #dd938a;
+  border-radius: 20px;
+  padding: 4px 15px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  width: 90px;
+}
+
+.notification-icon {
+  font-size: 1.3rem;
+  cursor: pointer;
+}

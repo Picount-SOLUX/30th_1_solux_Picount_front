@@ -1,0 +1,83 @@
+
+/* 사이드바 */
+.sidebar {
+  position: fixed; /* 화면 왼쪽에 고정 */
+  top: 45px; /* 상단바 높이만큼 아래로 */
+  left: 0;
+  height: calc(100vh - 45px); /* 상단바 제외한 높이 */
+  overflow-y: auto; /* 사이드바가 길면 내부 스크롤 */
+  z-index: 999; /* 내용 위에 표시 */
+  width: 200px;
+  background-color: #ffe7d9;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+}
+
+.menu-item.active {
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  width: 400px;
+  padding:15px;
+}
+
+
+.profile-section {
+  background: #FFF9E7; /* 프로필 박스 배경색 */
+  border: 1px solid #ddd; /* 연한 테두리 */
+  padding: 15px; /* 내부 여백 */
+  text-align: center;
+  margin-bottom: 20px; /* 메뉴와 간격 벌리기 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 살짝 그림자 */
+}
+
+.profile-image {
+  width: 170px;
+  height: 170px;
+  background-color: #cacaca;
+  margin: 0 auto 10px;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.profile-status {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  width: 400px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu li:hover {
+  background-color: white;
+}

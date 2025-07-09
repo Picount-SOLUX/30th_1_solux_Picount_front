@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ 추가
 import './InfoSteps.css';
 
 export default function InfoSteps() {
@@ -11,6 +12,7 @@ export default function InfoSteps() {
   });
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate(); // ✅ 추가
   const user = JSON.parse(localStorage.getItem('user'));
   const nickname = user?.nickname || '회원';
 
@@ -20,6 +22,7 @@ export default function InfoSteps() {
       setLoading(true);
       setTimeout(() => {
         localStorage.setItem('userInfo', JSON.stringify(formData));
+        navigate('/home'); // ✅ 저장 후 홈화면으로 이동
       }, 2000); // 2초 로딩 효과
     } else {
       setStep((prev) => prev + 1);
@@ -35,9 +38,9 @@ export default function InfoSteps() {
       const exists = prev.spendCategories.includes(category);
       const newCategories = exists
         ? prev.spendCategories.filter((c) => c !== category)
-        : prev.spendCategories.length < 6
+        : prev.spendCategories.length < 4 // ✅ 최대 선택 개수 4개로 유지
           ? [...prev.spendCategories, category]
-          : prev.spendCategories; // 최대 4개
+          : prev.spendCategories; 
       return { ...prev, spendCategories: newCategories };
     });
   };
