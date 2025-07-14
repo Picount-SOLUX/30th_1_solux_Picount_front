@@ -1,16 +1,22 @@
+import React from "react";
+import "./Challenge.css";
+
 export default function Challenge() {
   return (
     <div className="challenge-wrapper">
       {/* 포인트 섹션 */}
       <section className="points-section">
+        {/* 내 포인트 */}
         <div className="my-points-wrapper">
-          <h3 className="points-title">내 포인트</h3> {/* 👈 박스 바깥 */}
+          <h3 className="points-title">내 포인트</h3>
           <div className="my-points-box">
             <div className="points-value">1,200 p</div>
           </div>
         </div>
+
+        {/* 포인트 내역 */}
         <div className="points-history-wrapper">
-          <h3 className="history-title">포인트 내역</h3> {/* 👈 바깥으로 이동 */}
+          <h3 className="history-title">포인트 내역</h3>
           <div className="points-history-box">
             <div className="dropdown">
               <button className="dropdown-btn">전체 ▼</button>
@@ -37,8 +43,8 @@ export default function Challenge() {
       </section>
 
       {/* 전체 챌린지 섹션 */}
-      <h3 className="challenges-title">전체 챌린지</h3> {/* 👈 박스 바깥 */}
       <section className="challenges-section">
+        <h3 className="challenges-title">전체 챌린지</h3>
         <ul className="challenge-list">
           <li>
             <span>출석체크 하기 ✅</span>

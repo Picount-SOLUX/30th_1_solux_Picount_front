@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
@@ -6,6 +6,9 @@ export default function Login() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
+
+  const [showModal, setShowModal] = useState(false); // ✅ 모달 상태 추가
+  const [userInfo, setUserInfo] = useState(null);    // ✅ 유저 정보 저장
 
   const handleLogin = () => {
     const email = emailRef.current.value;
@@ -16,7 +19,7 @@ export default function Login() {
       return;
     }
 
-    // ✅ localStorage에서 회원 정보 불러오기
+    // localStorage에서 회원 정보 불러오기
     const storedUser = JSON.parse(localStorage.getItem('user'));
 
     if (
@@ -24,15 +27,9 @@ export default function Login() {
       storedUser.email === email &&
       storedUser.password === password
     ) {
-      // 로그인 성공
-      alert('로그인 성공!');
-      navigate('/welcome', {
-        state: {
-          nickname: storedUser.nickname, // 닉네임 전달
-          gender: storedUser.gender,     // 성별 전달
-          age: storedUser.age,           // 나이 전달
-        },
-      });
+      // ✅ 유저 정보 저장 후 모달 열기
+      setUserInfo(storedUser);
+      setShowModal(true);
     } else {
       alert('이메일 또는 비밀번호가 올바르지 않습니다.');
     }
@@ -42,6 +39,18 @@ export default function Login() {
     if (e.key === 'Enter') {
       handleLogin();
     }
+  };
+
+  // ✅ 모달 닫기 및 페이지 이동
+  const closeModal = () => {
+    setShowModal(false);
+    navigate('/welcome', {
+      state: {
+        nickname: userInfo.nickname,
+        gender: userInfo.gender,
+        age: userInfo.age,
+      },
+    });
   };
 
   return (
@@ -72,8 +81,8 @@ export default function Login() {
         </div>
 
         <div className="sns-icons">
-          <img src="icons/naver_icon.png" alt="naver login" className="kakao" />
-          <img src="icons/kakao_icon.png" alt="kakao login" className="naver" />
+          <img src="icons/naver_icon.png" alt="naver login" className="naver" />
+          <img src="icons/kakao_icon.png" alt="kakao login" className="kakao" />
         </div>
 
         <div className="login-links">
@@ -82,6 +91,16 @@ export default function Login() {
           <a href="#"> 비밀번호 찾기</a>
         </div>
       </div>
+
+      {/* 로그인 성공 모달 */}
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h3>로그인 성공!</h3>
+            <button onClick={closeModal}>확인</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

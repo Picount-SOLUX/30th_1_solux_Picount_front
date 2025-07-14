@@ -1,0 +1,105 @@
+.bar-graph-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0px;
+  height: 100%;
+  width: 100%;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* .edit-btn {
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #db968e;
+  border-radius: 20px;
+  padding: 4px 10px;
+  width: 50px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.edit-btn:hover {
+  background: linear-gradient(to bottom, #febbb3, #f8a89a);
+} */
+
+.bar-graph-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.bar-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.bar-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  min-width: 60px;
+  text-align: left;
+}
+
+.bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.progress-bar {
+  display: flex;
+  height: 25px;
+  border-radius: 15px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.progress-spent {
+  background: linear-gradient(to right, #d5dbdb, #aeb6bf);
+
+  transition: width 0.3s ease;
+}
+
+.progress-remaining {
+  background: #FFE8A0;
+  transition: width 0.3s ease;
+}
+
+.bar-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.spent-amount {
+  font-weight: 500;
+  color: #e74d2e;
+}
+
+.budget-amount {
+  font-weight: 500;
+  color: #333;
+}
+
+.spent-input {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.spent-input:focus {
+  outline: none;
+  border-color: #e74d2e;
+}

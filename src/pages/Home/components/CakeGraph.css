@@ -1,0 +1,51 @@
+.cake-graph-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.cake-image-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.cake-image {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+}
+
+.budget-info-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-top: auto;
+}
+
+.budget-text {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.edit-btn {
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #db968e;
+  border-radius: 20px;
+  padding: 4px 10px;
+  width: 50px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.edit-btn:hover {
+  background: linear-gradient(to bottom, #febbb3, #f8a89a);
+}

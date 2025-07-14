@@ -3,13 +3,13 @@ import './Welcome.css';
 
 export default function Welcome() {
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ useNavigate로 라우팅 준비
+  const navigate = useNavigate(); // useNavigate로 라우팅 준비
   const nickname =
     location.state?.nickname || JSON.parse(localStorage.getItem('user'))?.nickname;
 
   // 다음 버튼 클릭 시 InfoSteps로 이동
   const handleNext = () => {
-    navigate('/info-steps'); // ✅ InfoSteps 페이지로 이동
+    navigate('/info-steps'); // InfoSteps 페이지로 이동
   };
 
   return (
