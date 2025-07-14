@@ -20,6 +20,7 @@ export default function Budget() {
   const [isEditing, setIsEditing] = useState(false);
   const [tempCategories, setTempCategories] = useState([...categories]);
   const [newCategory, setNewCategory] = useState({ name: "", amount: "" });
+  const [showHelp, setShowHelp] = useState(false); // 도움말 상태
 
   const getTotalBudget = (list) =>
     list.reduce((sum, cat) => sum + parseInt(cat.amount || 0), 0);
@@ -47,7 +48,6 @@ export default function Budget() {
     );
   };
 
-  // ✅ 카테고리 추가
   const handleAddCategory = () => {
     if (!newCategory.name.trim()) return;
     const nextId =
@@ -63,17 +63,120 @@ export default function Budget() {
     setNewCategory({ name: "", amount: "" });
   };
 
-  // ✅ 카테고리 삭제
   const handleDeleteCategory = (id) => {
     setTempCategories((prev) => prev.filter((cat) => cat.id !== id));
   };
+
+  const toggleHelp = () => {
+    setShowHelp(!showHelp);
+  };
+
+  const jobData = [
+    {
+      title: "📌 직장인",
+      description:
+        "고정지출과 외식/회식 중심의 소비가 많기 때문에, 예산은 주로 이렇게 분배해요!",
+      budgets: [
+        { label: "식비", percent: 25, className: "food" },
+        { label: "고정지출", percent: 25, className: "fixed" },
+        { label: "교통", percent: 10, className: "trans" },
+        { label: "자기관리", percent: 15 },
+        { label: "모임", percent: 15 },
+        { label: "저축", percent: 10 },
+      ],
+    },
+    {
+      title: "📌 학생",
+      description:
+        "학생은 소액 소비와 친구들과의 모임이나 문화생활 지출이 두드러져요!",
+      budgets: [
+        { label: "식비", percent: 30, className: "food" },
+        { label: "쇼핑", percent: 15, className: "shopping" },
+        { label: "교통", percent: 15, className: "trans" },
+        { label: "문화", percent: 20 },
+        { label: "모임", percent: 15 },
+        { label: "기타", percent: 5 },
+      ],
+    },
+    {
+      title: "📌 전업주부",
+      description:
+        "가족 단위의 소비를 중심으로, 식비와 생활용품 지출이 큰 비중을 차지해요.",
+      budgets: [
+        { label: "식비", percent: 35, className: "food" },
+        { label: "생활용품", percent: 20, className: "living" },
+        { label: "교통", percent: 10, className: "trans" },
+        { label: "자녀", percent: 15 },
+        { label: "기타", percent: 5 },
+        { label: "고정비", percent: 15, className: "fixed" },
+      ],
+    },
+    {
+      title: "📌 프리랜서",
+      description:
+        "프리랜서는 소득이 유동적인 만큼, 자기관리 및 업무 관리 지출, 저축 항목의 비중이 중요해요!",
+      budgets: [
+        { label: "식비", percent: 20, className: "food" },
+        { label: "업무비(장비)", percent: 20 },
+        { label: "자기관리", percent: 15 },
+        { label: "저축", percent: 20, className: "saving" },
+        { label: "기타", percent: 5 },
+        { label: "고정지출", percent: 10, className: "fixed" },
+      ],
+    },
+  ];
 
   return (
     <div className="budget-wrapper">
       {/* 상단 예산 그래프 */}
       <section className="budget-graph-section">
-        <h2 className="section-title">예산 설정 내역</h2>
+        <div className="graph-header">
+          <h2 className="section-title">예산 설정 내역</h2>
+          <span
+            className="help-icon"
+            onClick={toggleHelp}
+            title="도움말 보기"
+          >
+            ❓
+          </span>
+        </div>
+
+        {showHelp && (
+          <div className="help-bubble">
+            <h4>도움말</h4>
+            <p>직업별 추천 예산 비율입니다:</p>
+
+            <div className="budget-bar-graph">
+              {jobData.map((job, idx) => (
+                <div key={idx} className="job-graph">
+                  <h5>{job.title}</h5>
+                  <p>{job.description}</p>
+                  <div className="bar-container">
+                    {job.budgets.map((item, i) => (
+                      <div
+                        key={i}
+                        className={`bar-segment ${item.className || ""}`}
+                        style={{ width: `${item.percent}%` }}
+                        title={`${item.label}: ${item.percent}%`}
+                      >
+                        <span className="bar-label">
+                          {item.label} {item.percent}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="close-btn" onClick={toggleHelp}>
+              닫기
+            </button>
+          </div>
+        )}
+
         <div className="budget-graph">
+          {/* 그래프 코드 */}
           <div className="graph-bar">
             {(isEditing ? tempCategories : categories).map((cat, idx) => {
               const percent =
@@ -88,7 +191,9 @@ export default function Budget() {
                     width: `${percent}%`,
                     backgroundColor: `hsl(${idx * 50}, 70%, 70%)`,
                   }}
-                  title={`${cat.name}: ${cat.amount}원 (${percent.toFixed(1)}%)`}
+                  title={`${cat.name}: ${cat.amount}원 (${percent.toFixed(
+                    1
+                  )}%)`}
                 ></div>
               );
             })}
@@ -103,7 +208,6 @@ export default function Budget() {
       <section className="budget-detail-section">
         <div className="detail-header">
           <h2 className="section-title">세부 예산</h2>
-
           {!isEditing ? (
             <button className="edit-btn" onClick={handleEditClick}>
               ✏️ 수정
@@ -163,11 +267,9 @@ export default function Budget() {
                   </>
                 )}
               </div>
-
             );
           })}
 
-          {/* 수정 모드일 때만 추가 행 */}
           {isEditing && (
             <div className="category-item add-category-row">
               <input
@@ -179,7 +281,6 @@ export default function Budget() {
                 }
                 className="category-input name-input"
               />
-              {/* 🆕 오른쪽 컨트롤 묶기 */}
               <div className="category-controls">
                 <input
                   type="number"
@@ -199,7 +300,6 @@ export default function Budget() {
                 </button>
               </div>
             </div>
-
           )}
         </div>
       </section>
