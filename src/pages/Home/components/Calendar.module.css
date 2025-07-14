@@ -1,0 +1,185 @@
+.calendarContainer {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  margin: 0 auto;
+  background: linear-gradient(to bottom, #fff5f5, #ffd9d9);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 0.88rem;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+.dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f8e6d5;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 24px 12px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: 120px;
+
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.6);
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='black' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  cursor: pointer;
+}
+
+.selectBox {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+}
+
+.weekday {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5a9a7;
+  color: black;
+  font-weight: bold;
+  box-sizing: border-box;
+  font-size: 0.78rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.day {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-sizing: border-box;
+  padding: 8px 20px;
+  font-size: 0.8rem;
+  min-height: 135px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.date {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.income {
+  color: rgb(98, 171, 248);
+  font-size: 0.75rem;
+}
+.expense {
+  color: red;
+  font-size: 0.75rem;
+}
+
+.outside {
+  color: #ccc;
+}
+
+.weekday:first-child {
+  border-top-left-radius: 12px;
+}
+
+.weekday:last-child {
+  border-top-right-radius: 12px;
+}
+
+.day:nth-child(42) {
+  border-bottom-right-radius: 12px;
+}
+.day:nth-child(36) {
+  border-bottom-left-radius: 12px;
+}
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 16px;
+  width: 100%;
+}
+
+.selectBox {
+  display: flex;
+  gap: 3px;
+  margin-top: 18px;
+}
+
+.stickerBar {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 100px;
+  border: 1.5px solid #f0d4ca;
+  padding: 6px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.stickerTrack {
+  display: flex;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.stickerItem {
+  font-size: 13px;
+  padding: 2px 4px;
+  border-radius: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.stickerItem:hover {
+  transform: scale(1.2);
+}
+
+.floatingEditBtn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #ffbebe;
+  color: #333;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.2s ease;
+}
+
+.floatingEditBtn:hover {
+  background-color: #ff9c9c;
+}
