@@ -1,29 +1,39 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 추가
-import './InfoSteps.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./InfoSteps.css";
 
 export default function InfoSteps() {
-  const [step, setStep] = useState(1); // 단계
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    purpose: '',
-    job: '',
-    budget: '',
-    spendCategories: [],
+    job: "",
+    budget: "",
   });
+  const [customBudget, setCustomBudget] = useState(""); // 직접 입력 금액 상태
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate(); // 페이지 이동 함수
-  const user = JSON.parse(localStorage.getItem('user'));
-  const nickname = user?.nickname || '회원';
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const nickname = user?.nickname || "회원";
 
   const handleNext = () => {
-    if (step === 4) {
-      // 마지막 단계면 로딩 → 저장 → Home으로 이동
+    if (step === 2 && formData.budget === "직접 입력") {
+      if (!customBudget || parseInt(customBudget) <= 0) {
+        alert("유효한 금액을 입력해주세요.");
+        return;
+      }
+      setFormData({ ...formData, budget: customBudget });
+    }
+
+    if (step === 3) {
       setLoading(true);
       setTimeout(() => {
-        localStorage.setItem('userInfo', JSON.stringify(formData));
-        navigate('/budget'); // Home 페이지로 이동
-      }, 2000); // 2초 로딩 효과
+        localStorage.setItem("selectedJob", formData.job);
+        localStorage.setItem(
+          "selectedBudget",
+          formData.budget.toString().replace(/,/g, "")
+        ); // 숫자 저장
+        navigate("/budget");
+      }, 2000);
     } else {
       setStep((prev) => prev + 1);
     }
@@ -33,16 +43,11 @@ export default function InfoSteps() {
     if (step > 1) setStep((prev) => prev - 1);
   };
 
-  const toggleCategory = (category) => {
-    setFormData((prev) => {
-      const exists = prev.spendCategories.includes(category);
-      const newCategories = exists
-        ? prev.spendCategories.filter((c) => c !== category)
-        : prev.spendCategories.length < 4 // 최대 4개 선택
-          ? [...prev.spendCategories, category]
-          : prev.spendCategories;
-      return { ...prev, spendCategories: newCategories };
-    });
+  const isNextDisabled = () => {
+    if (step === 1) return !formData.job;
+    if (step === 2)
+      return !formData.budget || (formData.budget === "직접 입력" && !customBudget);
+    return false;
   };
 
   return (
@@ -51,23 +56,31 @@ export default function InfoSteps() {
         {!loading ? (
           <>
             <div className="step-indicator">
-              {[1, 2, 3, 4].map((n) => (
-                <span key={n} className={step === n ? 'active' : ''}>●</span>
+              {[1, 2, 3].map((n) => (
+                <span key={n} className={step === n ? "active" : ""}>
+                  ●
+                </span>
               ))}
             </div>
 
             {step === 1 && (
               <>
                 <h2>나를 소개해 주세요!</h2>
-                <p>가입목적</p>
+                <p>직군</p>
                 <div className="button-group">
-                  {['소비 습관 개선', '자금 관리', '소비 내역 기록', '기타'].map((item) => (
+                  {[
+                    "중·고등학생",
+                    "대학생",
+                    "전업주부",
+                    "2030대 직장인",
+                    "4050대 직장인",
+                    "프리랜서",
+                    "기타",
+                  ].map((item) => (
                     <button
                       key={item}
-                      className={formData.purpose === item ? 'selected' : ''}
-                      onClick={() =>
-                        setFormData({ ...formData, purpose: item })
-                      }
+                      className={formData.job === item ? "selected" : ""}
+                      onClick={() => setFormData({ ...formData, job: item })}
                     >
                       {item}
                     </button>
@@ -78,80 +91,74 @@ export default function InfoSteps() {
 
             {step === 2 && (
               <>
-                <h2>나를 소개해 주세요!</h2>
-                <p>직군</p>
+                <h2>이번 달 예상 예산은 얼마인가요?</h2>
                 <div className="button-group">
-                  {['직장인', '학생', '전업 주부', '프리랜서', '기타'].map((item) => (
-                    <button
-                      key={item}
-                      className={formData.job === item ? 'selected' : ''}
-                      onClick={() =>
-                        setFormData({ ...formData, job: item })
-                      }
-                    >
-                      {item}
-                    </button>
-                  ))}
+                  {["300000", "500000", "1000000", "2000000", "3000000", "직접 입력"].map(
+                    (item) => (
+                      <button
+                        key={item}
+                        className={formData.budget === item ? "selected" : ""}
+                        onClick={() => {
+                          setFormData({ ...formData, budget: item });
+                          if (item !== "직접 입력") setCustomBudget("");
+                        }}
+                      >
+                        {item === "직접 입력" ? "직접 입력" : `${parseInt(item).toLocaleString()}원`}
+                      </button>
+                    )
+                  )}
                 </div>
+
+                {/* 직접 입력일 때 금액 입력창 표시 */}
+                {formData.budget === "직접 입력" && (
+                  <div style={{ marginTop: "10px" }}>
+                    <input
+                      type="number"
+                      placeholder="금액을 입력하세요 (숫자만)"
+                      value={customBudget}
+                      onChange={(e) => setCustomBudget(e.target.value)}
+                      style={{
+                        width: "90%",
+                        padding: "8px",
+                        borderRadius: "8px",
+                        border: "1px solid #ccc",
+                        marginTop: "8px",
+                      }}
+                    />
+                  </div>
+                )}
               </>
             )}
 
             {step === 3 && (
               <>
-                <h2>이번 달 예상 예산은 얼마인가요?</h2>
-                <div className="button-group">
-                  {[
-                    '100,000 ~ 150,000',
-                    '200,000 ~ 250,000',
-                    '300,000 ~ 350,000',
-                    '직접 입력',
-                  ].map((item) => (
-                    <button
-                      key={item}
-                      className={formData.budget === item ? 'selected' : ''}
-                      onClick={() =>
-                        setFormData({ ...formData, budget: item })
-                      }
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
+                <h2>예산 설정을 완료하시겠어요?</h2>
+                <p>
+                  선택한 직군: <strong>{formData.job}</strong>
+                </p>
+                <p>
+                  선택한 한 달 예산:{" "}
+                  <strong>
+                    {parseInt(formData.budget).toLocaleString()}원
+                  </strong>
+                </p>
               </>
             )}
 
-            {step === 4 && (
-              <>
-                <h2>주로 어떤 항목에 지출하시나요?</h2>
-                <p className="small-text">최대 4개 선택 가능</p>
-                <div className="button-group grid-2x3">
-                  {['식비', '교통비', '취미', '쇼핑', '저축', '기타'].map((item) => (
-                    <button
-                      key={item}
-                      className={formData.spendCategories.includes(item) ? 'selected' : ''}
-                      onClick={() => toggleCategory(item)}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-
-            <div className={`nav-buttons ${step === 1 ? 'single' : ''}`}>
+            <div className={`nav-buttons ${step === 1 ? "single" : ""}`}>
               {step > 1 && (
-                <button onClick={handlePrev} className="back-btn">이전</button>
+                <button onClick={handlePrev} className="back-btn">
+                  이전
+                </button>
               )}
-              <button
-                onClick={handleNext}
-              >
-                {step === 4 ? '완료' : '다음'}
+              <button onClick={handleNext} disabled={isNextDisabled()}>
+                {step === 3 ? "완료" : "다음"}
               </button>
             </div>
           </>
         ) : (
           <div className="loading-screen">
-            <h2>{nickname}님을 위한 맞춤 예산안을 찾고 있어요!</h2>
+            <h2>추천 예산안 만드는 중</h2>
           </div>
         )}
       </div>

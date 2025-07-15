@@ -11,23 +11,17 @@
 .info-steps-container {
   background: linear-gradient(to bottom, #ffe0e0, #fff8e7);
   border: 1px solid #d8aaaa;
-  border-radius: 10px;
-  padding: 30px 40px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 30px 35px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 360px;
+  width: 400px;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   color: #333;
-  margin-bottom: 10px;
-}
-
-.small-text {
-  font-size: 0.8rem;
-  color: #888;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .step-indicator {
@@ -44,75 +38,67 @@ h2 {
   color: #FEBBB3;
 }
 
+/* 버튼 그룹: 2열 그리드로 예쁘게 배치 */
 .button-group {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1px;
-  margin: 5px 0;
-}
-
-.button-group.grid-2x3 {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2열 */
-  grid-gap: 6px; /* 버튼 사이 간격 */
-  justify-items: center;
-}
-
-.button-group.grid-2x3 button {
-  width: 168px; /* 버튼 가로 길이 줄임 */
-  height: 38px; /* 버튼 세로 길이도 조절 */
-  font-size: 0.85rem; /* 글자 크기 조금 축소 */
+  gap: 10px; /* 버튼 사이 간격 */
+  margin-top: 10px;
 }
 
 .button-group button {
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 20px;
-  padding: 8px 14px;
+  padding: 10px 14px;
+  width: 170px;
   cursor: pointer;
   font-size: 0.9rem;
-  
+  transition: all 0.2s ease;
+}
+
+.button-group button:hover {
+  background: #ffe0e0;
 }
 
 .button-group button.selected {
   background: #333;
   color: #fff;
+  border: 1px solid #555;
+  /* width: 150px; */
 }
 
 .nav-buttons {
-  margin-top: 20px;
+  margin-top: 25px;
   display: flex;
-  justify-content: space-between;/* 좌/우 끝으로 배치 */
+  width: 400px;
+  gap: 200px;
+  /* justify-content: space-between; 좌우 배치 */
 }
 
 .nav-buttons.single {
-  justify-content: flex-end; /* 오른쪽 정렬 */
-  padding: 8px 0;
-
+  justify-content: flex-end; /* 한 개일 땐 오른쪽 */
 }
-
 
 .nav-buttons button {
   background: linear-gradient(to top, #FEBBB3, #FFFFFF);
   border: 1px solid #DD938A;
   border-radius: 20px;
   padding: 8px 14px;
-  margin: 0 5px;
+  width: 80px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-buttons button:hover {
+  opacity: 0.8;
 }
 
 .nav-buttons .back-btn {
   background: #f1f1f1;
 }
 
-.nav-buttons button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-
 .loading-screen {
-  font-size: 1.2rem;
-  color: #333;
+  font-size: 1.1rem;
+  color: #555;
 }

@@ -7,8 +7,8 @@ export default function Login() {
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false); // ✅ 모달 상태 추가
-  const [userInfo, setUserInfo] = useState(null);    // ✅ 유저 정보 저장
+  const [showModal, setShowModal] = useState(false); // 모달 상태 추가
+  const [userInfo, setUserInfo] = useState(null);    // 유저 정보 저장
 
   const handleLogin = () => {
     const email = emailRef.current.value;
@@ -27,7 +27,7 @@ export default function Login() {
       storedUser.email === email &&
       storedUser.password === password
     ) {
-      // ✅ 유저 정보 저장 후 모달 열기
+      // 유저 정보 저장 후 모달 열기
       setUserInfo(storedUser);
       setShowModal(true);
     } else {
@@ -41,7 +41,7 @@ export default function Login() {
     }
   };
 
-  // ✅ 모달 닫기 및 페이지 이동
+  // 모달 닫기 및 페이지 이동
   const closeModal = () => {
     setShowModal(false);
     navigate('/welcome', {
@@ -80,10 +80,7 @@ export default function Login() {
           <span className="divider-text">SNS 로그인</span>
         </div>
 
-        <div className="sns-icons">
-          <img src="icons/naver_icon.png" alt="naver login" className="naver" />
-          <img src="icons/kakao_icon.png" alt="kakao login" className="kakao" />
-        </div>
+        <img src="icons/kakao_icon.png" alt="kakao login" className="kakao" />
 
         <div className="login-links">
           <a href="#">아이디 찾기 </a>

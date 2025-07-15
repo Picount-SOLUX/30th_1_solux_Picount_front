@@ -37,7 +37,7 @@
   border: 1px solid #f0d9a3;
   border-radius: 12px;
   padding: 15px;
-  width: 600px;
+  width: 250px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 100;
 }
@@ -81,7 +81,7 @@
   font-size: 0.8rem;
 } */
 
-.budget-bar span {
+/* .budget-bar span {
   background: #f5f5f5;
   border-radius: 6px;
   padding: 2px 6px;
@@ -109,7 +109,7 @@
 
 .budget-bar .saving {
   background: #aed6f1;
-}
+} */
 
 .close-btn {
   margin-top: 10px;
@@ -117,7 +117,9 @@
   color: black;
   border: 1px solid #DD938A;
   border-radius: 20px;
-  width: 150px;
+  width: 70px;
+  margin-right: 5px;
+  margin-bottom: 2px;
   padding: 5px 10px;
   cursor: pointer;
   font-size: 0.85rem;
@@ -256,6 +258,7 @@
   align-items: center;
   font-size: 0.85rem;
 }
+
 .add-btn:hover {
   background: #ffdad6;
 }
@@ -295,7 +298,7 @@
   align-items: center;
   gap: 3px;
 }
-
+/* 
 .bar-label-outside .arrow {
   color: #888;
   font-size: 0.7rem;
@@ -319,4 +322,14 @@
 
 .bar-segment.saving {
   background-color: #aed6f1;
+} */
+
+/*직접입력 칸 스타일*/
+.custom-budget-input {
+  width: 88%;
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 0.9rem;
 }
