@@ -67,7 +67,7 @@ export default function Budget() {
       budgets: [
         { label: "식비", percent: 20 },
         { label: "업무비(장비/소프트웨어)", percent: 20 },
-        { label: "고정 지출", percent: 15 },
+        { label: "고정지출", percent: 15 },
         { label: "저축/투자", percent: 20 },
         { label: "자기계발", percent: 15 },
         { label: "기타", percent: 10 },
@@ -78,7 +78,7 @@ export default function Budget() {
       description: "일반적인 상황에 맞춘 기본 예산 추천입니다.",
       budgets: [
         { label: "식비", percent: 20 },
-        { label: "고정 지출", percent: 20 },
+        { label: "고정지출", percent: 20 },
         { label: "저축", percent: 20 },
         { label: "기타", percent: 40 },
       ],
