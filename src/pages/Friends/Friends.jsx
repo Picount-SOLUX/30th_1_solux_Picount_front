@@ -1,12 +1,9 @@
-import React from 'react';
+import React from "react";
 
-function Friends() {
+export default function Friend() {
+  
+
   return (
-    <div>
-      <h1>친구 페이지</h1>
-      <p>여기는 친구 페이지입니다.</p>
-    </div>
+      <h2>친구 페이지</h2>
   );
 }
-
-export default Friends;
