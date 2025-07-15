@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import InputModal from "./InputModal";
+import ViewModal from "./ViewModal";
 import styles from "./calendar.module.css";
 
-const Calendar = () => {
+function Calendar() {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [isInputOpen, setIsInputOpen] = useState(false);
+  const [viewData, setViewData] = useState(null);
 
   const yearOptions = Array.from(
     { length: 10 },
@@ -12,12 +16,9 @@ const Calendar = () => {
   );
   const monthOptions = Array.from({ length: 12 }, (_, i) => i);
 
-  const handleYearChange = (e) => {
-    setCurrentYear(Number(e.target.value));
-  };
-  const handleMonthChange = (e) => {
-    setCurrentMonth(Number(e.target.value));
-  };
+  const handleYearChange = (e) => setCurrentYear(Number(e.target.value));
+  const handleMonthChange = (e) => setCurrentMonth(Number(e.target.value));
+
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
@@ -26,6 +27,7 @@ const Calendar = () => {
       setCurrentMonth((prev) => prev - 1);
     }
   };
+
   const handleNextMonth = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
@@ -40,6 +42,20 @@ const Calendar = () => {
   const getDaysInMonth = () =>
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
+  const sampleData = {
+    date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-15`,
+    entries: [
+      { type: "income", category: "월급", amount: "3,000,000" },
+      { type: "expense", category: "식비", amount: "20,000" },
+    ],
+    memo: "카페에서 점심",
+    photo: null,
+  };
+
+  const handleDayClick = (date) => {
+    setViewData({ ...sampleData, date });
+  };
+
   const renderDays = () => {
     const firstDay = getFirstDayOfMonth();
     const daysInMonth = getDaysInMonth();
@@ -48,7 +64,6 @@ const Calendar = () => {
     const cells = [];
     for (let i = 0; i < 42; i++) {
       let date, isCurrentMonth;
-
       if (i < firstDay) {
         date = prevDaysInMonth - firstDay + i + 1;
         isCurrentMonth = false;
@@ -60,10 +75,16 @@ const Calendar = () => {
         isCurrentMonth = false;
       }
 
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(date).padStart(2, "0")}`;
+
       cells.push(
         <div
           key={`day-${i}`}
           className={`${styles.day} ${!isCurrentMonth ? styles.outside : ""}`}
+          onClick={() => isCurrentMonth && handleDayClick(dateStr)}
         >
           <span className={styles.date}>{date}</span>
           {isCurrentMonth && (
@@ -75,7 +96,6 @@ const Calendar = () => {
         </div>
       );
     }
-
     return cells;
   };
 
@@ -115,7 +135,6 @@ const Calendar = () => {
           </div>
         </div>
       </div>
-
       <div className={styles.weekdays}>
         {["SUN", "MON", "TUES", "WED", "THURS", "FRI", "SAT"].map((day) => (
           <div key={day} className={styles.weekday}>
@@ -125,9 +144,27 @@ const Calendar = () => {
       </div>
 
       <div className={styles.days}>{renderDays()}</div>
-      <button className={styles.floatingEditBtn}>✏️</button>
+
+      <button
+        className={styles.floatingEditBtn}
+        onClick={() => setIsInputOpen(true)}
+      >
+        ✏️
+      </button>
+
+      {isInputOpen && <InputModal onClose={() => setIsInputOpen(false)} />}
+      {viewData && (
+        <ViewModal
+          data={viewData}
+          onClose={() => setViewData(null)}
+          onEdit={() => {
+            setIsInputOpen(true);
+            setViewData(null);
+          }}
+        />
+      )}
     </div>
   );
-};
+}
 
 export default Calendar;

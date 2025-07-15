@@ -1,0 +1,32 @@
+.profileSection {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.profileImage {
+  width: 120px;
+  height: 120px;
+  background-color: #e5e5e5;
+  border-radius: 12px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.nickname {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.intro {
+  color: #777;
+  font-size: 0.95rem;
+}
+
+.friendCode {
+  font-size: 0.9rem;
+}
