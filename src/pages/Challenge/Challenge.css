@@ -5,6 +5,7 @@
   padding: 20px;
 }
 
+/* 포인트 영역 */
 .points-section {
   display: flex;
   gap: 20px;
@@ -37,7 +38,7 @@
   border: 1px solid #ddd;
   border-radius: 10px;
   flex: 1;
-  height: 200px;
+  height: 200px; /* 고정 높이 */
   padding: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -47,9 +48,10 @@
   border: 1px solid #ddd;
   border-radius: 10px;
   flex: 1;
-  height: 200px;
+  height: 200px; /* 고정 높이 */
   padding: 20px 35px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto; /* 세로 스크롤 생성 */
 }
 
 .points-value {
@@ -85,27 +87,30 @@
 }
 
 .plus {
-  color: green;
+  color: blue;
 }
 
+/* 챌린지 영역 */
 .challenges-section {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 15px 30px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.challenge-actions {
-  display: flex;
-  gap: 15px;
-  align-items: center;
+  position: relative;
+  margin-top: 30px; /* 위쪽 여백 줄임 */
 }
 
 .challenges-title {
   color: #e74d2e;
-  margin-bottom: 10px;
   font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  position: absolute; /* 챌린지 박스 밖으로 */
+  top: -25px; /* 살짝 박스 밖으로 빼기 */
+  left: 15px;
+  background: #fff; /* 배경 흰색으로 */
+  padding: 0 5px;
 }
 
 .challenge-list {
@@ -117,7 +122,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px;
+  padding: 0px;
   border-bottom: 1px solid #f0f0f0;
   font-size: 0.9rem;
 }
@@ -125,6 +130,12 @@
 .reward {
   color: #e74d2e;
   font-weight: bold;
+}
+
+.challenge-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
 .get-btn {
