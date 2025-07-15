@@ -1,13 +1,19 @@
+import React from "react";
+import styles from "./MyPage.module.css";
+import ProfileSection from "./components/ProfileSection";
+import FriendsSection from "./components/FriendsSection";
+import SkinsSection from "./components/SkinsSection";
+import GuestbookSection from "./components/GuestbookSection";
+import SettingsSection from "./components/SettingsSection";
 
-import React from 'react';
-
-function MyPage() {
+export default function MyPage() {
   return (
-    <div>
-      <h1>마이페이지</h1>
-      <p>여기는 마이페이지입니다.</p>
+    <div className={styles.container}>
+      <ProfileSection />
+      <FriendsSection />
+      <SkinsSection />
+      <GuestbookSection />
+      <SettingsSection />
     </div>
   );
 }
-
-export default MyPage;

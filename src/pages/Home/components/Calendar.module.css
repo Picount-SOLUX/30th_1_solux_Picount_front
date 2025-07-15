@@ -11,109 +11,6 @@
   font-family: "Noto Sans KR", sans-serif;
 }
 
-.dropdown {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #f8e6d5;
-  border: none;
-  border-radius: 24px;
-  padding: 12px 24px 12px 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  width: 120px;
-
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.6);
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='black' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px 12px;
-  cursor: pointer;
-}
-
-.selectBox {
-  display: flex;
-  justify-content: flex-start;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0;
-}
-
-.weekday {
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5a9a7;
-  color: black;
-  font-weight: bold;
-  box-sizing: border-box;
-  font-size: 0.78rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.day {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0;
-  box-sizing: border-box;
-  padding: 8px 20px;
-  font-size: 0.8rem;
-  min-height: 135px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-.date {
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-.income {
-  color: rgb(98, 171, 248);
-  font-size: 0.75rem;
-}
-.expense {
-  color: red;
-  font-size: 0.75rem;
-}
-
-.outside {
-  color: #ccc;
-}
-
-.weekday:first-child {
-  border-top-left-radius: 12px;
-}
-
-.weekday:last-child {
-  border-top-right-radius: 12px;
-}
-
-.day:nth-child(42) {
-  border-bottom-right-radius: 12px;
-}
-.day:nth-child(36) {
-  border-bottom-left-radius: 12px;
-}
 .headerRow {
   display: flex;
   justify-content: space-between;
@@ -126,7 +23,31 @@
 .selectBox {
   display: flex;
   gap: 3px;
-  margin-top: 18px;
+  margin-top: 0;
+  align-items: center;
+}
+
+.dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-color: #f8e6d5;
+  border: none;
+  border-radius: 24px;
+  padding: 6px 24px 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: 120px;
+  line-height: 1;
+  cursor: pointer;
+
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.6);
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='black' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
 }
 
 .stickerBar {
@@ -157,10 +78,87 @@
   border-radius: 8px;
   cursor: grab;
   user-select: none;
+  transition: transform 0.2s ease;
 }
 
 .stickerItem:hover {
   transform: scale(1.2);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin-top: 0;
+}
+
+.weekday {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5a9a7;
+  color: #333;
+  font-weight: bold;
+  font-size: 0.78rem;
+  box-sizing: border-box;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.day {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-sizing: border-box;
+  padding: 8px 20px;
+  font-size: 0.8rem;
+  min-height: 135px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.date {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.income {
+  color: rgb(98, 171, 248);
+  font-size: 0.75rem;
+}
+
+.expense {
+  color: red;
+  font-size: 0.75rem;
+}
+
+.outside {
+  color: #ccc;
+}
+
+.weekday:first-child {
+  border-top-left-radius: 12px;
+}
+
+.weekday:last-child {
+  border-top-right-radius: 12px;
+}
+
+.day:nth-child(42) {
+  border-bottom-right-radius: 12px;
+}
+.day:nth-child(36) {
+  border-bottom-left-radius: 12px;
 }
 
 .floatingEditBtn {
@@ -182,4 +180,14 @@
 
 .floatingEditBtn:hover {
   background-color: #ff9c9c;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
 }
