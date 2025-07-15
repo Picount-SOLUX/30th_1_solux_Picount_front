@@ -1,9 +1,11 @@
-import React from "react";
+
+import React from 'react';
 
 function MyPage() {
   return (
-    <div className="shop-container">
-      <h1 className="shop-title">마이페이지</h1>
+    <div>
+      <h1>마이페이지</h1>
+      <p>여기는 마이페이지입니다.</p>
     </div>
   );
 }

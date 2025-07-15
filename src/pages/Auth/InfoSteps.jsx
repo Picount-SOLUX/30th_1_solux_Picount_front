@@ -22,7 +22,7 @@ export default function InfoSteps() {
       setLoading(true);
       setTimeout(() => {
         localStorage.setItem('userInfo', JSON.stringify(formData));
-        navigate('/home'); // Home 페이지로 이동
+        navigate('/budget'); // Home 페이지로 이동
       }, 2000); // 2초 로딩 효과
     } else {
       setStep((prev) => prev + 1);

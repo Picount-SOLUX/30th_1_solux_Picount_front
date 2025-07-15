@@ -147,41 +147,40 @@ body {
   margin: 5px 0 10px;
   text-align: center;
 }
-
-
-.modal-overlay {
+.modal-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
 }
-
 .modal-content {
-  background: #fff9e9;
-  padding: 24px 30px;
-  border-radius: 12px;
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 10px;
   text-align: center;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease;
 }
-
-.modal-content p {
-  margin-bottom: 16px;
-  font-weight: bold;
-  font-size: 16px;
+.modal-content h3 {
+  margin-bottom: 10px;
 }
-
 .modal-content button {
-  background: #febbb3;
-  border: none;
-  padding: 8px 20px;
-  color: white;
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: linear-gradient(to top, #FEBBB3, #FFFFFF);
+  color: black;
+  border: 1px solid #DD938A;
   border-radius: 20px;
-  font-weight: bold;
   cursor: pointer;
+}
+.modal-content button:hover {
+  background: #ffe0e0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }

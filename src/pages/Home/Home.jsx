@@ -1,20 +1,40 @@
 import React from "react";
 import "./Home.css";
+import CakeGraph from "./components/CakeGraph";
+import BarGraph from "./components/BarGraph";
+import Calendar from "./components/Calendar";
 
 export default function Home() {
+  // 예산 데이터 가져오기
+  const savedCategories = JSON.parse(localStorage.getItem("budgetCategories")) || [];
+  const totalBudget = savedCategories.reduce(
+    (sum, cat) => sum + parseInt(cat.amount || 0),
+    0
+  );
+
+  // 달력이 완성되면 spent를 채울 예정
+  const categoriesWithSpent = savedCategories.map((cat) => ({
+    ...cat,
+    spent: 0, // 달력 완성 전에는 0원으로 초기화
+  }));
+
+  const totalSpent = categoriesWithSpent.reduce(
+    (sum, cat) => sum + parseInt(cat.spent || 0),
+    0
+  );
+
   return (
     <div className="home-container">
-      {/* 상단 그래프 */}
+      {/* ===== 상단 그래프 영역 ===== */}
       <div className="graph-section">
         {/* 케이크 그래프 */}
         <div className="cake-graph-wrapper">
           <h3 className="graph-title">남은 예산</h3>
           <div className="cake-graph">
-            <div className="cake-placeholder">케이크 그래프</div>
-            <p className="budget-info">
-              전체 예산 000,000원 | 지출 000,000원
-            </p>
-            <button className="edit-btn">변경</button>
+            <CakeGraph
+              totalBudget={totalBudget}
+              totalSpent={totalSpent}
+            />
           </div>
         </div>
 
@@ -22,45 +42,18 @@ export default function Home() {
         <div className="bar-graph-wrapper">
           <h3 className="graph-title">카테고리별 지출</h3>
           <div className="bar-graph">
-            <div className="bar-list">
-              <div className="bar-item">
-                <span>식비</span>
-                <div className="bar">
-                  <div className="fill" style={{ width: "70%" }}></div>
-                </div>
-                <span className="amount">000,000원</span>
-              </div>
-              <div className="bar-item">
-                <span>교통비</span>
-                <div className="bar">
-                  <div className="fill" style={{ width: "40%" }}></div>
-                </div>
-                <span className="amount">000,000원</span>
-              </div>
-              <div className="bar-item">
-                <span>취미 생활</span>
-                <div className="bar">
-                  <div className="fill" style={{ width: "60%" }}></div>
-                </div>
-                <span className="amount">000,000원</span>
-              </div>
-              <div className="bar-item">
-                <span>쇼핑</span>
-                <div className="bar">
-                  <div className="fill" style={{ width: "90%" }}></div>
-                </div>
-                <span className="amount">000,000원</span>
-              </div>
-            </div>
-            <button className="edit-btn">변경</button>
+            <BarGraph
+              categories={categoriesWithSpent}
+              totalBudget={totalBudget}
+            />
           </div>
         </div>
       </div>
 
-      {/* 방명록 */}
+      {/* ===== 방명록 ===== */}
       <section className="guestbook-wrapper">
         <h3 className="guestbook-title">
-          나의 방명록 <span className="view-record"> &gt; 이전 기록 보기</span>
+          나의 방명록 <span className="view-record">&gt; 이전 기록 보기</span>
         </h3>
         <div className="guestbook-section">
           <div className="guestbook-list">
@@ -80,7 +73,7 @@ export default function Home() {
 
         {/* 달력 추가 */}
         <div className="calendar-section">
-          <div className="calendar-placeholder">달력 자리</div>
+          <Calendar />
         </div>
       </section>
     </div>

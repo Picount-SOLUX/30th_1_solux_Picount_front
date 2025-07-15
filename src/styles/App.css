@@ -4,23 +4,15 @@
   height: 100vh;
 }
 
-.header {
-  border-bottom: 1px solid #ddd;
-}
-
 .body-wrapper {
   display: flex;
   flex: 1;
 }
 
-.sidebar {
-  border-right: 1px solid #ddd;
-}
-
 .main-content {
-  flex: 1; /* 남은 공간 전부 채움 */
-  margin-top: 45px; /* 상단바 높이만큼 */
-  margin-left: 240px; /* 사이드바 폭만큼 */
+  flex: 1;
   padding: 20px;
+  margin-left: 245px; /* 사이드바 너비만큼 밀어줌 */
+  margin-top: 45px;  /* 상단바 높이만큼 밀어줌 */
   overflow-y: auto;
 }

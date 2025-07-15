@@ -11,6 +11,8 @@ export default function Join() {
   const [gender, setGender] = useState(''); // 선택사항
   const [age, setAge] = useState('');       // 선택사항
 
+  const [showModal, setShowModal] = useState(false); // ✅ 모달 상태 추가
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -30,9 +32,14 @@ export default function Join() {
 
     localStorage.setItem('user', JSON.stringify(userData));
 
-    // 가입 완료 alert 후 로그인 화면으로 이동
-    alert('가입이 완료되었습니다!');
-    navigate('/login');
+    // ✅ 모달 열기
+    setShowModal(true);
+  };
+
+  // ✅ 모달 닫기 함수
+  const closeModal = () => {
+    setShowModal(false);
+    navigate('/login'); // 로그인 페이지로 이동
   };
 
   return (
@@ -140,6 +147,17 @@ export default function Join() {
           </button>
         </form>
       </div>
+
+      {/* 회원가입 완료 모달 */}
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h3>가입 완료</h3>
+            <p>회원가입이 완료되었습니다!</p>
+            <button onClick={closeModal}>확인</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
