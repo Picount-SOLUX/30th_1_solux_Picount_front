@@ -14,6 +14,8 @@ import Shop from "./pages/Shop/Shop";
 import Challenge from "./pages/Challenge/Challenge";
 import Friends from "./pages/Friends/Friends";
 import MyPage from "./pages/MyPage/MyPage";
+import SettingsPage from "./pages/MyPage/components/SettingsPage";
+import EditProfilePage from "./pages/MyPage/components/EditProfilePage";
 
 import "./styles/App.css";
 
@@ -56,6 +58,14 @@ function App() {
             <Route path="/challenge" element={<Challenge />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/mypage" element={<MyPage />} />
+            {/*설정페이지 라우터*/}
+            <Route path="/" element={<Home />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route
+              path="/settings/edit-profile"
+              element={<EditProfilePage />}
+            />
           </Routes>
         </main>
       </div>

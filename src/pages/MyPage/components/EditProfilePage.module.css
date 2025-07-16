@@ -1,0 +1,150 @@
+.container {
+  padding: 24px;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+.breadcrumb {
+  color: #e53935;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.profileSection {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.profileImageBox {
+  width: 200px;
+  height: 200px;
+  background-color: #ccc;
+  position: relative;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.profileImage {
+  line-height: 200px;
+  color: white;
+  font-weight: bold;
+}
+
+.changeImageBtn {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.profileInputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profileInputs input,
+.profileInputs textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.skinSection {
+  margin-top: 40px;
+}
+
+.skinGrid {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.skinBox {
+  width: 80px;
+  height: 80px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  position: relative;
+}
+
+.skinImage {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  line-height: 80px;
+  font-size: 0.8rem;
+}
+
+.removeSkinBtn {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+
+.guestbookSection {
+  margin-top: 40px;
+}
+
+.guestbookList {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.guestbookItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+
+.deleteAllBtn {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  color: red;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.saveWrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.saveBtn {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
