@@ -1,26 +1,118 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Budget.css";
 
 export default function Budget() {
-  const defaultCategories = [
-    { id: 1, name: "식비", amount: "0" },
-    { id: 2, name: "교통비", amount: "0" },
-    { id: 3, name: "취미", amount: "0" },
-    { id: 4, name: "쇼핑", amount: "0" },
-    { id: 5, name: "고정비", amount: "0" },
-    { id: 6, name: "저축", amount: "0" },
-    { id: 7, name: "기타", amount: "0" },
+  const jobData = [
+    {
+      title: "중·고등학생",
+      description: "소액 소비와 취미·문화 지출 중심의 예산 추천입니다.",
+      budgets: [
+        { label: "식비", percent: 30 },
+        { label: "교통비", percent: 15 },
+        { label: "취미/문화", percent: 20 },
+        { label: "쇼핑", percent: 15 },
+        { label: "기타", percent: 20 },
+      ],
+    },
+    {
+      title: "대학생",
+      description: "식비와 모임 비중이 높으며, 저축도 고려한 예산입니다.",
+      budgets: [
+        { label: "식비", percent: 25 },
+        { label: "교통비", percent: 15 },
+        { label: "취미/문화", percent: 20 },
+        { label: "모임/약속", percent: 20 },
+        { label: "저축", percent: 10 },
+        { label: "기타", percent: 10 },
+      ],
+    },
+    {
+      title: "전업주부",
+      description: "가족 중심 소비 패턴에 최적화된 예산 추천입니다.",
+      budgets: [
+        { label: "식비", percent: 35 },
+        { label: "생활용품", percent: 25 },
+        { label: "자녀교육", percent: 15 },
+        { label: "교통비", percent: 10 },
+        { label: "저축", percent: 10 },
+        { label: "기타", percent: 5 },
+      ],
+    },
+    {
+      title: "2030대 직장인",
+      description: "고정지출과 저축을 균형있게 고려한 예산 추천입니다.",
+      budgets: [
+        { label: "식비", percent: 25 },
+        { label: "고정지출(주거/공과금)", percent: 30 },
+        { label: "교통비", percent: 10 },
+        { label: "취미/문화", percent: 15 },
+        { label: "저축/투자", percent: 15 },
+        { label: "기타", percent: 5 },
+      ],
+    },
+    {
+      title: "4050대 직장인",
+      description: "고정지출과 자녀교육 지출 비중이 큰 예산 추천입니다.",
+      budgets: [
+        { label: "식비", percent: 20 },
+        { label: "고정지출(주거/공과금)", percent: 35 },
+        { label: "자녀교육", percent: 15 },
+        { label: "저축/투자", percent: 20 },
+        { label: "기타", percent: 10 },
+      ],
+    },
+    {
+      title: "프리랜서",
+      description: "유동적인 소득에 맞춘 예산 분배를 고려했습니다.",
+      budgets: [
+        { label: "식비", percent: 20 },
+        { label: "업무비(장비/소프트웨어)", percent: 20 },
+        { label: "고정지출", percent: 15 },
+        { label: "저축/투자", percent: 20 },
+        { label: "자기계발", percent: 15 },
+        { label: "기타", percent: 10 },
+      ],
+    },
+    {
+      title: "기타",
+      description: "일반적인 상황에 맞춘 기본 예산 추천입니다.",
+      budgets: [
+        { label: "식비", percent: 20 },
+        { label: "고정지출", percent: 20 },
+        { label: "저축", percent: 20 },
+        { label: "기타", percent: 40 },
+      ],
+    },
   ];
 
-  const [categories, setCategories] = useState(() => {
-    const saved = localStorage.getItem("budgetCategories");
-    return saved ? JSON.parse(saved) : defaultCategories;
-  });
-
+  const [categories, setCategories] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [tempCategories, setTempCategories] = useState([...categories]);
+  const [tempCategories, setTempCategories] = useState([]);
   const [newCategory, setNewCategory] = useState({ name: "", amount: "" });
-  const [showHelp, setShowHelp] = useState(false); // 도움말 상태
+  const [showHelp, setShowHelp] = useState(true); // 도움말 토글 상태
+
+  const selectedJob = localStorage.getItem("selectedJob");
+  const selectedBudget = parseInt(
+    localStorage.getItem("selectedBudget")?.replace(/[^0-9]/g, "") || "0"
+  );
+
+  const jobInfo = jobData.find((job) => job.title === selectedJob);
+
+  useEffect(() => {
+    if (jobInfo && selectedBudget > 0) {
+      const initializedCategories = jobInfo.budgets.map((item, idx) => ({
+        id: idx + 1,
+        name: item.label,
+        amount: Math.round((selectedBudget * item.percent) / 100).toString(),
+      }));
+
+      setCategories(initializedCategories);
+      localStorage.setItem(
+        "budgetCategories",
+        JSON.stringify(initializedCategories)
+      );
+    }
+  }, []);
 
   const getTotalBudget = (list) =>
     list.reduce((sum, cat) => sum + parseInt(cat.amount || 0), 0);
@@ -71,112 +163,38 @@ export default function Budget() {
     setShowHelp(!showHelp);
   };
 
-  const jobData = [
-    {
-      title: "📌 직장인",
-      description:
-        "고정지출과 외식/회식 중심의 소비가 많기 때문에, 예산은 주로 이렇게 분배해요!",
-      budgets: [
-        { label: "식비", percent: 25, className: "food" },
-        { label: "고정지출", percent: 25, className: "fixed" },
-        { label: "교통", percent: 10, className: "trans" },
-        { label: "자기관리", percent: 15 },
-        { label: "모임", percent: 15 },
-        { label: "저축", percent: 10 },
-      ],
-    },
-    {
-      title: "📌 학생",
-      description:
-        "학생은 소액 소비와 친구들과의 모임이나 문화생활 지출이 두드러져요!",
-      budgets: [
-        { label: "식비", percent: 30, className: "food" },
-        { label: "쇼핑", percent: 15, className: "shopping" },
-        { label: "교통", percent: 15, className: "trans" },
-        { label: "문화", percent: 20 },
-        { label: "모임", percent: 15 },
-        { label: "기타", percent: 5 },
-      ],
-    },
-    {
-      title: "📌 전업주부",
-      description:
-        "가족 단위의 소비를 중심으로, 식비와 생활용품 지출이 큰 비중을 차지해요.",
-      budgets: [
-        { label: "식비", percent: 35, className: "food" },
-        { label: "생활용품", percent: 20, className: "living" },
-        { label: "교통", percent: 10, className: "trans" },
-        { label: "자녀", percent: 15 },
-        { label: "기타", percent: 5 },
-        { label: "고정비", percent: 15, className: "fixed" },
-      ],
-    },
-    {
-      title: "📌 프리랜서",
-      description:
-        "프리랜서는 소득이 유동적인 만큼, 자기관리 및 업무 관리 지출, 저축 항목의 비중이 중요해요!",
-      budgets: [
-        { label: "식비", percent: 20, className: "food" },
-        { label: "업무비(장비)", percent: 20 },
-        { label: "자기관리", percent: 15 },
-        { label: "저축", percent: 20, className: "saving" },
-        { label: "기타", percent: 5 },
-        { label: "고정지출", percent: 10, className: "fixed" },
-      ],
-    },
-  ];
-
   return (
     <div className="budget-wrapper">
-      {/* 상단 예산 그래프 */}
       <section className="budget-graph-section">
         <div className="graph-header">
           <h2 className="section-title">예산 설정 내역</h2>
           <span
             className="help-icon"
             onClick={toggleHelp}
-            title="도움말 보기"
+            title="추천 예산 보기"
           >
             ❓
           </span>
         </div>
 
-        {showHelp && (
+        {showHelp && jobInfo && (
           <div className="help-bubble">
-            <h4>도움말</h4>
-            <p>직업별 추천 예산 비율입니다:</p>
-
-            <div className="budget-bar-graph">
-              {jobData.map((job, idx) => (
-                <div key={idx} className="job-graph">
-                  <h5>{job.title}</h5>
-                  <p>{job.description}</p>
-                  <div className="bar-container">
-                    {job.budgets.map((item, i) => (
-                      <div
-                        key={i}
-                        className={`bar-segment ${item.className || ""}`}
-                        style={{ width: `${item.percent}%` }}
-                        title={`${item.label}: ${item.percent}%`}
-                      >
-                        <span className="bar-label">
-                          {item.label} {item.percent}%
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            <h4>{jobInfo.title} 추천 예산안</h4>
+            <p>{jobInfo.description}</p>
+            {/* <ul>
+              {jobInfo.budgets.map((item, idx) => (
+                <li key={idx}>
+                  {item.label}: {item.percent}%
+                </li>
               ))}
-            </div>
-
-            <button className="close-btn" onClick={toggleHelp}>
+            </ul> */}
+            <button onClick={toggleHelp} className="close-btn">
               닫기
             </button>
           </div>
         )}
 
         <div className="budget-graph">
-          {/* 그래프 코드 */}
           <div className="graph-bar">
             {(isEditing ? tempCategories : categories).map((cat, idx) => {
               const percent =
@@ -204,7 +222,6 @@ export default function Budget() {
         </div>
       </section>
 
-      {/* 하단 세부 예산 */}
       <section className="budget-detail-section">
         <div className="detail-header">
           <h2 className="section-title">세부 예산</h2>

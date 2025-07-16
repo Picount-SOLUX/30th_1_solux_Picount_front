@@ -20,12 +20,12 @@ export default function Welcome() {
         </h1>
         <p>
           PICOUNT와 함께 건강한 소비 습관을 시작하기 전,<br />
-          <span className="highlight">맞춤 예산 설정안 추천</span>을 위한 몇 가지 사항을
+          <span className="highlight">더욱 간편한 예산 설정</span>을 위한 몇 가지 사항을
           입력해주세요!
         </p>
         <p className="subtext">
-          해당 정보들을 바탕으로 비슷한 성향대의 사람들을 위한 <br />
-          <span className="highlight">맞춤 예산 설정안 추천</span>을 해드려요!
+          입력해 주신 사항들을 메인 페이지에서 바로 반영해 드려요! <br />
+          {/* <span className="highlight">맞춤 예산 설정안 추천</span>을 해드려요! */}
         </p>
         <button className="welcome-button" onClick={handleNext}>
           다음

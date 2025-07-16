@@ -25,6 +25,7 @@
 
 .bar-graph-content {
   display: flex;
+  margin-bottom: 10px;
   flex-direction: column;
   gap: 8px;
   flex: 1;
