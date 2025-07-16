@@ -15,10 +15,10 @@ export default function Challenge() {
   // 챌린지 상태 (포인트 받은지 여부 체크)
   const [challenges, setChallenges] = useState([
     { id: 1, title: "출석체크 하기", reward: 100, claimed: false },
-    { id: 2, title: "일주일 연속 출석", reward: 1000, claimed: false },
-    { id: 3, title: "30일 연속 출석", reward: 3000, claimed: false },
-    { id: 4, title: "친구 홈피 방문해서 방명록 1회 남기기", reward: 200, claimed: false },
-    { id: 5, title: "무지출 사유 10일 이상 남기기", reward: 2000, claimed: false },
+    { id: 2, title: "일주일 연속 출석", reward: 1000, claimed: true },
+    { id: 3, title: "30일 연속 출석", reward: 3000, claimed: true },
+    { id: 4, title: "친구 홈피 방문해서 방명록 1회 남기기", reward: 200, claimed: true },
+    { id: 5, title: "무지출 사유 10일 이상 남기기", reward: 2000, claimed: true },
   ]);
 
   // 포인트 받기 버튼 클릭 핸들러
@@ -94,7 +94,7 @@ export default function Challenge() {
                   onClick={() => handleClaim(challenge.id)}
                   disabled={challenge.claimed} // 이미 받았으면 버튼 비활성화
                 >
-                  {challenge.claimed ? "완료" : "받기"}
+                  {challenge.claimed ? "받기" : "받기"}
                 </button>
               </div>
             </li>
