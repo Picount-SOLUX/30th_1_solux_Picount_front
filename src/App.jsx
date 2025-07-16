@@ -7,6 +7,7 @@ import Join from "./pages/Auth/Join";
 import Login from "./pages/Auth/Login";
 import Welcome from "./pages/Auth/Welcome";
 import InfoSteps from "./pages/Auth/InfoSteps";
+import ResetPassword from './pages/Auth/ResetPassword';
 
 import Home from "./pages/Home/Home";
 import Budget from "./pages/Budget/Budget";
@@ -21,7 +22,7 @@ function App() {
   const location = useLocation();
 
   // Header/Sidebar 없이 보여야 하는 페이지들
-  const noLayoutRoutes = ["/", "/join", "/login", "/welcome", "/info-steps"];
+  const noLayoutRoutes = ["/", "/join", "/login", "/welcome", "/info-steps", "/reset-password"];
   const isNoLayout = noLayoutRoutes.includes(location.pathname);
 
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/info-steps" element={<InfoSteps />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* 로그인 후 페이지 */}
             <Route path="/home" element={<Home />} />

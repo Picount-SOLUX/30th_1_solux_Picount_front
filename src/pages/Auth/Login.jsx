@@ -7,15 +7,16 @@ export default function Login() {
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false); // 모달 상태 추가
-  const [userInfo, setUserInfo] = useState(null);    // 유저 정보 저장
+  const [showModal, setShowModal] = useState(false); // 모달 상태
+  const [userInfo, setUserInfo] = useState(null);    // 유저 정보
+  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지
 
   const handleLogin = () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
     if (!email || !password) {
-      alert('이메일과 비밀번호를 입력해주세요.');
+      setErrorMessage('이메일과 비밀번호를 입력해주세요.');
       return;
     }
 
@@ -30,8 +31,9 @@ export default function Login() {
       // 유저 정보 저장 후 모달 열기
       setUserInfo(storedUser);
       setShowModal(true);
+      setErrorMessage(''); // 에러 메시지 초기화
     } else {
-      alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+      setErrorMessage('이메일 또는 비밀번호가 올바르지 않습니다.');
     }
   };
 
@@ -41,7 +43,10 @@ export default function Login() {
     }
   };
 
-  // 모달 닫기 및 페이지 이동
+  const goToResetPassword = () => {
+    navigate('/reset-password'); // 🔥 비밀번호 변경 페이지로 이동
+  };
+
   const closeModal = () => {
     setShowModal(false);
     navigate('/welcome', {
@@ -72,6 +77,13 @@ export default function Login() {
           ref={passwordRef}
           onKeyDown={handleKeyDown}
         />
+        {/* 🔥 에러 메시지 영역 */}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+        <div className="login-links">
+          <a onClick={goToResetPassword} className="link-text">비밀번호 찾기</a>
+        </div>
+
         <button className="login-button" onClick={handleLogin}>
           로그인
         </button>
@@ -80,12 +92,25 @@ export default function Login() {
           <span className="divider-text">SNS 로그인</span>
         </div>
 
-        <img src="icons/kakao_icon.png" alt="kakao login" className="kakao" />
-
-        <div className="login-links">
-          <a href="#">아이디 찾기 </a>
-          <span className="divider-bar">|</span>
-          <a href="#"> 비밀번호 찾기</a>
+        <div className="sns-icons">
+          <div className="kakao-container">
+            <a
+              href="https://kauth.kakao.com/oauth/authorize"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="src/assets/icons/kakaotalk.png"
+                alt="kakao login"
+                className="kakao-bg"
+              />
+              <img
+                src="src/assets/icons/kakao_icon.png"
+                alt="kakao login"
+                className="kakao-fg"
+              />
+            </a>
+          </div>
         </div>
       </div>
 
