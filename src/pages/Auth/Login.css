@@ -131,9 +131,9 @@ body {
 .login-links a {
   text-decoration: none;
   color: #ACACAC;
+  cursor: pointer; /* 클릭 가능 커서 */
+  display: inline-block; /* 링크도 박스로 만들어서 포인터 잘 적용되게 */
 }
-
-
 
 .modal-backdrop {
   position: fixed;
