@@ -5,13 +5,17 @@ import './Login.css';
 export default function ResetPassword() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // 1: 이메일 인증, 2: 새 비밀번호 설정
+  const [step, setStep] = useState(1); // 단계: 1-이메일, 2-코드, 3-새 비밀번호
   const [email, setEmail] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [inputCode, setInputCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 이메일 인증 버튼 클릭
+  const [showModal, setShowModal] = useState(false); // ✅ 모달 상태 추가
+
+  // 이메일 인증 요청
   const handleEmailVerification = () => {
     if (!email) {
       setErrorMessage('이메일을 입력해주세요.');
@@ -24,13 +28,21 @@ export default function ResetPassword() {
       return;
     }
 
-    // 이메일 전송 성공했다고 가정
-    alert('인증 이메일이 전송되었습니다.');
+    // 임시 인증 코드 생성
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    console.log(`임시 인증 코드: ${code}`);
+    setVerificationCode(code);
     setErrorMessage('');
-    setStep(2); // 다음 단계로 이동
+    setStep(2);
   };
 
-  // 비밀번호 변경 버튼 클릭
+  // 인증 코드 확인
+  const handleCodeVerification = () => {
+    setErrorMessage('');
+    setStep(3);
+  };
+
+  // 비밀번호 재설정
   const handlePasswordReset = () => {
     if (!newPassword || !confirmPassword) {
       setErrorMessage('모든 항목을 입력해주세요.');
@@ -46,7 +58,12 @@ export default function ResetPassword() {
     storedUser.password = newPassword;
     localStorage.setItem('user', JSON.stringify(storedUser));
 
-    alert('비밀번호가 성공적으로 변경되었습니다.');
+    // ✅ 모달 열기
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
     navigate('/login');
   };
 
@@ -54,6 +71,7 @@ export default function ResetPassword() {
     <div className="login-container">
       <h2 className="login-title">비밀번호 재설정</h2>
       <div className="login-box">
+        {/* 1단계: 이메일 입력 */}
         {step === 1 && (
           <>
             <input
@@ -70,7 +88,25 @@ export default function ResetPassword() {
           </>
         )}
 
+        {/* 2단계: 인증 코드 입력 */}
         {step === 2 && (
+          <>
+            <input
+              type="text"
+              placeholder="인증 코드 입력"
+              className="login-input"
+              value={inputCode}
+              onChange={(e) => setInputCode(e.target.value)}
+            />
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            <button className="login-button" onClick={handleCodeVerification}>
+              인증 코드 확인
+            </button>
+          </>
+        )}
+
+        {/* 3단계: 새 비밀번호 설정 */}
+        {step === 3 && (
           <>
             <input
               type="password"
@@ -93,6 +129,16 @@ export default function ResetPassword() {
           </>
         )}
       </div>
+
+      {/* ✅ 비밀번호 변경 성공 모달 */}
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h3>비밀번호가 성공적으로 변경되었습니다.</h3>
+            <button onClick={closeModal}>확인</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
