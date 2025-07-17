@@ -2,11 +2,6 @@ import React from "react";
 import "./BarGraph.css";
 
 export default function BarGraph({ categories }) {
-  const handleEditClick = () => {
-    // 색테마 변경 기능 추가 예정
-    console.log("그래프 색테마 변경");
-  };
-
   return (
     <div className="bar-graph-container">
       <div className="bar-graph-content">
