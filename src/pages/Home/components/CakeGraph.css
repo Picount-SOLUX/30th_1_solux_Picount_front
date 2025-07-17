@@ -24,22 +24,28 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  margin-top: auto;
+  width: 100%;
+  /* max-width: 300px;  <-- 주석처리 또는 값 조정 */
+  max-width: 400px; /* 필요하면 더 크게 조절 */
 }
 
 .budget-text {
   font-size: 12px;
+  margin-left: -14px;
   color: #333;
   line-height: 1.4;
-  flex: 1;
+  flex: 1 1 auto; /* 버튼 공간 확보 */
 }
 
-.edit-btn {
+.edit-btnn {
+  display: inline-block;
   background: linear-gradient(to bottom, #ffffff, #febbb3);
   border: 1px solid #db968e;
   border-radius: 20px;
   padding: 4px 10px;
-  width: 50px;
+  margin-right: 3px;
+  width: 70px;
+  height: 30px;
   cursor: pointer;
   font-size: 0.8rem;
   color: #333;
@@ -47,5 +53,162 @@
 }
 
 .edit-btn:hover {
-  background: linear-gradient(to bottom, #febbb3, #f8a89a);
+  background: #ffe0e0;
+}
+
+/* ✅ 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.book-modal {
+  position: relative;
+  display: flex;
+  width: 600px;
+  height: 400px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/*스프링*/
+.spring1 {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 35px;
+  height: 12px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.spring2 {
+  position: absolute;
+  left: 50%;
+  top: 13%;
+  width: 35px;
+  height: 12px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.spring3 {
+  position: absolute;
+  left: 50%;
+  top: 85%;
+  width: 35px;
+  height: 12px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.spring4 {
+  position: absolute;
+  left: 50%;
+  top: 90%;
+  width: 35px;
+  height: 12px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.book-page {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pages {
+  display: flex;
+  /* gap:5px; */
+}
+
+.left-page {
+  border-right: 1px dashed #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.book-cake-image {
+  width: 190px;
+  height: auto;
+  margin-top: 15px;
+}
+
+.skin-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.skin-item {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.skin-item.selected {
+  border-color: #ff8c8c;
+  background: #fff3f3;
+}
+
+.skin-item:hover {
+  border-color: #ffb6b6;
+  background-color: #fff5f5;
+}
+
+.skin-image {
+  width: 90%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.apply-btn {
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
+  border: 1px solid #db968e;
+  border-radius: 20px;
+  padding: 4px 10px;
+  width: 60px;
+  margin-left: 200px;
+  margin-top: 60px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 400;
+}
+
+.apply-btn:hover {
+  background: #ffe0e0;
 }

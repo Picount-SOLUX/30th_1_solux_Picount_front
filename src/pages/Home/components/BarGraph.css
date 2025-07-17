@@ -7,22 +7,6 @@
   font-family: "Noto Sans KR", sans-serif;
 }
 
-/* .edit-btn {
-  background: linear-gradient(to bottom, #ffffff, #febbb3);
-  border: 1px solid #db968e;
-  border-radius: 20px;
-  padding: 4px 10px;
-  width: 50px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  color: #333;
-  font-weight: 500;
-}
-
-.edit-btn:hover {
-  background: linear-gradient(to bottom, #febbb3, #f8a89a);
-} */
-
 .bar-graph-content {
   display: flex;
   margin-bottom: 10px;
@@ -64,7 +48,6 @@
 
 .progress-spent {
   background: linear-gradient(to right, #d5dbdb, #aeb6bf);
-
   transition: width 0.3s ease;
 }
 
