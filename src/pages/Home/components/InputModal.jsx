@@ -1,16 +1,21 @@
 import React, { useState, useRef } from "react";
+import { useEffect } from "react";
 import styles from "./InputModal.module.css";
 
-export default function InputModal({ onClose, onSubmit }) {
+export default function InputModal({ onClose, onSubmit, initialData }) {
   const today = new Date();
   const formatDate = (date) => date.toISOString().split("T")[0];
 
   const [date, setDate] = useState(formatDate(today));
-  const [rows, setRows] = useState([
-    { category: "", amount: "" },
+
+  const [type, setType] = useState("expense");
+  const [incomeRows, setIncomeRows] = useState([{ category: "", amount: "" }]);
+  const [expenseRows, setExpenseRows] = useState([
     { category: "", amount: "" },
   ]);
-  const [type, setType] = useState("expense");
+  const rows = type === "income" ? incomeRows : expenseRows;
+  const setRows = type === "income" ? setIncomeRows : setExpenseRows;
+
   const [memo, setMemo] = useState("");
   const [photo, setPhoto] = useState(null);
 
@@ -51,15 +56,11 @@ export default function InputModal({ onClose, onSubmit }) {
   };
 
   const handleSubmit = () => {
-    const data = {
-      date,
-      memo,
-      photo,
-      entries: rows.map((row) => ({
-        ...row,
-        type,
-      })),
-    };
+    const entries = [
+      ...incomeRows.map((row) => ({ ...row, type: "income" })),
+      ...expenseRows.map((row) => ({ ...row, type: "expense" })),
+    ];
+    const data = { date, memo, photo, entries };
     console.log("가계부 등록 데이터:", data);
     onSubmit(data);
     onClose();
@@ -76,6 +77,27 @@ export default function InputModal({ onClose, onSubmit }) {
   ];
 
   const incomeCategories = ["월급", "용돈", "기타"];
+
+  useEffect(() => {
+    if (initialData) {
+      setDate(initialData.date);
+      setMemo(initialData.memo || "");
+      setPhoto(initialData.photo || null);
+
+      const income =
+        initialData.entries?.filter((e) => e.type === "income") || [];
+      const expense =
+        initialData.entries?.filter((e) => e.type === "expense") || [];
+
+      setIncomeRows(
+        income.length > 0 ? income : [{ category: "", amount: "" }]
+      );
+      setExpenseRows(
+        expense.length > 0 ? expense : [{ category: "", amount: "" }]
+      );
+      setType("expense"); // 기본값 탭
+    }
+  }, [initialData]);
 
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>

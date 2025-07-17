@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import InputModal from "./InputModal";
 import ViewModal from "./ViewModal";
 import styles from "./calendar.module.css";
-import Sticker from "./Sticker";
 import Draggable from "react-draggable";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import DroppableDay from "./DroppableDay";
+import StickerItem from "./StickerItem";
 
 function Calendar() {
   const today = new Date();
@@ -12,7 +15,7 @@ function Calendar() {
   const [isInputOpen, setIsInputOpen] = useState(false);
   const [viewData, setViewData] = useState(null);
 
-  const [placedStickers, setPlacedStickers] = useState([]);
+  const [placedStickers, setPlacedStickers] = useState({});
   const [calendarData, setCalendarData] = useState({});
 
   const stickerList = [
@@ -25,14 +28,19 @@ function Calendar() {
     { id: 7, src: "/stickers/감정스티커 7.png" },
     { id: 8, src: "/stickers/감정스티커 8.png" },
   ];
-
-  const handleStickerClick = (src) => {
-    // 초기 위치는 캘린더 중앙 위로 고정 (나중에 드래그)
-    setPlacedStickers((prev) => [
+  const handleStickerDrop = (dateStr, src) => {
+    setPlacedStickers((prev) => ({
       ...prev,
-      { id: Date.now(), src, x: 100, y: 100 },
-    ]);
+      [dateStr]: src, // 하루 하나만
+    }));
   };
+  // const handleStickerClick = (src) => {
+  //   // 초기 위치는 캘린더 중앙 위로 고정 (나중에 드래그)
+  //   setPlacedStickers((prev) => [
+  //     ...prev,
+  //     { id: Date.now(), src, x: 100, y: 100 },
+  //   ]);
+  // };
 
   const yearOptions = Array.from(
     { length: 10 },
@@ -110,10 +118,13 @@ function Calendar() {
       )}-${String(date).padStart(2, "0")}`;
 
       cells.push(
-        <div
+        <DroppableDay
           key={`day-${i}`}
-          className={`${styles.day} ${!isCurrentMonth ? styles.outside : ""}`}
-          onClick={() => isCurrentMonth && handleDayClick(dateStr)}
+          date={dateStr}
+          stickerSrc={placedStickers[dateStr]}
+          onDrop={handleStickerDrop}
+          isCurrentMonth={isCurrentMonth}
+          onClick={handleDayClick}
         >
           <span className={styles.date}>{date}</span>
           {isCurrentMonth &&
@@ -122,14 +133,11 @@ function Calendar() {
               let totalIncome = 0;
               let totalExpense = 0;
 
-              if (data && data.entries && Array.isArray(data.entries)) {
+              if (data?.entries?.length) {
                 data.entries.forEach((entry) => {
                   const amount = Number(entry.amount.replace(/,/g, "")) || 0;
-                  if (entry.type === "income") {
-                    totalIncome += amount;
-                  } else if (entry.type === "expense") {
-                    totalExpense += amount;
-                  }
+                  if (entry.type === "income") totalIncome += amount;
+                  else if (entry.type === "expense") totalExpense += amount;
                 });
               }
 
@@ -146,101 +154,97 @@ function Calendar() {
                 </>
               );
             })()}
-        </div>
+        </DroppableDay>
       );
     }
     return cells;
   };
 
   return (
-    <div className={styles.calendarContainer}>
-      <div className={styles.headerRow}>
-        <div className={styles.selectBox}>
-          <select
-            value={currentYear}
-            onChange={handleYearChange}
-            className={styles.dropdown}
-          >
-            {yearOptions.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-          <select
-            value={currentMonth}
-            onChange={handleMonthChange}
-            className={styles.dropdown}
-          >
-            {monthOptions.map((month) => (
-              <option key={month} value={month}>
-                {month + 1}
-              </option>
-            ))}
-          </select>
-        </div>
+    <DndProvider backend={HTML5Backend}>
+      <div className={styles.calendarContainer}>
+        <div className={styles.headerRow}>
+          <div className={styles.selectBox}>
+            <select
+              value={currentYear}
+              onChange={handleYearChange}
+              className={styles.dropdown}
+            >
+              {yearOptions.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <select
+              value={currentMonth}
+              onChange={handleMonthChange}
+              className={styles.dropdown}
+            >
+              {monthOptions.map((month) => (
+                <option key={month} value={month}>
+                  {month + 1}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className={styles.stickerBar}>
-          <div className={styles.stickerTrack}>
-            {stickerList.map((sticker) => (
-              <img
-                key={sticker.id}
-                src={sticker.src}
-                alt="sticker"
-                onClick={() => handleStickerClick(sticker.src)}
-                className={styles.stickerIcon}
-              />
-            ))}
+          <div className={styles.stickerBar}>
+            <div className={styles.stickerTrack}>
+              {stickerList.map((sticker) => (
+                <StickerItem key={sticker.id} src={sticker.src} />
+              ))}
+            </div>
           </div>
         </div>
+        <div className={styles.weekdays}>
+          {["SUN", "MON", "TUES", "WED", "THURS", "FRI", "SAT"].map((day) => (
+            <div key={day} className={styles.weekday}>
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.days}>{renderDays()}</div>
+
+        <button
+          className={styles.floatingEditBtn}
+          onClick={() => setIsInputOpen(true)}
+        >
+          ✏️
+        </button>
+
+        {isInputOpen && (
+          <InputModal
+            onClose={() => setIsInputOpen(false)}
+            onSubmit={(data) => {
+              setCalendarData((prev) => ({
+                ...prev,
+                [data.date]: data,
+              }));
+              setIsInputOpen(false);
+            }}
+          />
+        )}
+        {viewData && (
+          <ViewModal
+            data={viewData}
+            onClose={() => setViewData(null)}
+            onEdit={() => {
+              setIsInputOpen(true);
+              setViewData(null);
+            }}
+          />
+        )}
+        {/* {placedStickers.map((sticker) => (
+            <Sticker
+              key={sticker.id}
+              src={sticker.src}
+              defaultPosition={{ x: sticker.x, y: sticker.y }}
+            />
+          ))} */}
       </div>
-      <div className={styles.weekdays}>
-        {["SUN", "MON", "TUES", "WED", "THURS", "FRI", "SAT"].map((day) => (
-          <div key={day} className={styles.weekday}>
-            {day}
-          </div>
-        ))}
-      </div>
-
-      <div className={styles.days}>{renderDays()}</div>
-
-      <button
-        className={styles.floatingEditBtn}
-        onClick={() => setIsInputOpen(true)}
-      >
-        ✏️
-      </button>
-
-      {isInputOpen && (
-        <InputModal
-          onClose={() => setIsInputOpen(false)}
-          onSubmit={(data) => {
-            setCalendarData((prev) => ({
-              ...prev,
-              [data.date]: data,
-            }));
-            setIsInputOpen(false);
-          }}
-        />
-      )}
-      {viewData && (
-        <ViewModal
-          data={viewData}
-          onClose={() => setViewData(null)}
-          onEdit={() => {
-            setIsInputOpen(true);
-            setViewData(null);
-          }}
-        />
-      )}
-      {placedStickers.map((sticker) => (
-        <Sticker
-          key={sticker.id}
-          src={sticker.src}
-          defaultPosition={{ x: sticker.x, y: sticker.y }}
-        />
-      ))}
-    </div>
+    </DndProvider>
   );
 }
 
