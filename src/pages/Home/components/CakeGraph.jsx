@@ -13,9 +13,10 @@ import cake8 from "../../../assets/cakes/BasicCake/8.png";
 import cake9 from "../../../assets/cakes/BasicCake/9.png";
 import cake10 from "../../../assets/cakes/BasicCake/10.png";
 
-// 샘플 스킨 이미지 import (2개 예시)
-import skin1 from "../../../assets/ShopItems/CakeSkin/WhiteCake.png";
-import skin2 from "../../../assets/ShopItems/CakeSkin/CherryCake.png";
+// 샘플 스킨 이미지 import (3개 예시)
+import skin1 from "../../../assets/ShopItems/CakeSkin/BasicCake.png";
+import skin2 from "../../../assets/ShopItems/CakeSkin/WhiteCake.png";
+import skin3 from "../../../assets/ShopItems/CakeSkin/CherryCake.png";
 
 // 이미지 배열
 const cakeImages = [cake1, cake2, cake3, cake4, cake5, cake6, cake7, cake8, cake9, cake10];
@@ -40,8 +41,9 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
 
   // 더미 데이터: 보유 중인 스킨들
   const ownedSkins = [
-    { id: 1, image: skin1, name: "화이트 케이크" },
-    { id: 2, image: skin2, name: "체리 케이크" },
+    { id: 1, image: skin1 },
+    { id: 2, image: skin2 },
+    { id: 3, image: skin3 },
   ];
 
   return (
@@ -72,10 +74,10 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
             onClick={(e) => e.stopPropagation()} // 모달 클릭 시 닫힘 방지
           >
             {/* 스프링 */}
-            <img className="spring1" src="src/assets/cakes/Spring.png"></img>
-            <img className="spring2" src="src/assets/cakes/Spring.png"></img>
-            <img className="spring3" src="src/assets/cakes/Spring.png"></img>
-            <img className="spring4" src="src/assets/cakes/Spring.png"></img>
+            <img className="spring1" src="src/assets/cakes/Spring.png" alt="spring" />
+            <img className="spring2" src="src/assets/cakes/Spring.png" alt="spring" />
+            <img className="spring3" src="src/assets/cakes/Spring.png" alt="spring" />
+            <img className="spring4" src="src/assets/cakes/Spring.png" alt="spring" />
 
             <div className="pages">
 
@@ -105,10 +107,10 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
                       >
                         <img
                           src={skin.image}
-                          alt={skin.name}
+                          alt="케이크 스킨"
                           className="skin-image"
                         />
-                        <p>{skin.name}</p>
+                        {/* 이름 제거 */}
                       </div>
                     ))
                   )}
@@ -125,7 +127,6 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
               </div>
 
             </div>
-
           </div>
         </div>
       )}

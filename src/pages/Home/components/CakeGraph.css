@@ -56,7 +56,7 @@
   background: #ffe0e0;
 }
 
-/* ✅ 모달 스타일 */
+/* 모달 스타일 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -82,12 +82,12 @@
 .book-modal {
   position: relative;
   display: flex;
-  width: 600px;
+  width: 630px; /* 살짝 더 넓게 */
   height: 400px;
-  background: #fff;
+  background: #9b958e; /* 아주 연한 배경 */
   border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  overflow: visible;
 }
 
 /*스프링*/
@@ -132,48 +132,67 @@
   z-index: 10;
 }
 
+
+.pages {
+  display: flex;
+  gap: 7px; /* 왼쪽과 오른쪽 사이에 틈 추가 */
+  position: relative;
+}
+
 .book-page {
   flex: 1;
   padding: 20px;
   box-sizing: border-box;
-}
-
-.pages {
-  display: flex;
-  /* gap:5px; */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05); /* 약한 그림자 */
 }
 
 .left-page {
-  border-right: 1px dashed #ddd;
+  border-right: 1px solid #eee; /* 가운데 접힌 듯한 얇은 선 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+.right-page h3 {
+  font-size: 0.8rem;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-right: 180px;
+  color:#E74D2E;
+}
+
 .right-page {
+  border-left: 1px solid #eee; /* 오른쪽 접힌 선 */
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  max-height: 100%; /* 부모 높이에 맞게 */
 }
 
 .book-cake-image {
   width: 190px;
   height: auto;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .skin-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  margin: 15px 0;
+  margin: 10px 0;
 }
 
 .skin-item {
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 10px;
+  /* font: 0.9rem; */
+  width: 85%;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
@@ -190,7 +209,7 @@
 }
 
 .skin-image {
-  width: 90%;
+  width: 85%;
   height: auto;
   border-radius: 10px;
 }
@@ -201,8 +220,9 @@
   border-radius: 20px;
   padding: 4px 10px;
   width: 60px;
-  margin-left: 200px;
-  margin-top: 60px;
+  margin-left: 210px;
+  margin-top:25px;
+  margin-bottom: 0px;
   cursor: pointer;
   font-size: 0.85rem;
   color: #333;
