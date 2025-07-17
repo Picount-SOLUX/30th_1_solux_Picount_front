@@ -1,4 +1,5 @@
 .calendarContainer {
+  position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -58,20 +59,27 @@
   background-color: white;
   border-radius: 100px;
   border: 1.5px solid #f0d4ca;
-  padding: 6px 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   overflow-x: auto;
   min-width: 0;
+  min-height: 32px;
+  padding: 2px 8px;
 }
 
 .stickerTrack {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   white-space: nowrap;
 }
-
+.placedSticker {
+  width: 32px;
+  height: 40px;
+  position: absolute;
+  z-index: 1000;
+  pointer-events: auto;
+}
 .stickerItem {
   font-size: 13px;
   padding: 2px 4px;
@@ -84,7 +92,15 @@
 .stickerItem:hover {
   transform: scale(1.2);
 }
-
+.stickerIcon {
+  width: 32px;
+  height: 32px;
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+.stickerIcon:hover {
+  transform: scale(1.2);
+}
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

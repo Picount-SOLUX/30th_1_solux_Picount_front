@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import styles from "./InputModal.module.css";
 
-export default function InputModal({ onClose }) {
+export default function InputModal({ onClose, onSubmit }) {
   const today = new Date();
   const formatDate = (date) => date.toISOString().split("T")[0];
 
@@ -53,12 +53,15 @@ export default function InputModal({ onClose }) {
   const handleSubmit = () => {
     const data = {
       date,
-      type,
-      entries: rows,
       memo,
       photo,
+      entries: rows.map((row) => ({
+        ...row,
+        type,
+      })),
     };
     console.log("가계부 등록 데이터:", data);
+    onSubmit(data);
     onClose();
   };
 
