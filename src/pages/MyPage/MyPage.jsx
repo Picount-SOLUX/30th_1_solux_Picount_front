@@ -9,8 +9,10 @@ import SettingsSection from "./components/SettingsSection";
 export default function MyPage() {
   return (
     <div className={styles.container}>
-      <ProfileSection />
-      <FriendsSection />
+      <div className={styles.profileRow}>
+        <ProfileSection />
+      </div>
+
       <SkinsSection />
       <GuestbookSection />
       <SettingsSection />

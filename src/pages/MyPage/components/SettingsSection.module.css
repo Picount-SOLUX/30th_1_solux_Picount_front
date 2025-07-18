@@ -1,22 +1,16 @@
 .settingsSection {
+  margin-top: 5px; /* 페이지 위와 간격 두기 */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 24px;
+  justify-content: flex-start;
+  bottom: 16px;
+  left: 260px;
+  z-index: 999; /* ✅ 보이는 순서 우선순위 확보 */
 }
 
 .settingsButton {
-  background-color: #f8e6d5;
-  color: #333;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
+  all: unset; /* ✅ 브라우저 기본 스타일 완전히 제거 */
   font-size: 1rem;
+  color: #333;
   cursor: pointer;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-.settingsButton:hover {
-  background-color: #f3d0a5;
+  text-decoration: underline; /* ✅ 밑줄 */
 }
