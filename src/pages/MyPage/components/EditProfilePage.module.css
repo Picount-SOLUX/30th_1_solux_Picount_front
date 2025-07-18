@@ -1,77 +1,105 @@
 .container {
-  padding: 24px;
+  padding: 20px;
   font-family: "Noto Sans KR", sans-serif;
 }
 
+/* 상단 경로 텍스트 */
 .breadcrumb {
   color: #e53935;
   font-weight: bold;
+  font-size: 0.95rem;
   margin-bottom: 24px;
 }
 
+/* 프로필 전체 섹션 */
 .profileSection {
   display: flex;
   gap: 32px;
   margin-bottom: 40px;
 }
 
+/* 프로필 이미지 영역 */
 .profileImageBox {
-  width: 200px;
-  height: 200px;
-  background-color: #ccc;
+  width: 230px;
+  height: 230px;
+  background-color: #aaa;
   position: relative;
   border-radius: 12px;
-  text-align: center;
+  overflow: hidden;
 }
 
 .profileImage {
-  line-height: 200px;
+  width: 100%;
+  height: 100%;
   color: white;
+  font-size: 0.95rem;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .changeImageBtn {
+  all: unset;
   position: absolute;
-  bottom: 8px;
+  bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
-  background: none;
-  border: none;
+  font-size: 0.85rem;
   color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
+/* 입력칸 영역 */
 .profileInputs {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
+}
+
+.profileInputs label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  gap: 6px;
 }
 
 .profileInputs input,
 .profileInputs textarea {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
+  all: unset;
   background-color: #f7f7f7;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  padding: 12px;
+  font-size: 0.95rem;
 }
 
+/* 스킨 목록 */
 .skinSection {
-  margin-top: 40px;
+  margin-top: 48px;
+}
+
+.skinSection h3 {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 12px;
 }
 
 .skinGrid {
   display: flex;
   gap: 12px;
-  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .skinBox {
-  width: 80px;
-  height: 80px;
-  background-color: #eee;
+  width: 72px;
+  height: 72px;
+  background-color: #f0f0f0;
   border: 1px solid #ccc;
   border-radius: 8px;
   position: relative;
@@ -80,32 +108,54 @@
 .skinImage {
   width: 100%;
   height: 100%;
-  text-align: center;
-  line-height: 80px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .removeSkinBtn {
+  all: unset;
   position: absolute;
-  bottom: -24px;
+  bottom: -18px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.75rem;
-  background: none;
-  border: none;
+  color: red;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 방명록 영역 */
+.guestbookSection {
+  margin-top: 48px;
+}
+
+.guestbookSection h3 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.deleteAllBtn {
+  all: unset;
+  font-size: 0.8rem;
   color: red;
   cursor: pointer;
 }
 
-.guestbookSection {
-  margin-top: 40px;
-}
-
 .guestbookList {
   list-style: none;
-  padding: 0;
-  margin: 12px 0;
-  max-height: 120px;
+  padding: 16px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  max-height: 150px;
   overflow-y: auto;
 }
 
@@ -113,38 +163,39 @@
   display: flex;
   justify-content: space-between;
   padding: 6px 0;
-  border-bottom: 1px solid #eee;
   font-size: 0.9rem;
+  border-bottom: 1px solid #eee;
+}
+
+.guestbookItem:last-child {
+  border-bottom: none;
 }
 
 .deleteBtn {
-  background: none;
-  border: none;
+  all: unset;
   color: red;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
-.deleteAllBtn {
-  margin-left: 8px;
-  font-size: 0.8rem;
-  color: red;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
+/* 저장 버튼 */
 .saveWrapper {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
 }
 
-.saveBtn {
-  background-color: #e53935;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 24px;
-  font-size: 0.95rem;
+.saveSection {
+  margin-top: 24px; /* 위와 간격 */
+  display: flex;
+  justify-content: flex-start;
+}
+
+.saveButton {
+  all: unset; /* 브라우저 기본 버튼 스타일 제거 */
+  font-size: 1rem;
+  color: #333;
   cursor: pointer;
+  text-decoration: underline;
 }

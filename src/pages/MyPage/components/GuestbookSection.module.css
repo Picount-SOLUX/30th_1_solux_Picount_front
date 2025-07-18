@@ -7,45 +7,33 @@
   font-size: 1rem;
   margin-bottom: 12px;
 }
-
-.scrollContainer {
+.box {
   background-color: #f5f5f5;
-  border-radius: 12px;
-  padding: 16px;
-  max-height: 200px;
-  overflow-y: auto;
-  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
-}
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 60px; /* 최대 높이 제한 */
+  overflow-y: auto; /* 넘칠 경우 세로 스크롤 */
 
-.entry {
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 12px;
+  scroll-behavior: smooth; /* 부드러운 스크롤 */
 }
-
-.entry:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.header {
+.row {
   display: flex;
-  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 6px;
-}
-
-.name {
-  font-weight: 600;
+  font-size: 0.95rem;
   color: #333;
 }
 
-.date {
-  font-size: 0.8rem;
-  color: #888;
+.row:last-child {
+  margin-bottom: 0;
 }
 
-.message {
-  font-size: 0.95rem;
-  color: #444;
+.name {
+  font-weight: 500;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #555;
 }

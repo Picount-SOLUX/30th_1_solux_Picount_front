@@ -3,12 +3,10 @@ import styles from "./SkinsSection.module.css";
 
 export default function SkinsSection() {
   const skins = [
-    { id: 1, name: "아이스크림", image: null },
-    { id: 2, name: "체리", image: null },
-    { id: 3, name: null, image: null },
-    { id: 4, name: null, image: null },
-    { id: 5, name: null, image: null },
-    { id: 6, name: null, image: null },
+    { id: 1, name: "생크림", image: "/skins/꾸미기 스킨 1.png" },
+    { id: 2, name: "체리", image: "/skins/꾸미기 스킨 2.png" },
+    { id: 3, name: "꽃", image: "/skins/꾸미기 스킨 3.png" },
+    { id: 4, name: "데코크림", image: "/skins/꾸미기 스킨 4.png" },
   ];
 
   return (

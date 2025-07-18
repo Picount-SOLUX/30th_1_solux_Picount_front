@@ -1,20 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SettingsPage.module.css";
+import DeleteAccountModal from "./DeleteAccountModal";
+import DeleteSuccessModal from "./DeleteSuccessModal";
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const handleLogout = () => {
     alert("로그아웃 처리");
   };
 
   const handleDeleteAccount = () => {
-    alert("회원 탈퇴 절차");
+    setShowModal(true); // 경고 모달 열기
   };
 
-  const navigate = useNavigate();
+  const confirmDelete = () => {
+    setShowModal(false);
+    setShowSuccess(true); // 성공 모달 열기
+    // 실제 API 연동 코드 추가 예정
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccess(false);
+    navigate("/"); // 홈 or 로그인 페이지로 이동
+  };
 
   const goToEditProfile = () => {
     navigate("/settings/edit-profile");
+  };
+  const goBackToMyPage = () => {
+    navigate("/mypage");
   };
 
   return (
@@ -28,7 +45,6 @@ export default function SettingsPage() {
             {" "}
             프로필 수정
           </li>
-          <li className={styles.item}>아이디 변경</li>
           <li className={styles.item}>비밀번호 변경</li>
         </ul>
       </div>
@@ -61,6 +77,17 @@ export default function SettingsPage() {
           회원 탈퇴
         </button>
       </div>
+      <button className={styles.backButton} onClick={goBackToMyPage}>
+        ← 마이페이지
+      </button>
+
+      {showModal && (
+        <DeleteAccountModal
+          onClose={() => setShowModal(false)}
+          onConfirm={confirmDelete}
+        />
+      )}
+      {showSuccess && <DeleteSuccessModal onClose={closeSuccessModal} />}
     </div>
   );
 }
