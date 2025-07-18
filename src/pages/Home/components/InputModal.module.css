@@ -204,3 +204,29 @@
 .addRowBtn:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
+
+.deleteBtn {
+  background: none;
+  border: none;
+  margin-left: 4px;
+  cursor: pointer;
+  padding: 0; /* 여백 제거 */
+  width: 22px; /* .deleteCircle과 동일하게 맞춤 */
+  height: 22px;
+  display: inline-flex; /* 자식 요소 정렬 위해 flex 사용 */
+  align-items: center;
+  justify-content: center;
+}
+
+.deleteCircle {
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 50%;
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  line-height: 22px;
+  font-size: 14px;
+  font-weight: bold;
+}

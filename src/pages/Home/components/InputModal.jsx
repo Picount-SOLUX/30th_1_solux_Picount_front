@@ -1,12 +1,20 @@
-import React, { useState, useRef } from "react";
-import { useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./InputModal.module.css";
 
-export default function InputModal({ onClose, onSubmit, initialData }) {
+export default function InputModal({
+  onClose,
+  onSubmit,
+  initialData,
+  calendarData,
+  isEditMode = false,
+}) {
+  const [initialized, setInitialized] = useState(false);
   const today = new Date();
   const formatDate = (date) => date.toISOString().split("T")[0];
 
-  const [date, setDate] = useState(formatDate(today));
+  // 날짜 상태 분리
+  const [date, setDate] = useState(formatDate(today)); // 최종 제출용
+  const [inputDate, setInputDate] = useState(formatDate(today)); // input 바인딩용
 
   const [type, setType] = useState("expense");
   const [incomeRows, setIncomeRows] = useState([{ category: "", amount: "" }]);
@@ -75,12 +83,20 @@ export default function InputModal({ onClose, onSubmit, initialData }) {
     "기타",
     "저축",
   ];
-
   const incomeCategories = ["월급", "용돈", "기타"];
 
+  const handleDeleteRow = (index) => {
+    const updated = [...rows];
+    updated.splice(index, 1);
+    setRows(updated.length > 0 ? updated : [{ category: "", amount: "" }]);
+  };
+
   useEffect(() => {
-    if (initialData) {
+    const matchedData = calendarData?.[inputDate];
+
+    if (initialData && !initialized) {
       setDate(initialData.date);
+      setInputDate(initialData.date);
       setMemo(initialData.memo || "");
       setPhoto(initialData.photo || null);
 
@@ -90,14 +106,46 @@ export default function InputModal({ onClose, onSubmit, initialData }) {
         initialData.entries?.filter((e) => e.type === "expense") || [];
 
       setIncomeRows(
-        income.length > 0 ? income : [{ category: "", amount: "" }]
+        income.length > 0
+          ? income.map((e) => ({ ...e }))
+          : [{ category: "", amount: "" }]
       );
       setExpenseRows(
-        expense.length > 0 ? expense : [{ category: "", amount: "" }]
+        expense.length > 0
+          ? expense.map((e) => ({ ...e }))
+          : [{ category: "", amount: "" }]
       );
-      setType("expense"); // 기본값 탭
+
+      setType("expense");
+      setInitialized(true);
+    } else if (!initialData && matchedData) {
+      setDate(inputDate);
+      setMemo(matchedData.memo || "");
+      setPhoto(matchedData.photo || null);
+
+      const income =
+        matchedData.entries?.filter((e) => e.type === "income") || [];
+      const expense =
+        matchedData.entries?.filter((e) => e.type === "expense") || [];
+
+      setIncomeRows(
+        income.length > 0
+          ? income.map((e) => ({ ...e }))
+          : [{ category: "", amount: "" }]
+      );
+      setExpenseRows(
+        expense.length > 0
+          ? expense.map((e) => ({ ...e }))
+          : [{ category: "", amount: "" }]
+      );
+    } else if (!initialData && !matchedData) {
+      setDate(inputDate);
+      setMemo("");
+      setPhoto(null);
+      setIncomeRows([{ category: "", amount: "" }]);
+      setExpenseRows([{ category: "", amount: "" }]);
     }
-  }, [initialData]);
+  }, [initialData, initialized, inputDate, calendarData]);
 
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
@@ -124,8 +172,8 @@ export default function InputModal({ onClose, onSubmit, initialData }) {
         <label className={styles.label}>날짜</label>
         <input
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={inputDate}
+          onChange={(e) => setInputDate(e.target.value)}
           className={styles.dateInput}
         />
 
@@ -148,6 +196,7 @@ export default function InputModal({ onClose, onSubmit, initialData }) {
                 )
               )}
             </select>
+
             <input
               className={styles.amountInput}
               value={row.amount}
@@ -163,6 +212,28 @@ export default function InputModal({ onClose, onSubmit, initialData }) {
                 +{amt.toLocaleString()}
               </button>
             ))}
+
+            {/* 버튼 영역 */}
+            {isEditMode ? (
+              // 수정 모드에서는 삭제 버튼. 단, 유일한 빈 항목만 있으면 생략
+              !(
+                rows.length === 1 &&
+                row.category === "" &&
+                row.amount === ""
+              ) && (
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => handleDeleteRow(idx)}
+                >
+                  <span className={styles.deleteCircle}>–</span>
+                </button>
+              )
+            ) : (
+              // 작성 모드에서는 항상 + 버튼
+              <button className={styles.addRowBtn} onClick={handleAddRow}>
+                +
+              </button>
+            )}
           </div>
         ))}
 

@@ -67,6 +67,9 @@ export default function ViewModal({ onClose, data, onEdit }) {
           <button className={styles.editBtn} onClick={onEdit}>
             수정
           </button>
+          <button className={styles.confirmBtn} onClick={onClose}>
+            확인
+          </button>
         </div>
       </div>
     </div>

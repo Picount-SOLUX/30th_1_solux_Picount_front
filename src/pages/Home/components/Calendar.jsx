@@ -41,6 +41,7 @@ function Calendar() {
   //     { id: Date.now(), src, x: 100, y: 100 },
   //   ]);
   // };
+  const [editData, setEditData] = useState(null);
 
   const yearOptions = Array.from(
     { length: 10 },
@@ -92,7 +93,13 @@ function Calendar() {
       setViewData(null);
     }
   };
-
+  const handleStickerDelete = (dateStr) => {
+    setPlacedStickers((prev) => {
+      const newData = { ...prev };
+      delete newData[dateStr];
+      return newData;
+    });
+  };
   const renderDays = () => {
     const firstDay = getFirstDayOfMonth();
     const daysInMonth = getDaysInMonth();
@@ -125,6 +132,7 @@ function Calendar() {
           onDrop={handleStickerDrop}
           isCurrentMonth={isCurrentMonth}
           onClick={handleDayClick}
+          onStickerDelete={handleStickerDelete}
         >
           <span className={styles.date}>{date}</span>
           {isCurrentMonth &&
@@ -209,20 +217,32 @@ function Calendar() {
 
         <button
           className={styles.floatingEditBtn}
-          onClick={() => setIsInputOpen(true)}
+          onClick={() => {
+            const todayStr = new Date().toISOString().split("T")[0];
+            const existingData = calendarData[todayStr] || null;
+            setEditData(existingData);
+            setIsInputOpen(true);
+          }}
         >
           ✏️
         </button>
 
         {isInputOpen && (
           <InputModal
-            onClose={() => setIsInputOpen(false)}
+            initialData={editData}
+            isEditMode={!!editData}
+            calendarData={calendarData}
+            onClose={() => {
+              setIsInputOpen(false);
+              setEditData(null);
+            }}
             onSubmit={(data) => {
               setCalendarData((prev) => ({
                 ...prev,
                 [data.date]: data,
               }));
               setIsInputOpen(false);
+              setEditData(null);
             }}
           />
         )}
@@ -231,6 +251,7 @@ function Calendar() {
             data={viewData}
             onClose={() => setViewData(null)}
             onEdit={() => {
+              setEditData(viewData); // ✅ 수정 데이터 저장
               setIsInputOpen(true);
               setViewData(null);
             }}

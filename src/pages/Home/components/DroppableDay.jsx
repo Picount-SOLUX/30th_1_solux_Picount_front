@@ -9,6 +9,7 @@ export default function DroppableDay({
   isCurrentMonth = true,
   onClick = () => {},
   children,
+  onStickerDelete,
 }) {
   const wasDropped = useRef(false);
 
@@ -56,7 +57,12 @@ export default function DroppableDay({
             position: "absolute",
             top: 4,
             right: 4,
-            pointerEvents: "none",
+            cursor: "pointer",
+            zIndex: 1,
+          }}
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ ViewModal 뜨는 이벤트 차단!
+            onStickerDelete?.(date);
           }}
         />
       )}
