@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const [isFriendOpen, setIsFriendOpen] = useState(false);
 
-  const toggleFriendList = () => {
-    setIsFriendOpen(!isFriendOpen);
+  const handleFriendClick = () => {
+    setIsFriendOpen(!isFriendOpen); // 화살표 토글
+    navigate("/friends"); // ✅ 방명록으로 이동
   };
 
   return (
@@ -29,6 +31,7 @@ export default function Sidebar() {
               🏠 홈
             </NavLink>
           </li>
+
           <li>
             <NavLink
               to="/budget"
@@ -39,6 +42,7 @@ export default function Sidebar() {
               💸 예산 설정
             </NavLink>
           </li>
+
           <li>
             <NavLink
               to="/shop"
@@ -49,6 +53,7 @@ export default function Sidebar() {
               🛒 상점
             </NavLink>
           </li>
+
           <li>
             <NavLink
               to="/challenge"
@@ -60,14 +65,13 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* 친구 토글 버튼 */}
-          <li onClick={toggleFriendList}>
+          {/* ✅ 하나의 친구 버튼으로 기능 통합 */}
+          <li onClick={handleFriendClick}>
             <div className="menu-item">
               👥 친구 토글
               <span className={`arrow ${isFriendOpen ? "open" : ""}`}>▾</span>
             </div>
           </li>
-
           {/* 친구 목록 */}
           {isFriendOpen && (
             <div className="friend-list">

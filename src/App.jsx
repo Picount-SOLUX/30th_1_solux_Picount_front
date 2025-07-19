@@ -7,7 +7,7 @@ import Join from "./pages/Auth/Join";
 import Login from "./pages/Auth/Login";
 import Welcome from "./pages/Auth/Welcome";
 import InfoSteps from "./pages/Auth/InfoSteps";
-import ResetPassword from './pages/Auth/ResetPassword';
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 import Home from "./pages/Home/Home";
 import Budget from "./pages/Budget/Budget";
@@ -17,6 +17,7 @@ import Friends from "./pages/Friends/Friends";
 import MyPage from "./pages/MyPage/MyPage";
 import SettingsPage from "./pages/MyPage/components/SettingsPage";
 import EditProfilePage from "./pages/MyPage/components/EditProfilePage";
+import Guestbook from "./pages/Friends/GuestBooks";
 
 import "./styles/App.css";
 
@@ -24,7 +25,14 @@ function App() {
   const location = useLocation();
 
   // Header/Sidebar 없이 보여야 하는 페이지들
-  const noLayoutRoutes = ["/", "/join", "/login", "/welcome", "/info-steps", "/reset-password"];
+  const noLayoutRoutes = [
+    "/",
+    "/join",
+    "/login",
+    "/welcome",
+    "/info-steps",
+    "/reset-password",
+  ];
   const isNoLayout = noLayoutRoutes.includes(location.pathname);
 
   return (
@@ -68,6 +76,7 @@ function App() {
               path="/settings/edit-profile"
               element={<EditProfilePage />}
             />
+            <Route path="/guestbooks" element={<Guestbook />} />
           </Routes>
         </main>
       </div>
