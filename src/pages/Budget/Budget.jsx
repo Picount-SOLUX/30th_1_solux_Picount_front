@@ -159,7 +159,7 @@ export default function Budget() {
     );
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = () => {  //카테고리 추가
     if (!newCategory.name.trim()) return;
     const nextId =
       tempCategories.length > 0
@@ -174,7 +174,7 @@ export default function Budget() {
     setNewCategory({ name: "", amount: "" });
   };
 
-  const handleDeleteCategory = (id) => {
+  const handleDeleteCategory = (id) => {  // 카테고리 삭제
     setTempCategories((prev) => prev.filter((cat) => cat.id !== id));
   };
 
