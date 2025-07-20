@@ -1,45 +1,52 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Join.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signup } from "../../api/AuthAPI";
+import "./Join.css";
 
 export default function Join() {
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [gender, setGender] = useState(''); // 선택사항
-  const [age, setAge] = useState('');       // 선택사항
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showModal, setShowModal] = useState(false); // 모달 상태 추가
+  const [error, setError] = useState("");            // 에러 메시지 상태
 
-  const [showModal, setShowModal] = useState(false); // ✅ 모달 상태 추가
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 비밀번호 확인
     if (password !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
+      setError("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    // 회원 정보 저장
-    const userData = {
-      email,
-      password,
-      nickname,
-      gender: gender || '선택안함', // 선택 안 하면 기본값
-      age: age || '선택안함',       // 선택 안 하면 기본값
-    };
-
-    localStorage.setItem('user', JSON.stringify(userData));
-
-    // ✅ 모달 열기
-    setShowModal(true);
+///////////////////// 회원가입 API ////////////////////////
+    try {
+      // 회원가입 API 요청
+      const response = await signup({
+        email,
+        password,
+        nickname,
+      });
+      console.log("응답 데이터: ", response.data); // 응답 확인용
+      if (response.data.success) {
+        // 모달 열기
+        setShowModal(true);
+      } else {
+        setError(response.data.message || "회원가입에 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "서버 오류가 발생했습니다.");
+    }
   };
+//////////////////////회원가입 API////////////////////////  
 
-  // ✅ 모달 닫기 함수
+  // 모달 닫기 함수
   const closeModal = () => {
     setShowModal(false);
-    navigate('/login'); // 로그인 페이지로 이동
+    navigate("/login"); // 로그인 페이지로 이동
   };
 
   return (
@@ -68,7 +75,7 @@ export default function Join() {
             </div>
             <input
               type="password"
-              placeholder="비밀번호(영문, 숫자 조합 8자리 이상 15자리 이하)"
+              placeholder="비밀번호(영문, 숫자 조합 8~15자리)"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -103,44 +110,8 @@ export default function Join() {
             />
           </label>
 
-          {/* 성별 (선택사항) */}
-          <div className="gender-age-section">
-            <div className="gender">
-              <label>성별(선택)</label>
-              <div className="gender-options">
-                <label>
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="남"
-                    onChange={(e) => setGender(e.target.value)}
-                  />{' '}
-                  남
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="여"
-                    onChange={(e) => setGender(e.target.value)}
-                  />{' '}
-                  여
-                </label>
-              </div>
-            </div>
-
-            {/* 나이 (선택사항) */}
-            <div className="age">
-              <label>나이(선택)</label>
-              <select value={age} onChange={(e) => setAge(e.target.value)}>
-                <option value="">선택안함</option>
-                <option value="10대">10대</option>
-                <option value="20대">20대</option>
-                <option value="30대">30대</option>
-                <option value="40대 이상">40대 이상</option>
-              </select>
-            </div>
-          </div>
+          {/* 에러 메시지 */}
+          {error && <p className="error-message">{error}</p>}
 
           <button type="submit" className="join-button">
             회원가입
