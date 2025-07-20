@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import DatePicker from "react-datepicker"; // 📦 달력
+import "react-datepicker/dist/react-datepicker.css"; // 📦 스타일
 import "./Budget.css";
 
 export default function Budget() {
@@ -16,7 +18,8 @@ export default function Budget() {
     },
     {
       title: "대학생",
-      description: "식비와 월세 등의 고정비, 모임 비중이 높으며 저축도 고려한 예산입니다.",
+      description:
+        "식비와 월세 등의 고정비, 모임 비중이 높으며 저축도 고려한 예산입니다.",
       budgets: [
         { label: "식비", percent: 25 },
         { label: "교통비", percent: 10 },
@@ -90,7 +93,13 @@ export default function Budget() {
   const [isEditing, setIsEditing] = useState(false);
   const [tempCategories, setTempCategories] = useState([]);
   const [newCategory, setNewCategory] = useState({ name: "", amount: "" });
-  const [showHelp, setShowHelp] = useState(true); // 도움말 토글 상태
+  const [showHelp, setShowHelp] = useState(true);
+
+  // 🔥 날짜 상태 추가
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().setMonth(new Date().getMonth() + 1))
+  ); // 기본: 오늘부터 한 달
 
   const selectedJob = localStorage.getItem("selectedJob");
   const selectedBudget = parseInt(
@@ -99,6 +108,7 @@ export default function Budget() {
 
   const jobInfo = jobData.find((job) => job.title === selectedJob);
 
+  // 🔥 InfoSteps 값으로 기본 예산 세팅
   useEffect(() => {
     if (jobInfo && selectedBudget > 0) {
       const initializedCategories = jobInfo.budgets.map((item, idx) => ({
@@ -106,14 +116,22 @@ export default function Budget() {
         name: item.label,
         amount: Math.round((selectedBudget * item.percent) / 100).toString(),
       }));
-
       setCategories(initializedCategories);
       localStorage.setItem(
         "budgetCategories",
         JSON.stringify(initializedCategories)
       );
     }
-  }, []);
+  }, [selectedJob, selectedBudget]); // ✅ 값 바뀔 때마다 실행
+
+  // 🔥 endDate가 지났을 때 카테고리 초기화
+  useEffect(() => {
+    const now = new Date();
+    if (endDate < now) {
+      setCategories([]);
+      localStorage.removeItem("budgetCategories");
+    }
+  }, [endDate]);
 
   const getTotalBudget = (list) =>
     list.reduce((sum, cat) => sum + parseInt(cat.amount || 0), 0);
@@ -182,13 +200,6 @@ export default function Budget() {
           <div className="help-bubble">
             <h4>{jobInfo.title} 추천 예산안</h4>
             <p>{jobInfo.description}</p>
-            {/* <ul>
-              {jobInfo.budgets.map((item, idx) => (
-                <li key={idx}>
-                  {item.label}: {item.percent}%
-                </li>
-              ))}
-            </ul> */}
             <button onClick={toggleHelp} className="close-btn">
               닫기
             </button>
@@ -226,6 +237,31 @@ export default function Budget() {
       <section className="budget-detail-section">
         <div className="detail-header">
           <h2 className="section-title">세부 예산</h2>
+
+          {/* 🔥 날짜 지정 */}
+          <div className="date-picker-wrapper">
+            <label>기간 선택 </label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              dateFormat="yyyy-MM-dd"
+            />
+            <span> ~ </span>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              dateFormat="yyyy-MM-dd"
+            />
+          </div>
+
+          {/* 수정/저장 버튼 */}
           {!isEditing ? (
             <button className="edit-btn" onClick={handleEditClick}>
               ✏️ 수정
