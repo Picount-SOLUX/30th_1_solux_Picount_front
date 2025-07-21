@@ -6,51 +6,82 @@ const shopItems = [
   {
     id: 1,
     category: "케이크 꾸미기 스킨",
-    image: "src/assets/ShopItems/CakeSkin/WhiteCake.png",
+    image: "/assets/ShopItems/CakeSkin/WhiteCake.png",
     price: 500,
   },
   {
     id: 2,
     category: "케이크 꾸미기 스킨",
-    image: "src/assets/ShopItems/CakeSkin/CherryCake.png",
+    image: "/assets/ShopItems/CakeSkin/CherryCake.png",
     price: 500,
   },
-  { id: 3, category: "케이크 꾸미기 스킨", image: "", price: 500 },
-  { id: 4, category: "케이크 꾸미기 스킨", image: "", price: 500 },
+  {
+    id: 3,
+    category: "케이크 꾸미기 스킨",
+    image: "/assets/ShopItems/CakeSkin/ChocolateCake.png",
+    price: 500,
+  },
+  {
+    id: 4,
+    category: "케이크 꾸미기 스킨",
+    image: "/assets/ShopItems/CakeSkin/CreamCake.png",
+    price: 500,
+  },
 
   // 달력 꾸미기 스킨
   {
     id: 5,
     category: "달력 꾸미기 스킨",
-    image: "src/assets/ShopItems/CalendarSkin/Angel.png",
+    image: "/assets/ShopItems/CalendarSkin/Angel.png",
     price: 500,
   },
   {
     id: 6,
     category: "달력 꾸미기 스킨",
-    image: "src/assets/ShopItems/CalendarSkin/BlueGray.png",
+    image: "/assets/ShopItems/CalendarSkin/PopUp.png",
     price: 500,
   },
-  { id: 7, category: "달력 꾸미기 스킨", image: "", price: 500 },
-  { id: 8, category: "달력 꾸미기 스킨", image: "", price: 500 },
+  {
+    id: 7,
+    category: "달력 꾸미기 스킨",
+    image: "/assets/ShopItems/CalendarSkin/Tomato.png",
+    price: 500,
+  },
+  {
+    id: 8,
+    category: "달력 꾸미기 스킨",
+    image: "/assets/ShopItems/CalendarSkin/Lace.png",
+    price: 500,
+  },
 
   // 테마 색상 변경
   {
     id: 9,
     category: "테마 색상 변경",
-    image: "src/assets/ShopItems/Theme/Blue.png",
+    image: "/assets/ShopItems/Theme/Blue.png",
     price: 500,
   },
   {
     id: 10,
     category: "테마 색상 변경",
-    image: "src/assets/ShopItems/Theme/Green.png",
+    image: "/assets/ShopItems/Theme/Green.png",
     price: 500,
   },
-  { id: 11, category: "테마 색상 변경", image: "", price: 500 },
+  {
+    id: 11,
+    category: "테마 색상 변경",
+    image: "/assets/ShopItems/Theme/Yellow.png",
+    price: 500,
+  },
+  {
+    id: 12,
+    category: "테마 색상 변경",
+    image: "/assets/ShopItems/Theme/Gray.png",
+    price: 500,
+  },
 ];
 
-export default function Shop() {
+function Shop() {
   return (
     <div className="shop-container">
       <div className="point-box">
@@ -71,15 +102,11 @@ export default function Shop() {
                 .filter((item) => item.category === category)
                 .map((item) => (
                   <div key={item.id} className="shop-item">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt="shop item"
-                        className="item-image"
-                      />
-                    ) : (
-                      <div className="placeholder-box"></div>
-                    )}
+                    <img
+                      src={item.image}
+                      alt="shop item"
+                      className="item-image"
+                    />
                     <div className="item-footer">
                       <span className="item-price">{item.price} p</span>
                       <button className="buy-btn">구매</button>
@@ -93,3 +120,5 @@ export default function Shop() {
     </div>
   );
 }
+
+export default Shop;

@@ -52,10 +52,10 @@ export default function DroppableDay({
           src={stickerSrc}
           alt="sticker"
           style={{
+            bottom: 4,
             width: 28,
             height: 28,
             position: "absolute",
-            top: 4,
             right: 4,
             cursor: "pointer",
             zIndex: 1,

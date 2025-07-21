@@ -230,3 +230,11 @@
   font-size: 14px;
   font-weight: bold;
 }
+.categoryEditBtn {
+  all: unset;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.85rem;
+  color: #333;
+  white-space: nowrap; /* ✅ 줄바꿈 방지 */
+}
