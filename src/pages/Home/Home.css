@@ -139,34 +139,53 @@
 }
 
 .guest-entry {
-  background: #eee;
-  padding: 6px;
-  border-radius: 6px;
-  margin-bottom: 6px;
+  display: flex; /* ✅ 프로필 + 메시지를 가로 정렬 */
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.profile-circle {
+  width: 32px;
+  height: 32px;
+  background-color: #ddd;
+  border-radius: 50%; /* ✅ 동그란 이미지 영역 */
+  flex-shrink: 0;
+}
+
+.message-bubble {
+  flex: 1;
+  background-color: #eaeaea; /* ✅ 회색 말풍선 */
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  color: #333;
 }
 
 .guestbook-input {
   display: flex;
-  gap: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .guestbook-input input {
   flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 8px 12px;
+  border: none;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  outline: none;
 }
 
 .submit-btn {
-  background: linear-gradient(to right, #febbb3, #ffc3b3);
-  border: none;
-  border-radius: 20px;
-  padding: 0 14px;
+  all: unset;
   font-size: 1.2rem;
+  color: #000000;
+  padding: 0 10px;
   cursor: pointer;
-  color: #fff;
+  display: flex;
+  align-items: center;
 }
-
 
 /* ===== 달력 ===== */
 .calendar-section {
@@ -176,7 +195,7 @@
 .calendar-placeholder {
   width: 100%; /* 방명록과 같은 너비 */
   aspect-ratio: 1.9 / 1; /* 정사각형 음 너무 크다 직사각형으로 */
-  background: linear-gradient(to bottom, #FFFFFF, #febbb3);
+  background: linear-gradient(to bottom, #ffffff, #febbb3);
   border: 1px solid #febbb3;
   border-radius: 10px;
   margin-top: 50px;

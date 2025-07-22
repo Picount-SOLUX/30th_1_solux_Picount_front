@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import styles from "./InputModal.module.css";
+import CategoryModal from "./CategoryModal";
 
 export default function InputModal({
   onClose,
@@ -7,6 +9,7 @@ export default function InputModal({
   initialData,
   calendarData,
   isEditMode = false,
+  onOpenCategoryModal,
 }) {
   const [initialized, setInitialized] = useState(false);
   const today = new Date();
@@ -63,15 +66,36 @@ export default function InputModal({
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const ownerId = localStorage.getItem("ownerId"); // ✅ 로그인 시 저장한 ID
+
     const entries = [
       ...incomeRows.map((row) => ({ ...row, type: "income" })),
       ...expenseRows.map((row) => ({ ...row, type: "expense" })),
     ];
-    const data = { date, memo, photo, entries };
-    console.log("가계부 등록 데이터:", data);
-    onSubmit(data);
-    onClose();
+
+    const payload = {
+      date,
+      ownerId,
+      memo,
+      entries,
+    };
+
+    try {
+      if (isEditMode) {
+        // ✅ 수정 요청
+        await axios.put("/api/calendar/record", payload);
+      } else {
+        // ✅ 작성 요청
+        await axios.post("/api/calendar/record", payload);
+      }
+
+      onSubmit?.(payload);
+      onClose();
+    } catch (e) {
+      console.error("가계부 저장 실패:", e);
+      alert("가계부 저장에 실패했습니다.");
+    }
   };
 
   const expenseCategories = [
@@ -90,10 +114,15 @@ export default function InputModal({
     updated.splice(index, 1);
     setRows(updated.length > 0 ? updated : [{ category: "", amount: "" }]);
   };
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const handleOpenCategoryModal = () => {
+    onClose(); // InputModal 닫기
+    setTimeout(() => {
+      onOpenCategoryModal?.(); // 상위에서 CategoryModal 열기
+    }, 200);
+  };
 
   useEffect(() => {
-    const matchedData = calendarData?.[inputDate];
-
     if (initialData && !initialized) {
       setDate(initialData.date);
       setInputDate(initialData.date);
@@ -118,34 +147,8 @@ export default function InputModal({
 
       setType("expense");
       setInitialized(true);
-    } else if (!initialData && matchedData) {
-      setDate(inputDate);
-      setMemo(matchedData.memo || "");
-      setPhoto(matchedData.photo || null);
-
-      const income =
-        matchedData.entries?.filter((e) => e.type === "income") || [];
-      const expense =
-        matchedData.entries?.filter((e) => e.type === "expense") || [];
-
-      setIncomeRows(
-        income.length > 0
-          ? income.map((e) => ({ ...e }))
-          : [{ category: "", amount: "" }]
-      );
-      setExpenseRows(
-        expense.length > 0
-          ? expense.map((e) => ({ ...e }))
-          : [{ category: "", amount: "" }]
-      );
-    } else if (!initialData && !matchedData) {
-      setDate(inputDate);
-      setMemo("");
-      setPhoto(null);
-      setIncomeRows([{ category: "", amount: "" }]);
-      setExpenseRows([{ category: "", amount: "" }]);
     }
-  }, [initialData, initialized, inputDate, calendarData]);
+  }, [initialData, initialized]);
 
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
@@ -173,9 +176,26 @@ export default function InputModal({
         <input
           type="date"
           value={inputDate}
-          onChange={(e) => setInputDate(e.target.value)}
-          className={styles.dateInput}
+          onChange={(e) => {
+            setInputDate(e.target.value);
+            setDate(e.target.value); // ✅ 함께 업데이트
+          }}
         />
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            marginBottom: "8px",
+          }}
+        >
+          <button
+            className={styles.categoryEditBtn}
+            onClick={handleOpenCategoryModal}
+          >
+            카테고리 수정
+          </button>
+        </div>
 
         {rows.map((row, idx) => (
           <div key={idx} className={styles.amountRow}>
@@ -269,6 +289,9 @@ export default function InputModal({
           ✕
         </button>
       </div>
+      {showCategoryModal && (
+        <CategoryModal onClose={() => setShowCategoryModal(false)} />
+      )}
     </div>
   );
 }
