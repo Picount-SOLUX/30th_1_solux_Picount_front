@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import DatePicker from "react-datepicker"; // 📦 달력
-import "react-datepicker/dist/react-datepicker.css"; // 📦 스타일
+import DatePicker from "react-datepicker"; // 달력
+import "react-datepicker/dist/react-datepicker.css"; // 스타일
 import "./Budget.css";
 
 export default function Budget() {

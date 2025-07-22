@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { login } from "../../api/AuthAPI"; 
 import './Login.css';
 
 export default function Login() {
@@ -11,7 +12,7 @@ export default function Login() {
   const [userInfo, setUserInfo] = useState(null);    // 유저 정보
   const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
@@ -19,24 +20,32 @@ export default function Login() {
       setErrorMessage('이메일과 비밀번호를 입력해주세요.');
       return;
     }
+///////////////////////로그인 API/////////////////////////
+    try {
+      // 로그인 API 호출
+      const response = await login({ email, password });
+      console.log("로그인 응답:", response.data);
 
-    // localStorage에서 회원 정보 불러오기
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+      if (response.data.success) {
+        const { accessToken, refreshToken, nickname } = response.data.data;
 
-    if (
-      storedUser &&
-      storedUser.email === email &&
-      storedUser.password === password
-    ) {
-      // 유저 정보 저장 후 모달 열기
-      setUserInfo(storedUser);
-      setShowModal(true);
-      setErrorMessage(''); // 에러 메시지 초기화
-    } else {
-      setErrorMessage('이메일 또는 비밀번호가 올바르지 않습니다.');
+        // 토큰 로컬 스토리지에 저장
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        setUserInfo({ nickname }); 
+
+        setShowModal(true);
+        setErrorMessage(""); // 에러 초기화
+      } else {
+        setErrorMessage(response.data.message || "로그인 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(err.response?.data?.message || "서버 오류가 발생했습니다.");
     }
-  };
-
+  }
+/////////////////////로그인 API////////////////////////////
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleLogin();
@@ -95,9 +104,7 @@ export default function Login() {
         <div className="sns-icons">
           <div className="kakao-container">
             <a
-              href="https://kauth.kakao.com/oauth/authorize"
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`https://kauth.kakao.com/oauth/authorize?client_id=7c1549534b329385c5627a58fc23a7e9&redirect_uri=http://localhost:5173/oauth/kakao&response_type=code`}
             >
               <img
                 src="src/assets/icons/kakaotalk.png"
