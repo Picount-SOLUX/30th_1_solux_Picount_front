@@ -29,6 +29,11 @@ export default function Join() {
         password,
         nickname,
       });
+      if (!response?.data?.success) {
+        console.error("회원가입 실패 또는 응답 없음", response?.data);
+        return;
+      }
+
       console.log("응답 데이터: ", response.data); // 응답 확인용
       if (response.data.success) {
         // 모달 열기
