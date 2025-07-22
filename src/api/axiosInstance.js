@@ -2,10 +2,11 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api", // 백엔드 주소 확인
+  baseURL: "https://523f7ec22c71.ngrok-free.app/api", // 백엔드 주소 확인
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // 요청 시 accessToken 자동 추가

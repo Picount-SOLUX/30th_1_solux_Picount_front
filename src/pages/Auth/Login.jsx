@@ -20,6 +20,7 @@ export default function Login() {
       setErrorMessage('이메일과 비밀번호를 입력해주세요.');
       return;
     }
+///////////////////////로그인 API/////////////////////////
     try {
       // 로그인 API 호출
       const response = await login({ email, password });
@@ -44,7 +45,7 @@ export default function Login() {
       setErrorMessage(err.response?.data?.message || "서버 오류가 발생했습니다.");
     }
   }
-  
+/////////////////////로그인 API////////////////////////////
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleLogin();
@@ -103,7 +104,7 @@ export default function Login() {
         <div className="sns-icons">
           <div className="kakao-container">
             <a
-              href={`https://kauth.kakao.com/oauth/authorize?client_id=카카오RESTAPI키&redirect_uri=http://localhost:5173/oauth/kakao&response_type=code`}
+              href={`https://kauth.kakao.com/oauth/authorize?client_id=7c1549534b329385c5627a58fc23a7e9&redirect_uri=http://localhost:5173/oauth/kakao&response_type=code`}
             >
               <img
                 src="src/assets/icons/kakaotalk.png"

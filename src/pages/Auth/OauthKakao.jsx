@@ -15,20 +15,18 @@ export default function OauthKakao() {
         navigate("/login");
         return;
       }
-
+//////////////////////카카오 로그인 API////////////////////
       try {
-        const res = await api.post("/api/members/social/kakao", { code });
+        const res = await api.post("api/social/kakao/login/oauth2/authorization/kakao", { code });
         console.log("카카오 로그인 응답:", res);
-
         const { accessToken, refreshToken, nickname, isNewUser } = res.data.data;
-
         // 토큰 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
 
         if (isNewUser) {
           // 신규회원이면 InfoSteps로
-          navigate("/welcome", { state: { nickname } });
+          navigate("/home", { state: { nickname } });  // 이거 나중에 수정 필요
         } else {
           // 기존회원이면 메인화면으로
           navigate("/home", { state: { nickname } });
@@ -38,9 +36,9 @@ export default function OauthKakao() {
         navigate("/login");
       }
     };
-
+////////////////////카카오 로그인 API//////////////////////
     fetchKakaoLogin();
   }, [navigate]);
 
-  return <div>카카오 로그인 처리중...</div>;
+  return <div>카카오 로그인 처리중</div>;
 }
