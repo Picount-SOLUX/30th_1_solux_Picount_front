@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import BudgetGraph from "./components/BudgetGraph";
+import BudgetDetail from "./components/BudgetDetail";
 import DatePicker from "react-datepicker"; // 달력
 import "react-datepicker/dist/react-datepicker.css"; // 스타일
 import "./Budget.css";
@@ -184,179 +186,33 @@ export default function Budget() {
 
   return (
     <div className="budget-wrapper">
-      <section className="budget-graph-section">
-        <div className="graph-header">
-          <h2 className="section-title">예산 설정 내역</h2>
-          <span
-            className="help-icon"
-            onClick={toggleHelp}
-            title="추천 예산 보기"
-          >
-            ❓
-          </span>
-        </div>
+      <BudgetGraph
+        categories={categories}
+        isEditing={isEditing}
+        tempCategories={tempCategories}
+        totalBudget={totalBudget}
+        jobInfo={jobInfo}
+        showHelp={showHelp}
+        toggleHelp={toggleHelp}
+      />
 
-        {showHelp && jobInfo && (
-          <div className="help-bubble">
-            <h4>{jobInfo.title} 추천 예산안</h4>
-            <p>{jobInfo.description}</p>
-            <button onClick={toggleHelp} className="close-btn">
-              닫기
-            </button>
-          </div>
-        )}
-
-        <div className="budget-graph">
-          <div className="graph-bar">
-            {(isEditing ? tempCategories : categories).map((cat, idx) => {
-              const percent =
-                totalBudget > 0
-                  ? (parseInt(cat.amount || 0) / totalBudget) * 100
-                  : 0;
-              return (
-                <div
-                  key={idx}
-                  className="graph-segment"
-                  style={{
-                    width: `${percent}%`,
-                    backgroundColor: `hsl(${idx * 50}, 70%, 70%)`,
-                  }}
-                  title={`${cat.name}: ${cat.amount}원 (${percent.toFixed(
-                    1
-                  )}%)`}
-                ></div>
-              );
-            })}
-          </div>
-          <div className="graph-total">
-            총예산: {totalBudget.toLocaleString()}원
-          </div>
-        </div>
-      </section>
-
-      <section className="budget-detail-section">
-        <div className="detail-header">
-          <h2 className="section-title">세부 예산</h2>
-
-          {/* 🔥 날짜 지정 */}
-          <div className="date-picker-wrapper">
-            <label>기간 선택 </label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              dateFormat="yyyy-MM-dd"
-            />
-            <span> ~ </span>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              dateFormat="yyyy-MM-dd"
-            />
-          </div>
-
-          {/* 수정/저장 버튼 */}
-          {!isEditing ? (
-            <button className="edit-btn" onClick={handleEditClick}>
-              ✏️ 수정
-            </button>
-          ) : (
-            <button className="save-btn" onClick={handleSaveClick}>
-              💾 저장
-            </button>
-          )}
-        </div>
-
-        <div className="category-list">
-          {(isEditing ? tempCategories : categories).map((cat) => {
-            const percent =
-              totalBudget > 0
-                ? (parseInt(cat.amount || 0) / totalBudget) * 100
-                : 0;
-            return (
-              <div key={cat.id} className="category-item">
-                {isEditing ? (
-                  <>
-                    <input
-                      type="text"
-                      value={cat.name}
-                      onChange={(e) =>
-                        handleInputChange(cat.id, "name", e.target.value)
-                      }
-                      className="category-input name-input"
-                    />
-                    <div className="category-controls">
-                      <input
-                        type="number"
-                        value={cat.amount}
-                        onChange={(e) =>
-                          handleInputChange(cat.id, "amount", e.target.value)
-                        }
-                        className="category-input amount-input"
-                      />
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteCategory(cat.id)}
-                        title="삭제"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <span className="category-name">{cat.name}</span>
-                    <span className="category-amount">
-                      {parseInt(cat.amount).toLocaleString()}원
-                    </span>
-                    <span className="category-percent">
-                      ({percent.toFixed(1)}%)
-                    </span>
-                  </>
-                )}
-              </div>
-            );
-          })}
-
-          {isEditing && (
-            <div className="category-item add-category-row">
-              <input
-                type="text"
-                value={newCategory.name}
-                placeholder="새 카테고리 이름"
-                onChange={(e) =>
-                  setNewCategory({ ...newCategory, name: e.target.value })
-                }
-                className="category-input name-input"
-              />
-              <div className="category-controls">
-                <input
-                  type="number"
-                  value={newCategory.amount}
-                  placeholder="금액"
-                  onChange={(e) =>
-                    setNewCategory({ ...newCategory, amount: e.target.value })
-                  }
-                  className="category-input amount-input"
-                />
-                <button
-                  className="add-btn"
-                  onClick={handleAddCategory}
-                  title="카테고리 추가"
-                >
-                  추가
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+      <BudgetDetail
+        isEditing={isEditing}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        handleEditClick={handleEditClick}
+        handleSaveClick={handleSaveClick}
+        categories={categories}
+        tempCategories={tempCategories}
+        handleInputChange={handleInputChange}
+        handleAddCategory={handleAddCategory}
+        handleDeleteCategory={handleDeleteCategory}
+        newCategory={newCategory}
+        setNewCategory={setNewCategory}
+        totalBudget={totalBudget}
+      />
     </div>
   );
 }
