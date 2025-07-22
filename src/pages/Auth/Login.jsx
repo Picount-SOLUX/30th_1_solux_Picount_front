@@ -33,6 +33,9 @@ export default function Login() {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
 
+        // 👉 이메일도 저장
+        localStorage.setItem("userEmail", email);
+        
         setUserInfo({ nickname }); 
 
         setShowModal(true);
