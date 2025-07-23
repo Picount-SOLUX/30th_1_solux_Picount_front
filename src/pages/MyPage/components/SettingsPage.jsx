@@ -3,14 +3,31 @@ import { useNavigate } from "react-router-dom";
 import styles from "./SettingsPage.module.css";
 import DeleteAccountModal from "./DeleteAccountModal";
 import DeleteSuccessModal from "./DeleteSuccessModal";
+import { logout } from "../../../api/AuthAPI"; // ✅ 로그아웃 API 임포트
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const handleLogout = () => {
-    alert("로그아웃 처리");
+
+//////////////////////로그아웃 API////////////////////////////  
+  const handleLogout = async () => {
+    try {
+      const res = await logout(); // ✅ 로그아웃 API 호출
+      console.log("로그아웃 응답:", res.data);
+
+      // 로컬스토리지 토큰 제거
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      alert(res.data.message || "로그아웃 되었습니다."); // ✅ API 메시지 출력
+      navigate("/login"); // 로그인 페이지로 이동
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      alert("로그아웃 중 오류가 발생했습니다.");
+    }
   };
+/////////////////////로그아웃 API/////////////////////////////
 
   const handleDeleteAccount = () => {
     setShowModal(true); // 경고 모달 열기

@@ -1,62 +1,88 @@
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../../api/AuthAPI";
+import "./Login.css";
 
 export default function Login() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false); // 모달 상태
-  const [userInfo, setUserInfo] = useState(null);    // 유저 정보
-  const [errorMessage, setErrorMessage] = useState(''); // 에러 메시지
+  const [showModal, setShowModal] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
     if (!email || !password) {
-      setErrorMessage('이메일과 비밀번호를 입력해주세요.');
+      setErrorMessage("이메일과 비밀번호를 입력해주세요.");
       return;
     }
 
-    // localStorage에서 회원 정보 불러오기
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    try {
+      const response = await login({ email, password });
+      console.log("로그인 응답:", response.data);
 
-    if (
-      storedUser &&
-      storedUser.email === email &&
-      storedUser.password === password
-    ) {
-      // 유저 정보 저장 후 모달 열기
-      setUserInfo(storedUser);
-      setShowModal(true);
-      setErrorMessage(''); // 에러 메시지 초기화
-    } else {
-      setErrorMessage('이메일 또는 비밀번호가 올바르지 않습니다.');
+      if (response.data.success) {
+        let { accessToken, refreshToken, nickname } = response.data.data;
+
+        // 🟢 nickname undefined 방지
+        nickname = nickname ?? "테스트유저";
+
+        // 로컬 스토리지에 저장
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("user", JSON.stringify({ nickname }));
+        console.log("localStorage 저장됨:", localStorage.getItem("user"));
+
+        setUserInfo({ nickname });
+
+        setShowModal(true);
+        setErrorMessage("");
+      } else {
+        setErrorMessage(response.data.message || "로그인 실패");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(
+        err.response?.data?.message || "서버 오류가 발생했습니다."
+      );
     }
   };
-
+/// 엔터 치면 로그인
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleLogin();
     }
   };
-
+/// 비밀번호 재설정
   const goToResetPassword = () => {
-    navigate('/reset-password'); // 🔥 비밀번호 변경 페이지로 이동
+    navigate("/reset-password");
   };
 
   const closeModal = () => {
     setShowModal(false);
-    navigate('/welcome', {
-      state: {
-        nickname: userInfo.nickname,
-        gender: userInfo.gender,
-        age: userInfo.age,
-      },
-    });
+    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    const nickname = storedUser.nickname || "테스트유저";
+    navigate("/welcome", { state: { nickname } });
   };
+
+  // 카카오 로그인 핸들러 수정
+const handleKakaoLogin = () => {
+  // 백엔드가 꺼져있을 때는 콜백 URL로 바로 이동 (가짜 토큰 포함)
+  if (import.meta.env.VITE_USE_BACKEND === "false") {
+    console.log("⚠️ 백엔드 OFF 상태 → mock 콜백 흐름으로 이동");
+    window.location.href =
+      "/callback?access_token=mock-access-token&refresh_token=mock-refresh-token&is_new=false";
+  } else {
+    // 백엔드 연동 ON일 때 실제 카카오 로그인 URL로 이동
+    window.location.href = "/api/login/oauth2/authorization/kakao";
+  }
+};
+
 
   return (
     <div className="login-container">
@@ -77,11 +103,12 @@ export default function Login() {
           ref={passwordRef}
           onKeyDown={handleKeyDown}
         />
-        {/* 🔥 에러 메시지 영역 */}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         <div className="login-links">
-          <a onClick={goToResetPassword} className="link-text">비밀번호 찾기</a>
+          <a onClick={goToResetPassword} className="link-text">
+            비밀번호 찾기
+          </a>
         </div>
 
         <button className="login-button" onClick={handleLogin}>
@@ -92,12 +119,12 @@ export default function Login() {
           <span className="divider-text">SNS 로그인</span>
         </div>
 
+        {/* 카카오톡 로그인 버튼 (이미지) */}
         <div className="sns-icons">
           <div className="kakao-container">
             <a
-              href="https://kauth.kakao.com/oauth/authorize"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={handleKakaoLogin} // ✅ 백엔드 URL 연결
+              style={{ cursor: "pointer" }}
             >
               <img
                 src="src/assets/icons/kakaotalk.png"
@@ -112,9 +139,10 @@ export default function Login() {
             </a>
           </div>
         </div>
+
       </div>
 
-      {/* 로그인 성공 모달 */}
+
       {showModal && (
         <div className="modal-backdrop">
           <div className="modal-content">
