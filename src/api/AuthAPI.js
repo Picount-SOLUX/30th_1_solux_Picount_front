@@ -52,7 +52,7 @@ export const login = async (loginData) => {
   }
 };
 
-// AuthAPI.js 내 changePassword 함수
+// 비밀번호 변경 API
 export const changePassword = async ({ prePassword, newPassword }) => {
   if (useBackend) {
     return await api.patch("api/auth/members/password", { prePassword, newPassword });

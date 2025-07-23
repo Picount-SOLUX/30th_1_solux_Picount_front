@@ -4,6 +4,10 @@ import './Welcome.css';
 export default function Welcome() {
   const location = useLocation();
   const navigate = useNavigate(); // useNavigate로 라우팅 준비
+  
+  console.log("location.state:", location.state);
+  console.log("localStorage user:", localStorage.getItem('user'));
+  
   const nickname =
     location.state?.nickname || JSON.parse(localStorage.getItem('user'))?.nickname;
 

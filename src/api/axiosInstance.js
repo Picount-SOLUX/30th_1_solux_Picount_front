@@ -60,6 +60,7 @@ api.interceptors.response.use(
           data: {
             accessToken: "mock-access-token",
             refreshToken: "mock-refresh-token",
+            nickname: localStorage.getItem("tempNickname") || "테스트유저", // ✅ 추가
           },
         };
       }
