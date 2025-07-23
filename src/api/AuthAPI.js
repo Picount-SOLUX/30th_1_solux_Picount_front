@@ -1,12 +1,12 @@
 import api from "./axiosInstance";
 
+const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
+
 // 회원가입 API
 export const signup = async (userData) => {
-  const isBackendReady = true; // ⚠️ 백엔드 연동 시 true로 변경
-
-  if (isBackendReady) {
+  if (useBackend) {
     // 진짜 백엔드 API 호출
-    return await api.post("/members/signup", userData);  //앞에 /api 추가 할말
+    return await api.post("/api/members/signup", userData);  //앞에 /api 추가 할말
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 회원가입 요청:", userData);
@@ -27,9 +27,7 @@ export const signup = async (userData) => {
 
 // 로그인 API
 export const login = async (loginData) => {
-  const isBackendReady = true; // ⚠️ 백엔드 연동 시 true로 변경
-
-  if (isBackendReady) {
+  if (useBackend) {
     // 백엔드 API 호출
     return await api.post("/members/login", loginData);
   } else {
@@ -56,9 +54,7 @@ export const login = async (loginData) => {
 
 // AuthAPI.js 내 changePassword 함수
 export const changePassword = async ({ prePassword, newPassword }) => {
-  const isBackendReady = false; // true로 바꾸면 실제 API 호출
-
-  if (isBackendReady) {
+  if (useBackend) {
     return await api.patch("api/auth/members/password", { prePassword, newPassword });
   } else {
     console.log("[Mock API] 비밀번호 변경 요청", { prePassword, newPassword });
@@ -75,6 +71,28 @@ export const changePassword = async ({ prePassword, newPassword }) => {
     });
   }
 };
+
+// 로그아웃 API
+export const logout = async () => {
+  if (useBackend) {
+    // 백엔드 연동 시 실제 API 호출
+    return await api.post("/api/members/logout");
+  } else {
+    // 백엔드 OFF 상태 → mock 처리
+    console.warn("📭 백엔드 연동 OFF → mock 로그아웃 처리");
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: { success: true, message: "Mock 로그아웃 성공" },
+          status: 200,
+        });
+      }, 500); // mock 지연
+    });
+  }
+};
+
+
+
 
 // 회원탈퇴 API
 // export const deleteAccount = async () => {
