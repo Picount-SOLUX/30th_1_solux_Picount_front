@@ -3,7 +3,6 @@ import axios from "axios";
 import InputModal from "./InputModal";
 import ViewModal from "./ViewModal";
 import styles from "./calendar.module.css";
-import Draggable from "react-draggable";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableDay from "./DroppableDay";
@@ -11,7 +10,7 @@ import StickerItem from "./StickerItem";
 // import themeStyles from "../../../styles/CalendarThemes.module.css";
 import useTheme from "../../../hooks/useTheme";
 import { useEffect } from "react";
-import "../../../styles/CalendarThemes.css"; // CSS module 아님
+import "../../../styles/CalendarThemes.css";
 import CategoryModal from "./CategoryModal";
 
 function Calendar() {
@@ -35,66 +34,35 @@ function Calendar() {
     { id: 8, src: "/stickers/감정스티커 8.png" },
   ];
   const handleStickerDrop = async (dateStr, src) => {
-    // try {
-    //   await axios.post("/api/calendar/emotion", {
-    //     date: dateStr,
-    //     stickerUrl: src,
-    //   });
-    //   setPlacedStickers((prev) => ({
-    //     ...prev,
-    //     [dateStr]: src,
-    //   }));
-    // } catch (e) {
-    //   console.error("스티커 등록 실패", e);
-    // }
+    try {
+      await axios.post("/api/calendar/emotion", {
+        date: dateStr,
+        stickerUrl: src,
+      });
+      setPlacedStickers((prev) => ({
+        ...prev,
+        [dateStr]: src,
+      }));
+    } catch (e) {
+      console.error("스티커 등록 실패", e);
+    }
   };
 
   const handleStickerDelete = async (dateStr) => {
-    // try {
-    //   await axios.delete(`/api/calendar/emotion?data=YYYY-MM-DD`, {
-    //     data: { date: dateStr },
-    //   });
-    //   setPlacedStickers((prev) => {
-    //     const newData = { ...prev };
-    //     delete newData[dateStr];
-    //     return newData;
-    //   });
-    // } catch (e) {
-    //   console.error("스티커 삭제 실패", e);
-    // }
+    try {
+      await axios.delete(`/api/calendar/emotion?date=${dateStr}`);
+      setPlacedStickers((prev) => {
+        const newData = { ...prev };
+        delete newData[dateStr];
+        return newData;
+      });
+    } catch (e) {
+      console.error("스티커 삭제 실패", e);
+    }
   };
   const [editData, setEditData] = useState(null);
 
   const { themeKey, updateTheme } = useTheme();
-
-  useEffect(() => {
-    const dummyData = {
-      "2025-07-20": {
-        entries: [
-          { type: "income", category: "용돈", amount: "10000" },
-          { type: "expense", category: "점심", amount: "5000" },
-        ],
-        memo: "테스트 메모",
-        photo: null,
-      },
-      "2025-07-22": {
-        entries: [{ type: "expense", category: "카페", amount: "4300" }],
-      },
-    };
-
-    const dummyStickers = {
-      "2025-07-20": "/stickers/감정스티커 3.png",
-      "2025-07-22": "/stickers/감정스티커 5.png",
-    };
-
-    setCalendarData(dummyData);
-    setPlacedStickers(dummyStickers);
-  }, []);
-
-  useEffect(() => {
-    console.log("현재 테마:", themeKey); // ✅ 여기서 확인!
-    updateTheme("angel"); // 테스트용
-  }, [themeKey, updateTheme]);
 
   const yearOptions = Array.from(
     { length: 10 },
@@ -129,21 +97,44 @@ function Calendar() {
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
   const handleDayClick = async (dateStr) => {
-    // try {
-    //   const res = await axios.get(
-    //     `/api/calendar/record?date=YYYY-MM-DD&ownerId={ownerId}`
-    //   );
-    //   const data = res.data;
-    //   if (data) {
-    //     setViewData({ ...data, date: dateStr });
-    //   }
-    // } catch (e) {
-    //   console.error("해당 날짜 가계부 불러오기 실패", e);
-    // }
+    const ownerId = localStorage.getItem("userId");
+    try {
+      const res = await axios.get(
+        `/api/calendar/record?date=${dateStr}&ownerId=${ownerId}`
+      );
+      const data = res.data;
+      if (data) {
+        setViewData({ ...data, date: dateStr });
+      }
+    } catch (e) {
+      console.error("해당 날짜 가계부 불러오기 실패", e);
+    }
   };
+
+  useEffect(() => {
+    const fetchCalendarSummary = async () => {
+      const ownerId = localStorage.getItem("userId");
+      try {
+        const res = await axios.get(
+          `/api/calendar/summary?year=${currentYear}&month=${
+            currentMonth + 1
+          }&ownerId=${ownerId}`
+        );
+        setCalendarData(res.data);
+      } catch (err) {
+        console.error("요약 불러오기 실패", err);
+      }
+    };
+
+    fetchCalendarSummary();
+  }, [currentYear, currentMonth]);
 
   const [showInputModal, setShowInputModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [categories, setCategories] = useState({
+    income: ["월급", "용돈"],
+    expense: ["식비", "교통비", "취미", "쇼핑", "고정비", "기타"],
+  }); /* 카테고리 관련을 예산 설정 페이지에서랑 같이 관리하게 될수도 따로 팔수도*/
 
   const renderDays = () => {
     const firstDay = getFirstDayOfMonth();
@@ -275,6 +266,7 @@ function Calendar() {
 
           {isInputOpen && (
             <InputModal
+              categories={categories}
               initialData={editData}
               isEditMode={!!editData}
               calendarData={calendarData}
@@ -291,9 +283,9 @@ function Calendar() {
                 setEditData(null);
               }}
               onOpenCategoryModal={() => {
-                setShowInputModal(false); // InputModal 닫기
+                setShowInputModal(false);
                 setIsInputOpen(false);
-                setShowCategoryModal(true); // CategoryModal 열기
+                setShowCategoryModal(true);
               }}
             />
           )}
@@ -303,21 +295,19 @@ function Calendar() {
               data={viewData}
               onClose={() => setViewData(null)}
               onEdit={() => {
-                setEditData(viewData); // ✅ 수정 데이터 저장
+                setEditData(viewData);
                 setIsInputOpen(true);
                 setViewData(null);
               }}
             />
           )}
-          {/* {placedStickers.map((sticker) => (
-            <Sticker
-              key={sticker.id}
-              src={sticker.src}
-              defaultPosition={{ x: sticker.x, y: sticker.y }}
-            />
-          ))} */}
+
           {showCategoryModal && (
-            <CategoryModal onClose={() => setShowCategoryModal(false)} />
+            <CategoryModal
+              onClose={() => setShowCategoryModal(false)}
+              categories={categories}
+              setCategories={setCategories}
+            />
           )}
         </DndProvider>
       </div>

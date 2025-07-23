@@ -34,6 +34,10 @@ export default function SettingsPage() {
     navigate("/mypage");
   };
 
+  const goToChangePassword = () => {
+    navigate("/settings/change-password");
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>마이페이지 &gt; 설정</div>
@@ -45,7 +49,9 @@ export default function SettingsPage() {
             {" "}
             프로필 수정
           </li>
-          <li className={styles.item}>비밀번호 변경</li>
+          <li className={styles.item} onClick={goToChangePassword}>
+            비밀번호 변경
+          </li>
         </ul>
       </div>
 

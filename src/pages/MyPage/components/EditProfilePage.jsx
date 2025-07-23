@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import styles from "./EditProfilePage.module.css";
 import { useNavigate } from "react-router-dom";
+import { useProfile } from "../../../context/useProfile";
+import axios from "axios";
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
+  const {
+    nickname,
+    setNickname,
+    intro,
+    setIntro,
+    profileImage,
+    setProfileImage,
+  } = useProfile();
 
   const [skins, setSkins] = useState([
     { id: 1, name: "생크림", image: "/skins/꾸미기 스킨 1.png" },
@@ -12,37 +22,51 @@ export default function EditProfilePage() {
     { id: 4, name: "데코크림", image: "/skins/꾸미기 스킨 4.png" },
   ]);
 
-  const handleRemoveSkin = (id) => {
-    setSkins((prevSkins) => prevSkins.filter((skin) => skin.id !== id));
-  };
-
-  const [nickname, setNickname] = useState("");
-  const [intro, setIntro] = useState("");
   const [guestbookList, setGuestbookList] = useState([
     { id: 1, content: "친구 닉네임 (0000-00-00 00:00)" },
     { id: 2, content: "친구 닉네임 (0000-00-00 00:00)" },
     { id: 3, content: "친구 닉네임 (0000-00-00 00:00)" },
   ]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result); // base64로 저장
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveSkin = (id) => {
+    setSkins((prevSkins) => prevSkins.filter((skin) => skin.id !== id));
+  };
+
   const handleDeleteGuestbook = (id) => {
-    setGuestbookList(guestbookList.filter((item) => item.id !== id));
+    setGuestbookList((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleDeleteAllGuestbook = () => {
     setGuestbookList([]);
   };
 
-  const handleSave = () => {
-    alert("수정 사항이 저장되었습니다.");
-    // 백엔드 연동 시 API 호출 위치
-    navigate("/settings"); // 설정 페이지로 이동
+  const handleSave = async () => {
+    try {
+      const payload = {
+        nickname,
+        intro,
+        profileImage, // base64 문자열 또는 null
+      };
 
-    const skins = [
-      { id: 1, name: "꾸미기 스킨 1", image: "skin1.png" },
-      { id: 2, name: "꾸미기 스킨 2", image: "skin2.png" },
-      { id: 3, name: "꾸미기 스킨 3", image: "skin3.png" },
-      { id: 4, name: "꾸미기 스킨 4", image: "skin4.png" },
-    ];
+      await axios.patch("/api/members/profile", payload);
+
+      alert("프로필이 성공적으로 수정되었습니다!");
+      navigate("/settings");
+    } catch (error) {
+      console.error("프로필 수정 실패:", error);
+      alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
@@ -54,9 +78,20 @@ export default function EditProfilePage() {
       <div className={styles.profileSection}>
         <div className={styles.profileImageBox}>
           <div className={styles.profileImage}>
-            <button className={styles.changeImageBtn}>
+            {profileImage ? (
+              <img src={profileImage} alt="프로필" className={styles.preview} />
+            ) : (
+              <div className={styles.placeholder}>이미지 없음</div>
+            )}
+            <label className={styles.changeImageBtn}>
               ✎ 프로필 이미지 변경
-            </button>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+            </label>
           </div>
         </div>
 
@@ -87,7 +122,7 @@ export default function EditProfilePage() {
           {skins.map((skin) => (
             <div className={styles.skinBox} key={skin.id}>
               <img
-                src={`${skin.image}`}
+                src={skin.image}
                 alt={skin.name}
                 className={styles.skinImage}
               />

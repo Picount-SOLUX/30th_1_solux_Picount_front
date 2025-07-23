@@ -210,10 +210,10 @@
   border: none;
   margin-left: 4px;
   cursor: pointer;
-  padding: 0; /* 여백 제거 */
-  width: 22px; /* .deleteCircle과 동일하게 맞춤 */
+  padding: 0;
+  width: 22px;
   height: 22px;
-  display: inline-flex; /* 자식 요소 정렬 위해 flex 사용 */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 }

@@ -21,10 +21,10 @@ export default function FriendAddButton() {
       {showMenu && (
         <div className={styles.menu}>
           <div className={styles.menuItem} onClick={handleAddByCode}>
-            <span>➕ 친구 코드로 친구 추가</span>
+            <span> 친구 코드로 친구 추가</span>
           </div>
           <div className={styles.menuItem}>
-            <span>💬 카카오톡으로 친구 추가</span>
+            <span> 카카오톡으로 친구 추가</span>
           </div>
         </div>
       )}
