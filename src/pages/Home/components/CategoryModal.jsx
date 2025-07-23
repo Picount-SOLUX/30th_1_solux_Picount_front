@@ -1,3 +1,4 @@
+// ✅ CategoryModal.jsx (카테고리 추가/수정/삭제)
 import React, { useState } from "react";
 import styles from "./CategoryModal.module.css";
 
@@ -5,6 +6,9 @@ export default function CategoryModal({ onClose, categories, setCategories }) {
   const [activeTab, setActiveTab] = useState("expense");
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [editIndex, setEditIndex] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleDelete = (index) => {
     setCategories((prev) => ({
@@ -15,23 +19,27 @@ export default function CategoryModal({ onClose, categories, setCategories }) {
 
   const handleAddCategory = () => {
     if (!newCategory.trim()) return;
+    const nextId =
+      categories[activeTab].length > 0
+        ? Math.max(...categories[activeTab].map((c) => c.id)) + 1
+        : 1;
+    const newItem = { id: nextId, name: newCategory };
     setCategories((prev) => ({
       ...prev,
-      [activeTab]: [...prev[activeTab], newCategory],
+      [activeTab]: [...prev[activeTab], newItem],
     }));
     setNewCategory("");
     setShowAddModal(false);
   };
 
-  const [editIndex, setEditIndex] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [showEditModal, setShowEditModal] = useState(false);
-
   const handleEditSave = () => {
     if (!editName.trim()) return;
     setCategories((prev) => {
       const updated = [...prev[activeTab]];
-      updated[editIndex] = editName;
+      updated[editIndex] = {
+        ...updated[editIndex],
+        name: editName,
+      };
       return {
         ...prev,
         [activeTab]: updated,
@@ -64,19 +72,19 @@ export default function CategoryModal({ onClose, categories, setCategories }) {
 
         <div className={styles.categoryList}>
           {categories[activeTab].map((cat, idx) => (
-            <div key={idx} className={styles.row}>
+            <div key={cat.id} className={styles.row}>
               <button
                 className={styles.deleteBtn}
                 onClick={() => handleDelete(idx)}
               >
                 <span className={styles.deleteCircle}>–</span>
               </button>
-              <span className={styles.name}>{cat}</span>
+              <span className={styles.name}>{cat.name}</span>
               <button
                 className={styles.editBtn}
                 onClick={() => {
                   setEditIndex(idx);
-                  setEditName(cat);
+                  setEditName(cat.name);
                   setShowEditModal(true);
                 }}
               >
@@ -99,7 +107,7 @@ export default function CategoryModal({ onClose, categories, setCategories }) {
           완료
         </button>
 
-        {/* 추가 입력용 모달 */}
+        {/* 추가 모달 */}
         {showAddModal && (
           <div className={styles.innerModalOverlay}>
             <div className={styles.innerModal}>
@@ -127,6 +135,8 @@ export default function CategoryModal({ onClose, categories, setCategories }) {
             </div>
           </div>
         )}
+
+        {/* 수정 모달 */}
         {showEditModal && (
           <div className={styles.innerModalOverlay}>
             <div className={styles.innerModal}>

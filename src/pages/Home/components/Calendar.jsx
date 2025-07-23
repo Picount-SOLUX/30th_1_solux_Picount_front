@@ -12,6 +12,7 @@ import useTheme from "../../../hooks/useTheme";
 import { useEffect } from "react";
 import "../../../styles/CalendarThemes.css";
 import CategoryModal from "./CategoryModal";
+import ReportModal from "./ReportModal";
 
 function Calendar() {
   const today = new Date();
@@ -24,45 +25,64 @@ function Calendar() {
   const [calendarData, setCalendarData] = useState({});
 
   const stickerList = [
-    { id: 1, src: "/stickers/감정스티커 1.png" },
-    { id: 2, src: "/stickers/감정스티커 2.png" },
-    { id: 3, src: "/stickers/감정스티커 3.png" },
-    { id: 4, src: "/stickers/감정스티커 4.png" },
-    { id: 5, src: "/stickers/감정스티커 5.png" },
-    { id: 6, src: "/stickers/감정스티커 6.png" },
-    { id: 7, src: "/stickers/감정스티커 7.png" },
-    { id: 8, src: "/stickers/감정스티커 8.png" },
+    { id: 1, src: "/stickers/감정스티커 1.png", emotion: "행복" },
+    { id: 2, src: "/stickers/감정스티커 2.png", emotion: "뿌듯" },
+    { id: 3, src: "/stickers/감정스티커 3.png", emotion: "평온" },
+    { id: 4, src: "/stickers/감정스티커 4.png", emotion: "우울" },
+    { id: 5, src: "/stickers/감정스티커 5.png", emotion: "분노" },
+    { id: 6, src: "/stickers/감정스티커 6.png", emotion: "불안" },
+    { id: 7, src: "/stickers/감정스티커 7.png", emotion: "피곤" },
+    { id: 8, src: "/stickers/감정스티커 8.png", emotion: "그냥" },
   ];
-  const handleStickerDrop = async (dateStr, src) => {
+
+  const handleStickerDrop = async (dateStr, emotionObj) => {
     try {
-      await axios.post("/api/calendar/emotion", {
+      const res = await axios.post("/api/calendar/emotion", {
         date: dateStr,
-        stickerUrl: src,
+        emotion: emotionObj.emotion,
       });
-      setPlacedStickers((prev) => ({
-        ...prev,
-        [dateStr]: src,
-      }));
+
+      const result = res.data;
+
+      if (result.success) {
+        // 성공했을 때만 표시
+        setPlacedStickers((prev) => ({
+          ...prev,
+          [dateStr]: emotionObj.src, // 표시용
+        }));
+      } else {
+        console.warn("스티커 등록 실패:", result.message);
+      }
     } catch (e) {
-      console.error("스티커 등록 실패", e);
+      console.error("스티커 등록 실패 (에러)", e);
     }
   };
 
   const handleStickerDelete = async (dateStr) => {
     try {
-      await axios.delete(`/api/calendar/emotion?date=${dateStr}`);
-      setPlacedStickers((prev) => {
-        const newData = { ...prev };
-        delete newData[dateStr];
-        return newData;
-      });
+      const res = await axios.delete(`/api/calendar/emotion?date=${dateStr}`);
+      const result = res.data;
+
+      if (result.status === "success") {
+        setPlacedStickers((prev) => {
+          const newData = { ...prev };
+          delete newData[dateStr];
+          return newData;
+        });
+      } else {
+        console.warn("삭제 응답 실패:", result.message);
+      }
     } catch (e) {
       console.error("스티커 삭제 실패", e);
     }
   };
+
   const [editData, setEditData] = useState(null);
 
   const { themeKey, updateTheme } = useTheme();
+
+  const [reportData, setReportData] = useState(null);
+  const [showReport, setShowReport] = useState(false);
 
   const yearOptions = Array.from(
     { length: 10 },
@@ -102,9 +122,30 @@ function Calendar() {
       const res = await axios.get(
         `/api/calendar/record?date=${dateStr}&ownerId=${ownerId}`
       );
-      const data = res.data;
-      if (data) {
-        setViewData({ ...data, date: dateStr });
+      const result = res.data;
+
+      if (result.success && result.data) {
+        const { memo, incomes, expenses, imageUrls } = result.data;
+
+        const combinedEntries = [
+          ...incomes.map((item) => ({
+            type: "income",
+            category: item.categoryName,
+            amount: item.amount,
+          })),
+          ...expenses.map((item) => ({
+            type: "expense",
+            category: item.categoryName,
+            amount: item.amount,
+          })),
+        ];
+
+        setViewData({
+          date: dateStr,
+          memo,
+          photo: imageUrls?.[0] || null, // 첫 번째 이미지만 처리
+          entries: combinedEntries,
+        });
       }
     } catch (e) {
       console.error("해당 날짜 가계부 불러오기 실패", e);
@@ -120,7 +161,20 @@ function Calendar() {
             currentMonth + 1
           }&ownerId=${ownerId}`
         );
-        setCalendarData(res.data);
+        const result = res.data;
+
+        if (result.success && result.data?.summary) {
+          const summaryArray = result.data.summary;
+
+          const summaryObj = {};
+          summaryArray.forEach((item) => {
+            summaryObj[item.date] = item;
+          });
+
+          setCalendarData(summaryObj);
+        } else {
+          console.warn("달력 요약 데이터 없음");
+        }
       } catch (err) {
         console.error("요약 불러오기 실패", err);
       }
@@ -128,6 +182,48 @@ function Calendar() {
 
     fetchCalendarSummary();
   }, [currentYear, currentMonth]);
+
+  useEffect(() => {
+    if (showReport) {
+      const fetchEmotionReport = async () => {
+        try {
+          const res = await axios.get(
+            `/api/calendar/report/emotion?year=${currentYear}&month=${
+              currentMonth + 1
+            }`
+          );
+          const result = res.data;
+          if (result.success) {
+            setReportData(result.data);
+          } else {
+            alert("리포트 조회 실패: " + result.message);
+          }
+        } catch (e) {
+          console.error("리포트 조회 중 에러", e);
+        }
+      };
+
+      fetchEmotionReport();
+    }
+  }, [showReport, currentYear, currentMonth]);
+
+  const fetchEmotionReport = async () => {
+    try {
+      const res = await axios.get(
+        `/api/calendar/report/emotion?year=${currentYear}&month=${
+          currentMonth + 1
+        }`
+      );
+      const result = res.data;
+      if (result.success) {
+        setReportData(result.data);
+      } else {
+        alert("리포트 조회 실패: " + result.message);
+      }
+    } catch (e) {
+      console.error("리포트 조회 중 에러", e);
+    }
+  };
 
   const [showInputModal, setShowInputModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -232,12 +328,22 @@ function Calendar() {
                   </option>
                 ))}
               </select>
+              <button
+                className={styles.reportBtn}
+                onClick={() => setShowReport(true)}
+              >
+                월말 리포트 보기 📝
+              </button>
             </div>
 
             <div className={styles.stickerBar}>
               <div className={styles.stickerTrack}>
                 {stickerList.map((sticker) => (
-                  <StickerItem key={sticker.id} src={sticker.src} />
+                  <StickerItem
+                    key={sticker.id}
+                    src={sticker.src}
+                    emotion={sticker.emotion}
+                  />
                 ))}
               </div>
             </div>
@@ -307,6 +413,17 @@ function Calendar() {
               onClose={() => setShowCategoryModal(false)}
               categories={categories}
               setCategories={setCategories}
+            />
+          )}
+          {showReport && reportData && (
+            <ReportModal
+              year={currentYear}
+              month={currentMonth + 1}
+              reportData={reportData}
+              onClose={() => {
+                setShowReport(false);
+                setReportData(null); // 다음번 로딩을 위해 초기화
+              }}
             />
           )}
         </DndProvider>

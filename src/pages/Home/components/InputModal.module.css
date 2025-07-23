@@ -238,3 +238,39 @@
   color: #333;
   white-space: nowrap; /* ✅ 줄바꿈 방지 */
 }
+
+.photoBtn {
+  padding: 6px 14px;
+  background-color: #fff;
+  border: 1px solid #aaa;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* ✅ 사진 미리보기 영역 */
+.photoBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.previewImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.changePhotoLabel {
+  padding: 6px 14px;
+  background-color: #eee;
+  border: 1px solid #aaa;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.85rem;
+}

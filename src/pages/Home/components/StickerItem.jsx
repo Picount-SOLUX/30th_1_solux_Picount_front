@@ -1,10 +1,11 @@
 import React from "react";
 import { useDrag } from "react-dnd";
 
-export default function StickerItem({ src }) {
+// emotion prop도 받도록 추가
+export default function StickerItem({ src, emotion }) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "sticker",
-    item: { src },
+    item: { src, emotion },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -14,7 +15,7 @@ export default function StickerItem({ src }) {
     <img
       ref={drag}
       src={src}
-      alt="sticker"
+      alt={emotion}
       style={{
         width: 32,
         height: 32,
