@@ -5,10 +5,11 @@ import Sidebar from "./components/Sidebar";
 import StartingPage from "./pages/StartingPage/StartingPage";
 import Join from "./pages/Auth/Join";
 import Login from "./pages/Auth/Login";
-import OauthKakao from "./pages/Auth/OauthKakao";
+import OauthKakao from "./pages/Auth/Callback";
 import Welcome from "./pages/Auth/Welcome";
 import InfoSteps from "./pages/Auth/InfoSteps";
 import ResetPassword from "./pages/Auth/ResetPassword";
+import Callback from "./pages/Auth/Callback"
 
 import Home from "./pages/Home/Home";
 import Budget from "./pages/Budget/Budget";
@@ -62,6 +63,7 @@ function App() {
             <Route path="/join" element={<Join />} />
             <Route path="/oauth/kakao" element={<OauthKakao />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/callback" element={<Callback />} />
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/info-steps" element={<InfoSteps />} />
             <Route path="/reset-password" element={<ResetPassword />} />

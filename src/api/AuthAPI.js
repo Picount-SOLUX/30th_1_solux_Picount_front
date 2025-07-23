@@ -29,7 +29,7 @@ export const signup = async (userData) => {
 export const login = async (loginData) => {
   if (useBackend) {
     // 백엔드 API 호출
-    return await api.post("/members/login", loginData);
+    return await api.post("/api/members/login", loginData);
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 로그인 요청:", loginData);

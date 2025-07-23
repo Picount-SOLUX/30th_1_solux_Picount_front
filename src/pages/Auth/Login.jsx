@@ -52,13 +52,13 @@ export default function Login() {
       );
     }
   };
-
+/// 엔터 치면 로그인
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleLogin();
     }
   };
-
+/// 비밀번호 재설정
   const goToResetPassword = () => {
     navigate("/reset-password");
   };
@@ -69,6 +69,20 @@ export default function Login() {
     const nickname = storedUser.nickname || "테스트유저";
     navigate("/welcome", { state: { nickname } });
   };
+
+  // 카카오 로그인 핸들러 수정
+const handleKakaoLogin = () => {
+  // 백엔드가 꺼져있을 때는 콜백 URL로 바로 이동 (가짜 토큰 포함)
+  if (import.meta.env.VITE_USE_BACKEND === "false") {
+    console.log("⚠️ 백엔드 OFF 상태 → mock 콜백 흐름으로 이동");
+    window.location.href =
+      "/callback?access_token=mock-access-token&refresh_token=mock-refresh-token&is_new=false";
+  } else {
+    // 백엔드 연동 ON일 때 실제 카카오 로그인 URL로 이동
+    window.location.href = "/api/login/oauth2/authorization/kakao";
+  }
+};
+
 
   return (
     <div className="login-container">
@@ -101,15 +115,42 @@ export default function Login() {
           로그인
         </button>
 
-        {showModal && (
-          <div className="modal-backdrop">
-            <div className="modal-content">
-              <h3>로그인 성공!</h3>
-              <button onClick={closeModal}>확인</button>
-            </div>
+        <div className="login-divider">
+          <span className="divider-text">SNS 로그인</span>
+        </div>
+
+        {/* 카카오톡 로그인 버튼 (이미지) */}
+        <div className="sns-icons">
+          <div className="kakao-container">
+            <a
+              onClick={handleKakaoLogin} // ✅ 백엔드 URL 연결
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src="src/assets/icons/kakaotalk.png"
+                alt="kakao login"
+                className="kakao-bg"
+              />
+              <img
+                src="src/assets/icons/kakao_icon.png"
+                alt="kakao login"
+                className="kakao-fg"
+              />
+            </a>
           </div>
-        )}
+        </div>
+
       </div>
+
+
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h3>로그인 성공!</h3>
+            <button onClick={closeModal}>확인</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
