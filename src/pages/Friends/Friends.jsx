@@ -12,7 +12,7 @@ export default function Friends() {
 
       {/* 방명록 메시지 */}
       <div className={styles.guestbookWrapper}>
-        <Guestbook />
+        <Guestbook showInput={false} />
       </div>
     </div>
   );

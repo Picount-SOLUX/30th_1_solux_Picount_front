@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import StartingPage from "./pages/StartingPage/StartingPage";
 import Join from "./pages/Auth/Join";
 import Login from "./pages/Auth/Login";
+import OauthKakao from "./pages/Auth/OauthKakao";
 import Welcome from "./pages/Auth/Welcome";
 import InfoSteps from "./pages/Auth/InfoSteps";
 import ResetPassword from "./pages/Auth/ResetPassword";
@@ -18,6 +19,9 @@ import MyPage from "./pages/MyPage/MyPage";
 import SettingsPage from "./pages/MyPage/components/SettingsPage";
 import EditProfilePage from "./pages/MyPage/components/EditProfilePage";
 import Guestbook from "./pages/Friends/GuestBooks";
+import useTheme from "./hooks/useTheme";
+import { ThemeProvider } from "./context/ThemeProvider";
+import "./styles/CalendarThemes.css";
 
 import "./styles/App.css";
 
@@ -36,13 +40,13 @@ function App() {
   const isNoLayout = noLayoutRoutes.includes(location.pathname);
 
   return (
-    <div className="app-wrapper">
-      {/* 홈 이후부터 Header/Sidebar 표시 */}
-      {!isNoLayout && <Header />}
+    <ThemeProvider>
+      <div className="app-wrapper">
+        {/* 홈 이후부터 Header/Sidebar 표시 */}
+        {!isNoLayout && <Header />}
 
-      <div className="body-wrapper">
-        {!isNoLayout && <Sidebar />}
-
+        <div className="body-wrapper">
+          {!isNoLayout && <Sidebar />}
         <main
           className="main-content"
           style={{
@@ -56,31 +60,33 @@ function App() {
             {/* 로그인 전 페이지 */}
             <Route path="/" element={<StartingPage />} />
             <Route path="/join" element={<Join />} />
+            <Route path="/oauth/kakao" element={<OauthKakao />} />
             <Route path="/login" element={<Login />} />
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/info-steps" element={<InfoSteps />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* 로그인 후 페이지 */}
-            <Route path="/home" element={<Home />} />
-            <Route path="/budget" element={<Budget />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/challenge" element={<Challenge />} />
-            <Route path="/friends" element={<Friends />} />
-            <Route path="/mypage" element={<MyPage />} />
-            {/*설정페이지 라우터*/}
-            <Route path="/" element={<Home />} />
-            <Route path="/mypage" element={<MyPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route
-              path="/settings/edit-profile"
-              element={<EditProfilePage />}
-            />
-            <Route path="/guestbooks" element={<Guestbook />} />
-          </Routes>
-        </main>
+              {/* 로그인 후 페이지 */}
+              <Route path="/home" element={<Home />} />
+              <Route path="/budget" element={<Budget />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/challenge" element={<Challenge />} />
+              <Route path="/friends" element={<Friends />} />
+              <Route path="/mypage" element={<MyPage />} />
+              {/*설정페이지 라우터*/}
+              <Route path="/" element={<Home />} />
+              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route
+                path="/settings/edit-profile"
+                element={<EditProfilePage />}
+              />
+              <Route path="/guestbooks" element={<Guestbook />} />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 
