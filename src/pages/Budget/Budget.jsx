@@ -97,7 +97,7 @@ export default function Budget() {
   const [newCategory, setNewCategory] = useState({ name: "", amount: "" });
   const [showHelp, setShowHelp] = useState(true);
 
-  // 🔥 날짜 상태 추가
+  // 날짜 상태 추가
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(new Date().setMonth(new Date().getMonth() + 1))
@@ -126,7 +126,7 @@ export default function Budget() {
     }
   }, [selectedJob, selectedBudget]); // ✅ 값 바뀔 때마다 실행
 
-  // 🔥 endDate가 지났을 때 카테고리 초기화
+  // endDate가 지났을 때 카테고리 초기화
   useEffect(() => {
     const now = new Date();
     if (endDate < now) {

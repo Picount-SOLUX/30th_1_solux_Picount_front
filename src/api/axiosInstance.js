@@ -1,7 +1,7 @@
 // src/api/axiosInstance.js
 import axios from "axios";
 
-// ✅ 환경변수로 백엔드 연동 여부 확인
+// 환경변수로 백엔드 연동 여부 확인
 const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
 const api = axios.create({
@@ -12,7 +12,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// ✅ 요청 인터셉터
+// 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
     if (!useBackend) {
@@ -25,7 +25,7 @@ api.interceptors.request.use(
       });
     }
 
-    // ✅ accessToken 헤더에 자동 추가
+    // accessToken 헤더에 자동 추가
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -36,12 +36,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ 응답 인터셉터
+// 응답 인터셉터
 api.interceptors.response.use(
   (response) => response, // 정상 응답 그대로 반환
   async (error) => {
-    // 백엔드 연동 OFF 상태에서 mock 응답 반환
-    // ✅ 백엔드 OFF일 때는 mock 응답 반환
+    // 백엔드 OFF일 때는 mock 응답 반환
     if (import.meta.env.VITE_USE_BACKEND === "false") {
       console.info("✅ 백엔드 OFF → mock 응답 반환:", error.config.url);
 
