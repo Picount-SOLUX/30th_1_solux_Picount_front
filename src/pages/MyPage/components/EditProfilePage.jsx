@@ -3,6 +3,7 @@ import styles from "./EditProfilePage.module.css";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../../context/useProfile";
 import axios from "axios";
+import { useEffect } from "react";
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
@@ -43,12 +44,32 @@ export default function EditProfilePage() {
     setSkins((prevSkins) => prevSkins.filter((skin) => skin.id !== id));
   };
 
-  const handleDeleteGuestbook = (id) => {
-    setGuestbookList((prev) => prev.filter((item) => item.id !== id));
+  const handleDeleteGuestbook = async (id) => {
+    try {
+      await axios.delete(`/api/guestbook/my/${id}`, {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        },
+      });
+      setGuestbookList((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("방명록 삭제 실패", error);
+      alert("삭제에 실패했습니다.");
+    }
   };
 
-  const handleDeleteAllGuestbook = () => {
-    setGuestbookList([]);
+  const handleDeleteAllGuestbook = async () => {
+    try {
+      await axios.delete("/api/guestbook/my", {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        },
+      });
+      setGuestbookList([]);
+    } catch (error) {
+      console.error("전체 방명록 삭제 실패", error);
+      alert("전체 삭제에 실패했습니다.");
+    }
   };
 
   const handleSave = async () => {
@@ -68,6 +89,26 @@ export default function EditProfilePage() {
       alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
     }
   };
+
+  useEffect(() => {
+    axios
+      .get("/api/guestbook/my?page=0&size=10", {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          const formatted = res.data.data.content.map((item) => ({
+            id: item.guestbookId,
+            content: `${item.ownerNickname} (${item.createdAt
+              .slice(0, 16)
+              .replace("T", " ")}) - ${item.content}`,
+          }));
+          setGuestbookList(formatted);
+        }
+      });
+  }, []);
 
   return (
     <div className={styles.container}>

@@ -123,3 +123,48 @@
 .backButton:hover {
   color: #777; /* 선택: 호버 시 약간 흐려짐 */
 }
+.friendList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.friendItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  justify-content: space-between;
+}
+
+.friendAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friendName {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.friendDeleteBtn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.friendItem:hover .friendDeleteBtn {
+  display: inline-block;
+}
+
+.noFriend {
+  font-size: 0.9rem;
+  color: #888;
+  padding: 8px;
+}

@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import "../../../styles/CalendarThemes.css";
 import CategoryModal from "./CategoryModal";
 import ReportModal from "./ReportModal";
+import useSkin from "../../../context/useSkin";
 
 function Calendar() {
   const today = new Date();
@@ -23,6 +24,7 @@ function Calendar() {
 
   const [placedStickers, setPlacedStickers] = useState({});
   const [calendarData, setCalendarData] = useState({});
+  const { setCalendarSkinUrl, calendarSkinUrl } = useSkin();
 
   const stickerList = [
     { id: 1, src: "/stickers/감정스티커 1.png", emotion: "행복" },
@@ -151,6 +153,14 @@ function Calendar() {
       console.error("해당 날짜 가계부 불러오기 실패", e);
     }
   };
+
+  // 테스트용으로 angel 스킨 바로 적용
+  useEffect(() => {
+    setCalendarSkinUrl({
+      backgroundUrl: "angel-bg.png",
+      frameUrl: "angel_frame.png",
+    });
+  }, [setCalendarSkinUrl]);
 
   useEffect(() => {
     const fetchCalendarSummary = async () => {
@@ -302,131 +312,160 @@ function Calendar() {
 
   return (
     <div className={`${themeKey}-theme`}>
-      <div className={styles.calendarContainer}>
-        <DndProvider backend={HTML5Backend}>
-          <div className={styles.headerRow}>
-            <div className={styles.selectBox}>
-              <select
-                value={currentYear}
-                onChange={handleYearChange}
-                className={styles.dropdown}
-              >
-                {yearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={currentMonth}
-                onChange={handleMonthChange}
-                className={styles.dropdown}
-              >
-                {monthOptions.map((month) => (
-                  <option key={month} value={month}>
-                    {month + 1}
-                  </option>
-                ))}
-              </select>
-              <button
-                className={styles.reportBtn}
-                onClick={() => setShowReport(true)}
-              >
-                월말 리포트 보기 📝
-              </button>
-            </div>
-
-            <div className={styles.stickerBar}>
-              <div className={styles.stickerTrack}>
-                {stickerList.map((sticker) => (
-                  <StickerItem
-                    key={sticker.id}
-                    src={sticker.src}
-                    emotion={sticker.emotion}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className={styles.weekdays}>
-            {["SUN", "MON", "TUES", "WED", "THURS", "FRI", "SAT"].map((day) => (
-              <div key={day} className={styles.weekday}>
-                {day}
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.days}>{renderDays()}</div>
-
-          <button
-            className={styles.floatingEditBtn}
-            onClick={() => {
-              const todayStr = new Date().toISOString().split("T")[0];
-              const existingData = calendarData[todayStr] || null;
-              setEditData(existingData);
-              setIsInputOpen(true);
-            }}
-          >
-            ✏️
-          </button>
-
-          {isInputOpen && (
-            <InputModal
-              categories={categories}
-              initialData={editData}
-              isEditMode={!!editData}
-              calendarData={calendarData}
-              onClose={() => {
-                setIsInputOpen(false);
-                setEditData(null);
-              }}
-              onSubmit={(data) => {
-                setCalendarData((prev) => ({
-                  ...prev,
-                  [data.date]: data,
-                }));
-                setIsInputOpen(false);
-                setEditData(null);
-              }}
-              onOpenCategoryModal={() => {
-                setShowInputModal(false);
-                setIsInputOpen(false);
-                setShowCategoryModal(true);
+      <div
+        className={styles.calendarContainer}
+        style={
+          calendarSkinUrl?.backgroundUrl
+            ? {
+                "--bg-img": `url('/assets/ShopItems/CalendarSkin/${calendarSkinUrl.backgroundUrl}')`,
+              }
+            : {}
+        }
+      >
+        <div className={styles.calendarContainer}>
+          {calendarSkinUrl?.frameUrl && (
+            <div
+              className={styles.frameOverlay}
+              style={{
+                backgroundImage: `url('/assets/ShopItems/CalendarSkin/${calendarSkinUrl.frameUrl}')`,
               }}
             />
           )}
+          <DndProvider backend={HTML5Backend}>
+            <div className={styles.headerRow}>
+              <div className={styles.selectBox}>
+                <select
+                  value={currentYear}
+                  onChange={handleYearChange}
+                  className={styles.dropdown}
+                >
+                  {yearOptions.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={currentMonth}
+                  onChange={handleMonthChange}
+                  className={styles.dropdown}
+                >
+                  {monthOptions.map((month) => (
+                    <option key={month} value={month}>
+                      {month + 1}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className={styles.reportBtn}
+                  onClick={() => setShowReport(true)}
+                >
+                  월말 리포트 보기 📝
+                </button>
+              </div>
 
-          {viewData && (
-            <ViewModal
-              data={viewData}
-              onClose={() => setViewData(null)}
-              onEdit={() => {
-                setEditData(viewData);
+              <div className={styles.stickerBar}>
+                <div className={styles.stickerTrack}>
+                  {stickerList.map((sticker) => (
+                    <StickerItem
+                      key={sticker.id}
+                      src={sticker.src}
+                      emotion={sticker.emotion}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className={styles.weekdays}>
+              {["SUN", "MON", "TUES", "WED", "THURS", "FRI", "SAT"].map(
+                (day) => (
+                  <div key={day} className={styles.weekday}>
+                    {day}
+                  </div>
+                )
+              )}
+            </div>
+
+            <div className={styles.days}>{renderDays()}</div>
+
+            <button
+              className={styles.floatingEditBtn}
+              onClick={() => {
+                const todayStr = new Date().toISOString().split("T")[0];
+                const existingData = calendarData[todayStr] || null;
+                setEditData(existingData);
                 setIsInputOpen(true);
-                setViewData(null);
               }}
-            />
-          )}
+            >
+              ✏️
+            </button>
 
-          {showCategoryModal && (
-            <CategoryModal
-              onClose={() => setShowCategoryModal(false)}
-              categories={categories}
-              setCategories={setCategories}
-            />
-          )}
-          {showReport && reportData && (
-            <ReportModal
-              year={currentYear}
-              month={currentMonth + 1}
-              reportData={reportData}
-              onClose={() => {
-                setShowReport(false);
-                setReportData(null); // 다음번 로딩을 위해 초기화
-              }}
-            />
-          )}
-        </DndProvider>
+            {isInputOpen && (
+              <InputModal
+                categories={categories}
+                initialData={editData}
+                isEditMode={!!editData}
+                calendarData={calendarData}
+                onClose={() => {
+                  setIsInputOpen(false);
+                  setEditData(null);
+                }}
+                onSubmit={(data) => {
+                  setCalendarData((prev) => ({
+                    ...prev,
+                    [data.date]: data,
+                  }));
+                  setIsInputOpen(false);
+                  setEditData(null);
+                }}
+                onOpenCategoryModal={() => {
+                  setShowInputModal(false);
+                  setIsInputOpen(false);
+                  setShowCategoryModal(true);
+                }}
+              />
+            )}
+
+            {viewData && (
+              <ViewModal
+                data={viewData}
+                onClose={() => setViewData(null)}
+                onEdit={() => {
+                  setEditData(viewData);
+                  setIsInputOpen(true);
+                  setViewData(null);
+                }}
+              />
+            )}
+
+            {showCategoryModal && (
+              <CategoryModal
+                onClose={() => setShowCategoryModal(false)}
+                categories={categories}
+                setCategories={setCategories}
+              />
+            )}
+            {showReport && reportData && (
+              <ReportModal
+                year={currentYear}
+                month={currentMonth + 1}
+                reportData={reportData}
+                onClose={() => {
+                  setShowReport(false);
+                  setReportData(null); // 다음번 로딩을 위해 초기화
+                }}
+              />
+            )}
+            {calendarSkinUrl?.frameUrl && (
+              <div
+                className={styles.frameOverlay}
+                style={{
+                  backgroundImage: `url('/assets/ShopItems/CalendarSkin/${calendarSkinUrl.frameUrl}')`,
+                }}
+              />
+            )}
+          </DndProvider>
+        </div>
       </div>
     </div>
   );

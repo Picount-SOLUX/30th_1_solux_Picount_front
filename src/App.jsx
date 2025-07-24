@@ -25,6 +25,9 @@ import useTheme from "./hooks/useTheme";
 import { ThemeProvider } from "./context/ThemeProvider";
 import "./styles/CalendarThemes.css";
 import { ProfileProvider } from "./context/ProfileProvider";
+import GuestbookHistoryPage from "./pages/Friends/GuestbookHistoryPage";
+import FriendHome from "./pages/Friends/FriendHome";
+import FriendManagePage from "./pages/MyPage/components/FriendManagePage";
 
 import "./styles/App.css";
 
@@ -76,6 +79,7 @@ function App() {
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/challenge" element={<Challenge />} />
+                <Route path="/friends/:friendId" element={<FriendHome />} />
                 <Route path="/friends" element={<Friends />} />
                 <Route path="/mypage" element={<MyPage />} />
                 {/*설정페이지 라우터*/}
@@ -90,7 +94,14 @@ function App() {
                   path="/settings/change-password"
                   element={<ChangePasswordPage />}
                 />
-                <Route path="/guestbooks" element={<Guestbook />} />
+                <Route
+                  path="/settings/friend-manage"
+                  element={<FriendManagePage />}
+                />
+                <Route
+                  path="/guestbook/history"
+                  element={<GuestbookHistoryPage />}
+                />
               </Routes>
             </main>
           </div>
