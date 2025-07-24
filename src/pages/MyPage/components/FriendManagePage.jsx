@@ -9,7 +9,7 @@ export default function FriendManagePage() {
 
   useEffect(() => {
     axios
-      .get("/api/friends/my", {
+      .get("https://37cf286da836.ngrok-free.app/api/friends/my", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -29,11 +29,14 @@ export default function FriendManagePage() {
     if (!confirmDelete) return;
 
     try {
-      const res = await axios.delete(`/api/friends/${friendId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.delete(
+        `https://37cf286da836.ngrok-free.app/api/friends/${friendId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (res.data.success) {
         alert("친구가 삭제되었습니다.");

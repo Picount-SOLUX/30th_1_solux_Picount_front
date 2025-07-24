@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios"; // 추가
+import axios from "axios";
 import styles from "./FriendCodeModal.module.css";
 
 export default function FriendCodeModal({ onClose }) {
   const [code, setCode] = useState("");
-  const [error, setError] = useState(""); // 오류 메시지 상태
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,13 +12,19 @@ export default function FriendCodeModal({ onClose }) {
 
     if (!code.trim()) return;
 
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      setError("로그인이 필요합니다.");
+      return;
+    }
+
     try {
       const response = await axios.post(
-        "/api/friends/request",
+        "https://37cf286da836.ngrok-free.app/api/friends/request",
         { friendCode: code },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // 필요시 토큰 가져오기
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
         }

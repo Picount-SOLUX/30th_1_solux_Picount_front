@@ -65,11 +65,14 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await axios.get("/api/friends/my", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await axios.get(
+          "https://37cf286da836.ngrok-free.app/api/friends/my",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         if (res.data.success) {
           setFriends(res.data.data);
         }
@@ -85,11 +88,14 @@ export default function SettingsPage() {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
     try {
-      const res = await axios.delete(`/api/friends/${friendId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.delete(
+        `https://37cf286da836.ngrok-free.app/api/friends/${friendId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       if (res.data.success) {
         alert("삭제 성공");
         setFriends((prev) => prev.filter((f) => f.memberId !== friendId));
@@ -129,7 +135,7 @@ export default function SettingsPage() {
 
               try {
                 const res = await axios.post(
-                  "/api/members/visibility/main",
+                  "https://37cf286da836.ngrok-free.app/api/members/visibility/main",
                   { isMainVisible: newValue },
                   {
                     headers: {

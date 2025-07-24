@@ -6,7 +6,7 @@ const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
 export const signup = async (userData) => {
   if (useBackend) {
     // 진짜 백엔드 API 호출
-    return await api.post("/api/members/signup", userData);  //앞에 /api 추가 할말
+    return await api.post("/members/signup", userData); //앞에 /api 추가 할말
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 회원가입 요청:", userData);
@@ -29,7 +29,7 @@ export const signup = async (userData) => {
 export const login = async (loginData) => {
   if (useBackend) {
     // 백엔드 API 호출
-    return await api.post("/api/members/login", loginData);
+    return await api.post("/members/login", loginData);
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 로그인 요청:", loginData);
@@ -55,7 +55,10 @@ export const login = async (loginData) => {
 // 비밀번호 변경 API
 export const changePassword = async ({ prePassword, newPassword }) => {
   if (useBackend) {
-    return await api.patch("api/auth/members/password", { prePassword, newPassword });
+    return await api.patch("api/auth/members/password", {
+      prePassword,
+      newPassword,
+    });
   } else {
     console.log("[Mock API] 비밀번호 변경 요청", { prePassword, newPassword });
     return new Promise((resolve) => {
@@ -90,9 +93,6 @@ export const logout = async () => {
     });
   }
 };
-
-
-
 
 // 회원탈퇴 API
 // export const deleteAccount = async () => {
