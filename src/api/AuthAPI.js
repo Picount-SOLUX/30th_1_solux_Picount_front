@@ -6,7 +6,7 @@ const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
 export const signup = async (userData) => {
   if (useBackend) {
     // 진짜 백엔드 API 호출
-    return await api.post("/api/members/signup", userData);  //앞에 /api 추가 할말
+    return await api.post("/members/signup", userData);  //앞에 /api 추가 할말
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 회원가입 요청:", userData);
@@ -20,7 +20,7 @@ export const signup = async (userData) => {
             data: null,
           },
         });
-      }, 1000); // 1초 지연으로 실제 호출처럼 보이게
+      }, 1000); // 1초 지연
     });
   }
 };
@@ -29,7 +29,7 @@ export const signup = async (userData) => {
 export const login = async (loginData) => {
   if (useBackend) {
     // 백엔드 API 호출
-    return await api.post("/api/members/login", loginData);
+    return await api.post("/members/login", loginData);
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 로그인 요청:", loginData);
@@ -52,10 +52,32 @@ export const login = async (loginData) => {
   }
 };
 
+
+// 이메일 존재 여부 확인 API
+export const checkEmailExists = async (email) => {
+  if (useBackend) {
+    const url = `/members?email=${encodeURIComponent(email)}`;
+    return await api.get(url); // 백엔드 엔드포인트 확인 필요
+  } else {
+    console.log("[Mock API] 이메일 확인 요청", email);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // 테스트용: 임의로 특정 이메일만 존재한다고 가정
+        if (email === "test@example.com") {
+          resolve({ data: { exists: true } });
+        } else {
+          reject({ response: { data: { message: "가입되지 않은 이메일입니다." } } });
+        }
+      }, 1000);
+    });
+  }
+};
+
+
 // 비밀번호 변경 API
 export const changePassword = async ({ prePassword, newPassword }) => {
   if (useBackend) {
-    return await api.patch("api/auth/members/password", { prePassword, newPassword });
+    return await api.patch("/members/password", { prePassword, newPassword });
   } else {
     console.log("[Mock API] 비밀번호 변경 요청", { prePassword, newPassword });
     return new Promise((resolve) => {
@@ -76,7 +98,7 @@ export const changePassword = async ({ prePassword, newPassword }) => {
 export const logout = async () => {
   if (useBackend) {
     // 백엔드 연동 시 실제 API 호출
-    return await api.post("/api/members/logout");
+    return await api.post("/members/logout");
   } else {
     // 백엔드 OFF 상태 → mock 처리
     console.warn("📭 백엔드 연동 OFF → mock 로그아웃 처리");

@@ -12,7 +12,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// ✅ 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
     if (!useBackend) {
@@ -21,13 +20,20 @@ api.interceptors.request.use(
       return Promise.reject({
         config,
         message: "백엔드 연동 OFF, 요청 차단됨",
-        isMock: true, // mock 표시
+        isMock: true,
       });
     }
 
-    // ✅ accessToken 헤더에 자동 추가
     const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
+
+    // ✅ accessToken 제외할 경로 목록
+    const noAuthUrls = ["/members/signup", "/members/login", "/members/refresh"];
+
+    // 현재 요청이 토큰 제외 대상인지 확인
+    const isNoAuth = noAuthUrls.some((url) => config.url.includes(url));
+
+    // 제외 대상이 아니고 토큰이 있다면 헤더에 추가
+    if (accessToken && !isNoAuth) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
@@ -36,11 +42,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+
 // ✅ 응답 인터셉터
 api.interceptors.response.use(
   (response) => response, // 정상 응답 그대로 반환
   async (error) => {
-    // 백엔드 연동 OFF 상태에서 mock 응답 반환
     // ✅ 백엔드 OFF일 때는 mock 응답 반환
     if (import.meta.env.VITE_USE_BACKEND === "false") {
       console.info("✅ 백엔드 OFF → mock 응답 반환:", error.config.url);
@@ -73,7 +79,7 @@ api.interceptors.response.use(
         config: error.config,
       });
     }
-
+//////////////가짜///////////////
 
     // 404 에러는 무시하고 빈 응답 반환
     if (error.response?.status === 404) {
@@ -91,9 +97,9 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-
+        const refreshUrl = useBackend ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh` : "/api/members/refresh";
         // refreshToken으로 새 accessToken 발급 요청
-        const res = await axios.post("http://localhost:8080/api/members/refresh", {
+        const res = await api.post("/members/refresh", {
           refreshToken,
         });
 
