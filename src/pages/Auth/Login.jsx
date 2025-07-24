@@ -79,7 +79,7 @@ const handleKakaoLogin = () => {
       "/callback?access_token=mock-access-token&refresh_token=mock-refresh-token&is_new=false";
   } else {
     // 백엔드 연동 ON일 때 실제 카카오 로그인 URL로 이동
-    window.location.href = "/api/login/oauth2/authorization/kakao";
+    window.location.href = "https://7ace74aa4830.ngrok-free.app/api/login/oauth2/authorization/kakao";
   }
 };
 
@@ -123,7 +123,11 @@ const handleKakaoLogin = () => {
         <div className="sns-icons">
           <div className="kakao-container">
             <a
-              onClick={handleKakaoLogin} // ✅ 백엔드 URL 연결
+              href="https://7ace74aa4830.ngrok-free.app/api/login/oauth2/authorization/kakao" // ✅ 백엔드 URL 연결
+              //onClick={(e) => {
+                //e.preventDefault();
+                //handleKakaoLogin();
+              //}}
               style={{ cursor: "pointer" }}
             >
               <img

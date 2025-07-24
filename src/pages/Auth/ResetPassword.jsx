@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { changePassword } from '../../api/AuthAPI'; // 바꾸셔야 하면 맞게 경로 수정
+import { checkEmailExists, changePassword } from '../../api/AuthAPI'; // 바꾸셔야 하면 맞게 경로 수정
 import './Login.css';
 
 export default function ResetPassword() {
@@ -14,21 +14,23 @@ export default function ResetPassword() {
   const [showModal, setShowModal] = useState(false);
 
   // 1단계: 이메일 확인 후 새 비밀번호 단계로
-  const handleEmailCheck = () => {
+  const handleEmailCheck = async () => {
     if (!email) {
       setErrorMessage('이메일을 입력해주세요.');
       return;
     }
 
-    // 회원 존재 여부 체크 - 여기선 로컬스토리지 예시
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (!storedUser || storedUser.email !== email) {
-      setErrorMessage('가입된 이메일이 아닙니다.');
-      return;
+    try {
+      const res = await checkEmailExists(email); // ✅ 백엔드에 이메일 존재 여부 확인 요청
+      if (res.data.data) {
+        setErrorMessage('');
+        setStep(2); // 다음 단계로
+      } else {
+        setErrorMessage('가입된 이메일이 아닙니다.');
+      }
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || '이메일 확인 중 오류가 발생했습니다.');
     }
-
-    setErrorMessage('');
-    setStep(2); // 새 비밀번호 설정 단계로
   };
 
   // 2단계: 비밀번호 변경 요청
