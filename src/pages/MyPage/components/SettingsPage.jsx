@@ -29,6 +29,14 @@ export default function SettingsPage() {
   };
 /////////////////////로그아웃 API/////////////////////////////
 
+/////////////////////회원탈퇴 API
+
+
+
+
+
+
+
   const handleDeleteAccount = () => {
     setShowModal(true); // 경고 모달 열기
   };

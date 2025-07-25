@@ -52,12 +52,12 @@ export const login = async (loginData) => {
   }
 };
 
-
 // 이메일 존재 여부 확인 API
 export const checkEmailExists = async (email) => {
   if (useBackend) {
-    const url = `/members?email=${encodeURIComponent(email)}`;
-    return await api.get(url); // 백엔드 엔드포인트 확인 필요
+    return await api.get("/members", {
+      params: { email } // 👈 Axios가 알아서 encode 해줌
+    });
   } else {
     console.log("[Mock API] 이메일 확인 요청", email);
     return new Promise((resolve, reject) => {
@@ -72,7 +72,6 @@ export const checkEmailExists = async (email) => {
     });
   }
 };
-
 
 // 비밀번호 변경 API
 export const changePassword = async ({ prePassword, newPassword }) => {
