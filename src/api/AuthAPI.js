@@ -1,6 +1,6 @@
 import api from "./axiosInstance";
 
-const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
+const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
 // 회원가입 API
 export const signup = async (userData) => {

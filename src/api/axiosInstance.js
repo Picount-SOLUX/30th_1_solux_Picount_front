@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // ✅ 환경변수로 백엔드 연동 여부 확인
-const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
+const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
 const api = axios.create({
   baseURL: useBackend ? import.meta.env.VITE_API_BASE_URL : "", // 백엔드 ON일 때만 baseURL 지정
