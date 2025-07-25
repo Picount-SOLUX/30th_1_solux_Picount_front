@@ -114,7 +114,7 @@ export default function InputModal({
       if (photo) formData.append("photos", photo);
 
       const res = await axios.post(
-        "https://37cf286da836.ngrok-free.app/api/calendar/record",
+        "https://6e45bd638524.ngrok-free.app/api/calendar/record",
         formData,
         {
           headers: {

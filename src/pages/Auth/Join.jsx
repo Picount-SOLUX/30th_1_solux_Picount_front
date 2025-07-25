@@ -10,7 +10,7 @@ export default function Join() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showModal, setShowModal] = useState(false); // 모달 상태 추가
-  const [error, setError] = useState("");            // 에러 메시지 상태
+  const [error, setError] = useState(""); // 에러 메시지 상태
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default function Join() {
       return;
     }
 
-///////////////////// 회원가입 API ////////////////////////
+    ///////////////////// 회원가입 API ////////////////////////
     try {
       // 회원가입 API 요청
       const response = await signup({
@@ -36,7 +36,15 @@ export default function Join() {
 
       console.log("응답 데이터: ", response.data); // 응답 확인용
       if (response.data.success) {
-        // 모달 열기
+        console.log("응답 데이터: ", response.data);
+
+        const accessToken = response.data.data.accessToken;
+        localStorage.setItem("token", accessToken);
+        console.log("✅ 저장됨!", localStorage.getItem("token"));
+        if (accessToken) {
+          localStorage.setItem("token", accessToken); // ← 핵심!
+        }
+
         setShowModal(true);
       } else {
         setError(response.data.message || "회원가입에 실패");
@@ -46,7 +54,7 @@ export default function Join() {
       setError(err.response?.data?.message || "서버 오류가 발생했습니다.");
     }
   };
-//////////////////////회원가입 API////////////////////////  
+  //////////////////////회원가입 API////////////////////////
 
   // 모달 닫기 함수
   const closeModal = () => {

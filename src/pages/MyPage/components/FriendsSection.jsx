@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./FriendsSection.module.css";
 import FriendAddButton from "./FriendAddButton";
+import api from "../../../api/axiosInstance";
 
 export default function FriendsSection() {
   const [friends, setFriends] = useState([]);
@@ -10,14 +11,11 @@ export default function FriendsSection() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await axios.get(
-          "https://37cf286da836.ngrok-free.app/api/friends/my",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const res = await api.get("/api/friends/my", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
         if (res.data.success) {
           setFriends(res.data.data);
