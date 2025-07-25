@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 12px 16px;
+}
+
+.backButton {
+  all: unset; /* 기본 버튼 스타일 제거 */
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+}

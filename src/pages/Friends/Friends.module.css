@@ -5,3 +5,11 @@
 .guestbookWrapper {
   margin-top: 24px;
 }
+.backButton {
+  all: unset;
+  padding: 6px 12px;
+  background-color: #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}

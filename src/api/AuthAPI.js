@@ -1,12 +1,12 @@
 import api from "./axiosInstance";
 
-const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
+const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
 // 회원가입 API
 export const signup = async (userData) => {
   if (useBackend) {
     // 진짜 백엔드 API 호출
-    return await api.post("/members/signup", userData);  //앞에 /api 추가 할말
+    return await api.post("/members/signup", userData); //앞에 /api 추가 할말
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 회원가입 요청:", userData);
@@ -66,7 +66,9 @@ export const checkEmailExists = async (email) => {
         if (email === "test@example.com") {
           resolve({ data: { exists: true } });
         } else {
-          reject({ response: { data: { message: "가입되지 않은 이메일입니다." } } });
+          reject({
+            response: { data: { message: "가입되지 않은 이메일입니다." } },
+          });
         }
       }, 1000);
     });
@@ -111,9 +113,6 @@ export const logout = async () => {
     });
   }
 };
-
-
-
 
 // 회원탈퇴 API
 // export const deleteAccount = async () => {

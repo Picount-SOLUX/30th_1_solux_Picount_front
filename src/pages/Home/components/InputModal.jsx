@@ -98,19 +98,37 @@ export default function InputModal({
           amount: Number(row.amount.replace(/,/g, "")),
         }));
 
-      const requestBody = {
-        entryDate: date,
-        memo: memo,
-        incomeList: [...prevIncomeList, ...newIncomeList],
-        expenseList: [...prevExpenseList, ...newExpenseList],
-      };
-
+      // ✅ FormData 구성
       const formData = new FormData();
-      formData.append("request", JSON.stringify(requestBody));
+      formData.append("ownerId", ownerId);
+      formData.append("entryDate", date);
+      formData.append("memo", memo);
+      formData.append(
+        "incomeList",
+        JSON.stringify([...prevIncomeList, ...newIncomeList])
+      );
+      formData.append(
+        "expenseList",
+        JSON.stringify([...prevExpenseList, ...newExpenseList])
+      );
       if (photo) formData.append("photos", photo);
 
-      const res = await axios.post("/api/calendar/record", formData);
-      onSubmit?.({ date, ...requestBody });
+      const res = await axios.post(
+        "https://37cf286da836.ngrok-free.app/api/calendar/record",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      onSubmit?.({
+        date,
+        incomeList: newIncomeList,
+        expenseList: newExpenseList,
+        memo,
+      });
       onClose();
     } catch (e) {
       console.error("가계부 저장 실패:", e);
