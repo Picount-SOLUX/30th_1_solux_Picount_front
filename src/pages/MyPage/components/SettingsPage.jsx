@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./SettingsPage.module.css";
 import DeleteAccountModal from "./DeleteAccountModal";
 import DeleteSuccessModal from "./DeleteSuccessModal";
-import { logout } from "../../../api/AuthAPI"; // ✅ 로그아웃 API 임포트
+import { logout, deleteAccount } from "../../../api/AuthAPI"; // ✅ 로그아웃 API 임포트
 import { useEffect } from "react";
 import axios from "axios";
 
@@ -12,7 +12,7 @@ export default function SettingsPage() {
   const [showModal, setShowModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  //////////////////////로그아웃 API////////////////////////////
+////////////////////////로그아웃 API////////////////////////////
   const handleLogout = async () => {
     try {
       const res = await logout(); // ✅ 로그아웃 API 호출
@@ -29,30 +29,36 @@ export default function SettingsPage() {
       alert("로그아웃 중 오류가 발생했습니다.");
     }
   };
-  /////////////////////로그아웃 API/////////////////////////////
+///////////////////////로그아웃 API/////////////////////////////
 
-/////////////////////회원탈퇴 API
-
-
-
-
-
-
-
+///////////////////////회원탈퇴 API///////////////////////////
   const handleDeleteAccount = () => {
     setShowModal(true); // 경고 모달 열기
   };
-
-  const confirmDelete = () => {
-    setShowModal(false);
-    setShowSuccess(true); // 성공 모달 열기
-    // 실제 API 연동 코드 추가 예정
+  const confirmDelete = async () => {
+    try {
+      const res = await deleteAccount(); // 실제 회원탈퇴 API 호출
+      if (res.data?.success) {
+        // 로컬 토큰 제거
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        // 서버 로그아웃 처리
+        await logout();
+        setShowModal(false);      // 확인 모달 닫기
+        setShowSuccess(true);     // 성공 모달 열기
+      } else {
+        alert(res.data.message || "회원탈퇴 실패");
+      }
+    } catch (error) {
+      console.error("회원탈퇴 실패:", error);
+      alert("회원탈퇴 중 오류가 발생했습니다.");
+    }
   };
-
   const closeSuccessModal = () => {
     setShowSuccess(false);
-    navigate("/"); // 홈 or 로그인 페이지로 이동
+    navigate("/"); // StartingPage로 이동
   };
+///////////////////////회원탈퇴 API///////////////////////////
 
   const goToEditProfile = () => {
     navigate("/settings/edit-profile");

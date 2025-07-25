@@ -101,12 +101,12 @@ api.interceptors.response.use(
         // refreshToken으로 새 accessToken 발급 요청
         const res = await api.post("/members/refresh", {
           refreshToken,
-        });
+        }); //request body 부분
 
         const { accessToken: newAccessToken } = res.data.data;
-
         // 새 accessToken 저장
         localStorage.setItem("accessToken", newAccessToken);
+        //response body 부분
 
         // 실패한 요청 헤더에 새 토큰 추가 후 재시도
         error.config.headers.Authorization = `Bearer ${newAccessToken}`;

@@ -2,14 +2,27 @@ import React, { useState } from "react";
 import styles from "./ChangePasswordPage.module.css";
 
 export default function ChangePasswordPage() {
-  const [currentPassword, setCurrentPassword] = useState("");
+  const [prePassword, setprePassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleChangePassword = () => {
-    alert("비밀번호 변경 요청 준비 완료 (API 연동 예정)");
+///////////////////비밀번호 변경 API/////////////////////////
+  const handleChangePassword = async () => {
+    if (!prePassword || !newPassword || !confirmPassword) {
+      alert("모든 항목을 입력해주세요.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    try {
+      const res = await changePassword({ prePassword, newPassword });
+      alert(res.data.message);
+    } catch (err) {
+      alert(err.response?.data?.message || "비밀번호 변경에 실패했습니다.");
+    }
   };
-
+/////////////////////비밀번호 변경 API/////////////////////////
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>비밀번호 변경</h2>
@@ -21,8 +34,8 @@ export default function ChangePasswordPage() {
         <input
           type="password"
           placeholder="기존 비밀번호 입력"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
+          value={prePassword}
+          onChange={(e) => setprePassword(e.target.value)}
         />
       </div>
 
