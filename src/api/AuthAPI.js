@@ -54,16 +54,18 @@ export const login = async (loginData) => {
 // 이메일 존재 여부 확인 API
 export const checkEmailExists = async (email) => {
   if (useBackend) {
-    return await api.get("/members", {
-      params: { email } // Axios가 알아서 encode 해줌
+    return await api.get("/members/findAccount", {
+      params: { email }, // Axios가 알아서 encode 해줌
     });
   } else {
     console.log("[Mock API] 이메일 확인 요청", email);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const registeredEmails = JSON.parse(localStorage.getItem("registeredEmails") || "[]");
-
+        const registeredEmails = JSON.parse(
+          localStorage.getItem("registeredEmails") || "[]"
+        );
         // 테스트용: 임의로 특정 이메일만 존재한다고 가정
+        // => 아 이거 포기포기
         if (registeredEmails.includes(email)) {
           resolve({ data: { data: true } });
         } else {
@@ -77,23 +79,21 @@ export const checkEmailExists = async (email) => {
 };
 
 // 비밀번호 찾기 - 새비밀번호로 변경
-export const findPassword = async ({ email, newPassword }) => {
+export const findPassword = async ({ memberId, newPassword }) => {
   if (useBackend) {
     // 실제 백엔드 API 호출
-    return await api.post('/members/password', {
-      email,
-      newPassword,
+    return await api.patch(`/members/findAccount/${memberId}`, {
+      password: newPassword,
     });
   } else {
     // 목 데이터: 실제 요청 없이 테스트용 응답
-    console.log('[Mock API] 비밀번호 찾기 요청됨:', { email, newPassword });
+    console.log("[Mock API] 비밀번호 찾기 요청됨:", { memberId, newPassword });
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           data: {
             success: true,
-            message: '비밀번호가 성공적으로 변경되었습니다.',
-            data: true,
+            message: "비밀번호가 성공적으로 변경되었습니다.",
           },
         });
       }, 500); // 0.5초 지연으로 실제 응답처럼 보이게
@@ -122,9 +122,7 @@ export const logout = async () => {
 
 // 회원탈퇴 API
 export const deleteAccount = async () => {
-  const isBackendReady = true; // true로 바꾸면 실제 API 호출
-
-  if (isBackendReady) {
+  if (useBackend) {
     // 실제 API 호출
     return await api.patch("/members/withdraw");
   } else {

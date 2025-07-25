@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styles from "./ChangePasswordPage.module.css";
+import { ChangePassword } from "../../../api/MyPageAPI";
+
 
 export default function ChangePasswordPage() {
   const [prePassword, setprePassword] = useState("");
@@ -16,7 +18,7 @@ export default function ChangePasswordPage() {
       return;
     }
     try {
-      const res = await changePassword({ prePassword, newPassword });
+      const res = await ChangePassword({ prePassword, newPassword });
       alert(res.data.message);
     } catch (err) {
       alert(err.response?.data?.message || "비밀번호 변경에 실패했습니다.");

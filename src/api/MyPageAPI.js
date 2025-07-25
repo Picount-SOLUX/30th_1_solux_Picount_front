@@ -7,8 +7,8 @@ export const ChangePassword = async ({ prePassword, newPassword }) => {
   if (useBackend) {
     // 실제 백엔드 API 요청
     return await api.patch("/members/password", {
-      prePassword,
-      newPassword,
+      prePassword: prePassword,
+      newPassword: newPassword,
     });
   } else {
     // 목 응답 (테스트용)

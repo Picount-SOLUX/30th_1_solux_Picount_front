@@ -43,7 +43,6 @@ export default function SettingsPage() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         // 서버 로그아웃 처리
-        await logout();
         setShowModal(false);      // 확인 모달 닫기
         setShowSuccess(true);     // 성공 모달 열기
       } else {
