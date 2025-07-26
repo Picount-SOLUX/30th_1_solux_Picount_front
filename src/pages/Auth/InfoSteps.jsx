@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createBudget } from "../../api/BudgetAPI.js"; // API 함수 불러오기
-import { updateMemberGroup } from "../../api/BudgetAPI";
+import { updateMemberGroup, createCategory, updateBudgetPlan } from "../../api/BudgetAPI";
 
 import "./InfoSteps.css";
 
@@ -44,14 +44,14 @@ export default function InfoSteps() {
       setLoading(true);
 ///////////////////직군 변경＆예산 생성 API//////////////////////////
       try {
-        // 직군 변경 먼저
+        // 1. 직군 변경 먼저
         const groupTypePayload = {
           memberGroupType: convertJobToEnum(formData.job), // 아래 함수 참고
         };
         const groupResponse = await updateMemberGroup(groupTypePayload);
         console.log("직군 변경 성공:", groupResponse.data);
 
-        // 예산 생성 요청
+        // 2. 예산 생성 요청
         const budgetPayload = {
           startDate: new Date().toISOString().split("T")[0],
           endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0],
@@ -61,15 +61,104 @@ export default function InfoSteps() {
         console.log("예산 생성 성공:", budgetResponse.data);
         localStorage.setItem("budgetId", budgetResponse.data.id);
         // 위에 이거 로컬에 저장할 필요가 있나?
-        
-        setTimeout(() => {
-          localStorage.setItem("selectedJob", formData.job);
-          localStorage.setItem(
-            "selectedBudget",
-            formData.budget.toString().replace(/,/g, "")
-          );
-          navigate("/budget");
-        }, 2000);
+        const budgetId = budgetResponse.data.id;
+
+        // 3. 직군에 따른 추천 카테고리 출
+        const jobBudgets = {
+          "중·고등학생": [
+            { label: "식비", percent: 30 },
+            { label: "교통비", percent: 15 },
+            { label: "교재비", percent: 30 },
+            { label: "쇼핑/문화", percent: 10 },
+            { label: "기타", percent: 15 },
+          ],
+          "대학생": [
+            { label: "식비", percent: 25 },
+            { label: "교통비", percent: 10 },
+            { label: "고정비(월세)", percent: 20 },
+            { label: "모임/약속", percent: 15 },
+            { label: "쇼핑/문화", percent: 10 },
+            { label: "저축", percent: 10 },
+            { label: "기타", percent: 10 },
+          ],
+          "전업주부": [
+            { label: "식비", percent: 35 },
+            { label: "생활용품", percent: 25 },
+            { label: "자녀교육", percent: 15 },
+            { label: "교통비", percent: 10 },
+            { label: "저축", percent: 10 },
+            { label: "기타", percent: 5 },
+          ],
+          "2030대 직장인": [
+            { label: "식비", percent: 25 },
+            { label: "고정비", percent: 30 },
+            { label: "교통비", percent: 10 },
+            { label: "취미/자기계발", percent: 10 },
+            { label: "저축/투자", percent: 20 },
+            { label: "기타", percent: 5 },
+          ],
+          "4050대 직장인": [
+            { label: "식비", percent: 20 },
+            { label: "고정지출", percent: 35 },
+            { label: "자녀교육", percent: 20 },
+            { label: "저축/투자", percent: 20 },
+            { label: "기타", percent: 5 },
+          ],
+          "프리랜서": [
+            { label: "식비", percent: 20 },
+            { label: "업무비(장비 등)", percent: 20 },
+            { label: "고정지출", percent: 15 },
+            { label: "저축/투자", percent: 20 },
+            { label: "자기계발", percent: 15 },
+            { label: "기타", percent: 10 },
+          ],
+          "기타": [
+            { label: "식비", percent: 20 },
+            { label: "고정지출", percent: 20 },
+            { label: "저축", percent: 20 },
+            { label: "기타", percent: 40 },
+          ],
+        };
+
+        const categories = jobBudgets[formData.job] || [];
+        const totalAmount = budgetPayload.totalAmount;
+
+        // 4. 각 카테고리에 대해 카테고리 생성 + 예산 계획 구성
+        const budgetPlans = [];
+
+        for (const cat of categories) {
+          const amount = Math.round((totalAmount * cat.percent) / 100);
+
+          // 카테고리 생성
+          const categoryPayload = {
+            name: cat.label,
+            budgetId,
+          };
+          const categoryRes = await createCategory(categoryPayload);
+          console.log("카테고리 생성 완료!!", categoryRes.data)
+          const categoryId = categoryRes.data.id;
+
+          // 예산 계획 구성에 추가
+          budgetPlans.push({
+            categoryId,
+            amount,
+          });
+        }
+
+        // 5. 예산 계획 저장
+        const res = await updateBudgetPlan(budgetId, {
+          startDate: budgetPayload.startDate,
+          endDate: budgetPayload.endDate,
+          totalAmount,
+          budgetAllocationList: budgetPlans,
+        });
+        console.log("예산 분배도 완료!!", res.data)
+        // 완료 처리
+        localStorage.setItem("budgetId", budgetId);
+        localStorage.setItem("selectedJob", formData.job);
+        localStorage.setItem("selectedBudget", totalAmount.toString());
+
+        navigate("/budget");
       } catch (err) {
         console.error("직군 변경 또는 예산 생성 실패:", err);
         alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");

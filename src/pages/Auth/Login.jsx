@@ -57,10 +57,6 @@ export default function Login() {
       handleLogin();
     }
   };
-/// 비밀번호 재설정
-  const goToResetPassword = () => {
-    navigate("/reset-password");
-  };
 
   const closeModal = () => {
     setShowModal(false);

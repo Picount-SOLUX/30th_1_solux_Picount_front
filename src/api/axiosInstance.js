@@ -95,15 +95,14 @@ api.interceptors.response.use(
       localStorage.getItem("refreshToken")
     ) {
       error.config._retry = true;
-
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-        const refreshUrl = useBackend ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh` : "/api/members/refresh";
         // refreshToken으로 새 accessToken 발급 요청
         const res = await api.post("/members/refresh", {
           refreshToken,
         }); //request body 부분
-
+        console.log("토큰 재발급 성공", res.data)
+        
         const { accessToken: newAccessToken } = res.data.data;
         // 새 accessToken 저장
         localStorage.setItem("accessToken", newAccessToken);
