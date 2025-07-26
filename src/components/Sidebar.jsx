@@ -7,9 +7,13 @@ export default function Sidebar() {
   const [isFriendOpen, setIsFriendOpen] = useState(false);
 
   const handleFriendClick = () => {
-    setIsFriendOpen(!isFriendOpen); // 화살표 토글
-    navigate("/friends"); // ✅ 방명록으로 이동
+    setIsFriendOpen(!isFriendOpen);
   };
+  const friends = [
+    { id: "user1", name: "민지", status: "오늘도 절약 중!" },
+    { id: "user2", name: "수현", status: "커피 한 잔의 여유" },
+    { id: "user3", name: "지우", status: "파이낸셜 마스터" },
+  ];
 
   return (
     <aside className="sidebar">
@@ -75,15 +79,17 @@ export default function Sidebar() {
           {/* 친구 목록 */}
           {isFriendOpen && (
             <div className="friend-list">
-              <div className="friend-item">
-                <span className="friend-dot"></span> 친구(상태 메시지)
-              </div>
-              <div className="friend-item">
-                <span className="friend-dot"></span> 친구(상태 메시지)
-              </div>
-              <div className="friend-item">
-                <span className="friend-dot"></span> 친구(상태 메시지)
-              </div>
+              {friends.map((friend) => (
+                <div
+                  key={friend.id}
+                  className="friend-item"
+                  onClick={() => navigate(`/friends/${friend.id}`)}
+                >
+                  <span className="friend-dot"></span>
+                  <span className="friend-name">{friend.name}</span>
+                  <span className="friend-status">({friend.status})</span>
+                </div>
+              ))}
             </div>
           )}
 

@@ -14,3 +14,19 @@
   cursor: pointer;
   margin-bottom: 20px;
 }
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.backButton {
+  all: unset;
+  font-size: 0.9rem;
+  color: #444;
+  background-color: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}

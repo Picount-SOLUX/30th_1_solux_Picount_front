@@ -123,3 +123,55 @@
   font-family: "Noto Sans KR", sans-serif;
   font-size: 0.9rem;
 }
+
+.innerModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.innerModal {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 260px;
+  text-align: center;
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.confirmBtn,
+.cancelBtn {
+  all: unset;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.confirmBtn {
+  background-color: #f3b8b5;
+}
+.cancelBtn {
+  background-color: #eee;
+}

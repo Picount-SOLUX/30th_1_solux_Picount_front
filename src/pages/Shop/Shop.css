@@ -1,6 +1,6 @@
 .shop-container {
   padding: 20px;
-  font-family: 'Pretendard', sans-serif;
+  font-family: "Pretendard", sans-serif;
   color: #333;
 }
 
@@ -88,7 +88,7 @@
 .item-footer {
   display: flex;
   align-items: center;
-  gap: 160px; 
+  gap: 160px;
 }
 
 .item-price {
@@ -98,9 +98,9 @@
 }
 
 .buy-btn {
-  background: linear-gradient(to top, #FEBBB3, #FFFFFF);
+  background: linear-gradient(to top, #febbb3, #ffffff);
   color: black;
-  border: 1px solid #DD938A;
+  border: 1px solid #dd938a;
   border-radius: 20px;
   padding: 4px 8px;
   font-size: 12px;
@@ -109,5 +109,15 @@
 }
 
 .buy-btn:hover {
-  background-color: #ffe0e0; 
+  background-color: #ffe0e0;
+}
+
+.purchase-message {
+  margin: 12px 0;
+  padding: 12px;
+  background-color: #f0f0f0;
+  color: #333;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 0.95rem;
 }

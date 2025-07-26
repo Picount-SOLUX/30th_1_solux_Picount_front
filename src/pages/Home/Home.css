@@ -106,30 +106,35 @@
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 20px;
+  padding: 30px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 방명록 제목을 박스 바깥 위쪽에 */
-.guestbook-wrapper {
+.guestbook-title-wrapper {
   display: flex;
-  flex-direction: column;
-  padding: 20px 25px;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #e25b45;
+  margin-bottom: 10px;
 }
 
 .guestbook-title {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #e74d2e;
-  margin: 20px 0 8px 5px; /* 박스 위쪽 왼쪽에 위치 */
+  font-weight: 600;
 }
 
-.view-record {
-  color: #e74d2e;
+.guestbook-separator {
+  margin: 0 4px;
+}
+
+.view-record-btn {
+  all: unset;
+  color: #e25b45;
+  text-decoration: underline;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-weight: 600;
 }
-
 .guestbook-list {
   min-height: 100px;
   background-color: #f5f5f5;
@@ -161,8 +166,16 @@
   font-size: 0.95rem;
   color: #333;
 }
+.guestbook-section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px; /* ✅ 내부 여백 */
+  margin: 24px 0; /* ✅ 위아래 외부 간격 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
-.guestbook-input {
+/* .guestbook-input {
   display: flex;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -185,7 +198,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-}
+} */
 
 /* ===== 달력 ===== */
 .calendar-section {

@@ -5,9 +5,9 @@ import CategoryModal from "./CategoryModal";
 
 export default function InputModal({
   onClose,
+  categories,
   onSubmit,
   initialData,
-  calendarData,
   isEditMode = false,
   onOpenCategoryModal,
 }) {
@@ -15,9 +15,8 @@ export default function InputModal({
   const today = new Date();
   const formatDate = (date) => date.toISOString().split("T")[0];
 
-  // 날짜 상태 분리
-  const [date, setDate] = useState(formatDate(today)); // 최종 제출용
-  const [inputDate, setInputDate] = useState(formatDate(today)); // input 바인딩용
+  const [date, setDate] = useState(formatDate(today));
+  const [inputDate, setInputDate] = useState(formatDate(today));
 
   const [type, setType] = useState("expense");
   const [incomeRows, setIncomeRows] = useState([{ category: "", amount: "" }]);
@@ -29,12 +28,19 @@ export default function InputModal({
 
   const [memo, setMemo] = useState("");
   const [photo, setPhoto] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const containerRef = useRef();
 
   const formatWithComma = (value) => {
     const number = value.replace(/[^0-9]/g, "");
     return Number(number).toLocaleString();
+  };
+
+  const getCategoryId = (type, name) => {
+    const list = categories?.[type] || [];
+    const match = list.find((c) => c.name === name);
+    return match?.id || null;
   };
 
   const handleAmountChange = (index, value) => {
@@ -50,6 +56,7 @@ export default function InputModal({
   };
 
   const handleAddRow = () => {
+    if (isEditMode) return;
     setRows([...rows, { category: "", amount: "" }]);
   };
 
@@ -67,58 +74,77 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
-    const ownerId = localStorage.getItem("ownerId"); // ✅ 로그인 시 저장한 ID
-
-    const entries = [
-      ...incomeRows.map((row) => ({ ...row, type: "income" })),
-      ...expenseRows.map((row) => ({ ...row, type: "expense" })),
-    ];
-
-    const payload = {
-      date,
-      ownerId,
-      memo,
-      entries,
-    };
+    const ownerId = localStorage.getItem("userId");
 
     try {
-      if (isEditMode) {
-        // ✅ 수정 요청
-        await axios.put("/api/calendar/record", payload);
-      } else {
-        // ✅ 작성 요청
-        await axios.post("/api/calendar/record", payload);
-      }
+      const fetchRes = await axios.get(
+        `/api/calendar/record?date=${date}&ownerId=${ownerId}`
+      );
+      const prevData = fetchRes.data?.data || {};
+      const prevIncomeList = prevData.incomes || [];
+      const prevExpenseList = prevData.expenses || [];
 
-      onSubmit?.(payload);
+      const newIncomeList = incomeRows
+        .filter((row) => row.category && row.amount)
+        .map((row) => ({
+          categoryId: getCategoryId("income", row.category),
+          amount: Number(row.amount.replace(/,/g, "")),
+        }));
+
+      const newExpenseList = expenseRows
+        .filter((row) => row.category && row.amount)
+        .map((row) => ({
+          categoryId: getCategoryId("expense", row.category),
+          amount: Number(row.amount.replace(/,/g, "")),
+        }));
+
+      // ✅ FormData 구성
+      const formData = new FormData();
+      formData.append("ownerId", ownerId);
+      formData.append("entryDate", date);
+      formData.append("memo", memo);
+      formData.append(
+        "incomeList",
+        JSON.stringify([...prevIncomeList, ...newIncomeList])
+      );
+      formData.append(
+        "expenseList",
+        JSON.stringify([...prevExpenseList, ...newExpenseList])
+      );
+      if (photo) formData.append("photos", photo);
+
+      const res = await axios.post(
+        "https://37cf286da836.ngrok-free.app/api/calendar/record",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      onSubmit?.({
+        date,
+        incomeList: newIncomeList,
+        expenseList: newExpenseList,
+        memo,
+      });
       onClose();
     } catch (e) {
       console.error("가계부 저장 실패:", e);
-      alert("가계부 저장에 실패했습니다.");
     }
   };
-
-  const expenseCategories = [
-    "식비",
-    "교통비",
-    "취미",
-    "쇼핑",
-    "고정비",
-    "기타",
-    "저축",
-  ];
-  const incomeCategories = ["월급", "용돈", "기타"];
 
   const handleDeleteRow = (index) => {
     const updated = [...rows];
     updated.splice(index, 1);
     setRows(updated.length > 0 ? updated : [{ category: "", amount: "" }]);
   };
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
   const handleOpenCategoryModal = () => {
-    onClose(); // InputModal 닫기
+    onClose();
     setTimeout(() => {
-      onOpenCategoryModal?.(); // 상위에서 CategoryModal 열기
+      onOpenCategoryModal?.();
     }, 200);
   };
 
@@ -128,6 +154,7 @@ export default function InputModal({
       setInputDate(initialData.date);
       setMemo(initialData.memo || "");
       setPhoto(initialData.photo || null);
+      setPreview(initialData.photo || null);
 
       const income =
         initialData.entries?.filter((e) => e.type === "income") || [];
@@ -149,6 +176,51 @@ export default function InputModal({
       setInitialized(true);
     }
   }, [initialData, initialized]);
+
+  useEffect(() => {
+    const fetchExistingData = async () => {
+      const ownerId = localStorage.getItem("userId");
+      try {
+        const res = await axios.get(
+          `/api/calendar/record?date=${inputDate}&ownerId=${ownerId}`
+        );
+        const result = res.data;
+
+        if (result.success && result.data) {
+          const { memo, incomes, expenses } = result.data;
+          setMemo(memo || "");
+          setIncomeRows(
+            incomes.length > 0
+              ? incomes.map((e) => ({
+                  category: e.categoryName,
+                  amount: e.amount.toString(),
+                }))
+              : [{ category: "", amount: "" }]
+          );
+          setExpenseRows(
+            expenses.length > 0
+              ? expenses.map((e) => ({
+                  category: e.categoryName,
+                  amount: e.amount.toString(),
+                }))
+              : [{ category: "", amount: "" }]
+          );
+        }
+      } catch (e) {
+        console.log("선택한 날짜에 기존 데이터 없음");
+      }
+    };
+
+    if (!isEditMode && !initialized) {
+      fetchExistingData();
+    }
+  }, [inputDate, isEditMode, initialized]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setPhoto(file);
+    if (file) setPreview(URL.createObjectURL(file));
+  };
 
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
@@ -178,8 +250,9 @@ export default function InputModal({
           value={inputDate}
           onChange={(e) => {
             setInputDate(e.target.value);
-            setDate(e.target.value); // ✅ 함께 업데이트
+            setDate(e.target.value);
           }}
+          disabled={isEditMode}
         />
 
         <div
@@ -208,13 +281,11 @@ export default function InputModal({
               <option value="" disabled hidden>
                 카테고리
               </option>
-              {(type === "expense" ? expenseCategories : incomeCategories).map(
-                (cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                )
-              )}
+              {categories[type]?.map((cat) => (
+                <option key={cat.name || cat} value={cat.name || cat}>
+                  {cat.name || cat}
+                </option>
+              ))}
             </select>
 
             <input
@@ -233,9 +304,7 @@ export default function InputModal({
               </button>
             ))}
 
-            {/* 버튼 영역 */}
-            {isEditMode ? (
-              // 수정 모드에서는 삭제 버튼. 단, 유일한 빈 항목만 있으면 생략
+            {isEditMode &&
               !(
                 rows.length === 1 &&
                 row.category === "" &&
@@ -247,19 +316,15 @@ export default function InputModal({
                 >
                   <span className={styles.deleteCircle}>–</span>
                 </button>
-              )
-            ) : (
-              // 작성 모드에서는 항상 + 버튼
-              <button className={styles.addRowBtn} onClick={handleAddRow}>
-                +
-              </button>
-            )}
+              )}
           </div>
         ))}
 
-        <button className={styles.addRowBtn} onClick={handleAddRow}>
-          +
-        </button>
+        {!isEditMode && (
+          <button className={styles.addRowBtn} onClick={handleAddRow}>
+            +
+          </button>
+        )}
 
         <textarea
           className={styles.memo}
@@ -267,17 +332,41 @@ export default function InputModal({
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
         ></textarea>
-        <input
-          id="upload-photo"
-          type="file"
-          accept="image/*"
-          onChange={(e) => setPhoto(e.target.files[0])}
-          style={{ display: "none" }}
-        />
 
-        <label htmlFor="upload-photo" className={styles.photoBtn}>
-          파일 업로드 ⬆
-        </label>
+        <div className={styles.photoBox}>
+          {preview && (
+            <img src={preview} alt="preview" className={styles.previewImage} />
+          )}
+          <input
+            id="upload-photo"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="upload-photo" className={styles.photoBtn}>
+            사진 업로드 ⬆
+          </label>
+        </div>
+
+        {/* {isEditMode && preview && (
+          <div className={styles.photoBox}>
+            <img
+              src={preview}
+              alt="기존 사진 미리보기"
+              className={styles.previewImage}
+            />
+            <label htmlFor="upload-photo" className={styles.changePhotoLabel}>
+              사진 교체하기
+            </label>
+          </div>
+        )}
+
+        {!isEditMode && (
+          <label htmlFor="upload-photo" className={styles.photoBtn}>
+            사진 업로드 ⬆
+          </label>
+        )} */}
 
         <div className={styles.submitRow}>
           <button className={styles.submitBtn} onClick={handleSubmit}>
@@ -289,9 +378,6 @@ export default function InputModal({
           ✕
         </button>
       </div>
-      {showCategoryModal && (
-        <CategoryModal onClose={() => setShowCategoryModal(false)} />
-      )}
     </div>
   );
 }

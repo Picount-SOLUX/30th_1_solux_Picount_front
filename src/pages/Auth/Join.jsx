@@ -20,7 +20,6 @@ export default function Join() {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
-
 ///////////////////// 회원가입 API ////////////////////////
     try {
       // 회원가입 API 요청

@@ -1,15 +1,15 @@
 // src/api/axiosInstance.js
 import axios from "axios";
 
-// 환경변수로 백엔드 연동 여부 확인
-const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
+// ✅ 환경변수로 백엔드 연동 여부 확인
+const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
 
 const api = axios.create({
   baseURL: useBackend ? import.meta.env.VITE_API_BASE_URL : "", // 백엔드 ON일 때만 baseURL 지정
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: false,
 });
 
 // 요청 인터셉터
@@ -21,13 +21,21 @@ api.interceptors.request.use(
       return Promise.reject({
         config,
         message: "백엔드 연동 OFF, 요청 차단됨",
-        isMock: true, // mock 표시
+        isMock: true,
       });
     }
 
     // accessToken 헤더에 자동 추가
     const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
+
+    // ✅ accessToken 제외할 경로 목록
+    const noAuthUrls = ["/members/signup", "/members/login", "/members/refresh"];
+
+    // 현재 요청이 토큰 제외 대상인지 확인
+    const isNoAuth = noAuthUrls.some((url) => config.url.includes(url));
+
+    // 제외 대상이 아니고 토큰이 있다면 헤더에 추가
+    if (accessToken && !isNoAuth) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
@@ -72,7 +80,7 @@ api.interceptors.response.use(
         config: error.config,
       });
     }
-
+//////////////가짜///////////////
 
     // 404 에러는 무시하고 빈 응답 반환
     if (error.response?.status === 404) {
@@ -90,16 +98,16 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-
+        const refreshUrl = useBackend ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh` : "/api/members/refresh";
         // refreshToken으로 새 accessToken 발급 요청
-        const res = await axios.post("http://localhost:8080/api/members/refresh", {
+        const res = await api.post("/members/refresh", {
           refreshToken,
-        });
+        }); //request body 부분
 
         const { accessToken: newAccessToken } = res.data.data;
-
         // 새 accessToken 저장
         localStorage.setItem("accessToken", newAccessToken);
+        //response body 부분
 
         // 실패한 요청 헤더에 새 토큰 추가 후 재시도
         error.config.headers.Authorization = `Bearer ${newAccessToken}`;

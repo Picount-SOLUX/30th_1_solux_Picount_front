@@ -1,0 +1,36 @@
+.calendarWrapper {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+  width: 100%;
+  max-width: 300px;
+  background: #fffaf7;
+}
+
+.header,
+.body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.weekday {
+  font-size: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  color: #888;
+}
+
+.day {
+  background: #f8d9c4;
+  text-align: center;
+  border-radius: 6px;
+  padding: 4px 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.empty {
+  height: 28px;
+}

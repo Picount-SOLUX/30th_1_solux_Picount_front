@@ -1,0 +1,42 @@
+.container {
+  padding: 24px;
+}
+.title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+.friendList {
+  list-style: none;
+  padding: 0;
+}
+.friendItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+.name {
+  flex: 1;
+}
+.deleteBtn {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.backBtn {
+  margin-top: 24px;
+  padding: 6px 12px;
+}
+.noFriend {
+  color: #888;
+}
