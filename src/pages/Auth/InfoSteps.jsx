@@ -42,12 +42,12 @@ export default function InfoSteps() {
 
     if (step === 3) {
       setLoading(true);
-////////////////////////직군 변경 API//////////////////////////
+///////////////////직군 변경＆예산 생성 API//////////////////////////
       try {
+        // 직군 변경 먼저
         const groupTypePayload = {
           memberGroupType: convertJobToEnum(formData.job), // 아래 함수 참고
         };
-
         const groupResponse = await updateMemberGroup(groupTypePayload);
         console.log("직군 변경 성공:", groupResponse.data);
 
@@ -57,10 +57,10 @@ export default function InfoSteps() {
           endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0],
           totalAmount: parseInt(formData.budget.toString().replace(/,/g, "")),
         };
-
         const budgetResponse = await createBudget(budgetPayload);
         console.log("예산 생성 성공:", budgetResponse.data);
         localStorage.setItem("budgetId", budgetResponse.data.id);
+        // 위에 이거 로컬에 저장할 필요가 있나?
         
         setTimeout(() => {
           localStorage.setItem("selectedJob", formData.job);
@@ -75,7 +75,7 @@ export default function InfoSteps() {
         alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");
         setLoading(false);
       }
-/////////////////////직군 변경 API//////////////////////////////
+////////////////////직군 변경＆예산 생성 API//////////////////////////////
 
       console.log("보낼 데이터 (POST 준비):", budgetPayload); // ✅ 콘솔 확인
 

@@ -1,56 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Challenge.css";
+import { fetchMyChallenges, claimChallengeReward } from "../../api/ChallengeAPI";
 
 export default function Challenge() {
-  // 현재 포인트 상태
   const [points, setPoints] = useState(1200);
-
-  // 포인트 내역 상태
   const [history, setHistory] = useState([
     { date: "6.28", description: "케이크 꾸미기 스킨", amount: -500 },
     { date: "6.28", description: "달력 꾸미기 스킨", amount: -500 },
     { date: "6.28", description: "출석체크 하기", amount: +100 },
   ]);
+  const [challenges, setChallenges] = useState([]);
 
-  // 챌린지 상태 (포인트 받은지 여부 체크)
-  const [challenges, setChallenges] = useState([
-    { id: 1, title: "출석체크 하기", reward: 100, claimed: false },
-    { id: 2, title: "일주일 연속 출석", reward: 1000, claimed: true },
-    { id: 3, title: "30일 연속 출석", reward: 3000, claimed: true },
-    { id: 4, title: "친구 홈피 방문해서 방명록 1회 남기기", reward: 200, claimed: true },
-    { id: 5, title: "무지출 사유 10일 이상 남기기", reward: 2000, claimed: true },
-  ]);
-
-  // 포인트 받기 버튼 클릭 핸들러
-  const handleClaim = (challengeId) => {
-    // 이미 받은 챌린지는 막기
-    const updatedChallenges = challenges.map((challenge) => {
-      if (challenge.id === challengeId && !challenge.claimed) {
-        // 포인트 추가
-        setPoints((prev) => prev + challenge.reward);
-
-        // 내역 추가
-        const today = new Date();
-        const dateStr = `${today.getMonth() + 1}.${today.getDate()}`;
-        setHistory((prev) => [
-          { date: dateStr, description: challenge.title, amount: +challenge.reward },
-          ...prev,
-        ]);
-
-        // 해당 챌린지를 받은 상태로 업데이트
-        return { ...challenge, claimed: true };
+  useEffect(() => {
+    const loadChallenges = async () => {
+      try {
+        const res = await fetchMyChallenges();
+        setChallenges(res.data.data);
+      } catch (err) {
+        console.error("챌린지 로딩 실패", err);
+        alert("챌린지를 불러오는 데 실패했습니다.");
       }
-      return challenge;
-    });
+    };
 
-    setChallenges(updatedChallenges);
+    loadChallenges();
+  }, []);
+
+  const handleClaim = async (challengeId, challengeName, reward) => {
+    try {
+      await claimChallengeReward(challengeId);
+      setPoints((prev) => prev + reward);
+
+      const today = new Date();
+      const dateStr = `${today.getMonth() + 1}.${today.getDate()}`;
+      setHistory((prev) => [
+        { date: dateStr, description: challengeName, amount: +reward },
+        ...prev,
+      ]);
+
+      setChallenges((prev) =>
+        prev.map((challenge) =>
+          challenge.challengeId === challengeId
+            ? { ...challenge, status: "COMPLETED" }
+            : challenge
+        )
+      );
+    } catch (err) {
+      console.error("보상 수령 실패", err);
+      alert("보상 수령에 실패했습니다.");
+    }
   };
 
   return (
     <div className="challenge-wrapper">
       {/* 포인트 섹션 */}
       <section className="points-section">
-        {/* 내 포인트 */}
         <div className="my-points-wrapper">
           <h3 className="points-title">내 포인트</h3>
           <div className="my-points-box">
@@ -58,7 +61,6 @@ export default function Challenge() {
           </div>
         </div>
 
-        {/* 포인트 내역 */}
         <div className="points-history-wrapper">
           <h3 className="history-title">포인트 내역</h3>
           <div className="points-history-box">
@@ -80,21 +82,27 @@ export default function Challenge() {
         </div>
       </section>
 
-      {/* 전체 챌린지 섹션 */}
+      {/* 챌린지 섹션 */}
       <section className="challenges-section">
         <h3 className="challenges-title">전체 챌린지</h3>
         <ul className="challenge-list">
           {challenges.map((challenge) => (
-            <li key={challenge.id}>
-              <span>{challenge.title}</span>
+            <li key={challenge.challengeId}>
+              <span>{challenge.name}</span>
               <div className="challenge-actions">
-                <span className="reward">{challenge.reward}p</span>
+                <span className="reward">{getRewardByType(challenge.type)}p</span>
                 <button
                   className="get-btn"
-                  onClick={() => handleClaim(challenge.id)}
-                  disabled={challenge.claimed} // 이미 받았으면 버튼 비활성화
+                  onClick={() =>
+                    handleClaim(
+                      challenge.challengeId,
+                      challenge.name,
+                      getRewardByType(challenge.type)
+                    )
+                  }
+                  disabled={challenge.status !== "ONGOING"}
                 >
-                  {challenge.claimed ? "받기" : "받기"}
+                  {challenge.status === "COMPLETED" ? "완료됨" : "받기"}
                 </button>
               </div>
             </li>
@@ -103,4 +111,16 @@ export default function Challenge() {
       </section>
     </div>
   );
+}
+
+// ✅ 보상 포인트 타입별 매핑 함수
+function getRewardByType(type) {
+  const rewardMap = {
+    ATTENDANCE: 100,
+    ATTENDANCE7: 1000,
+    ATTENDANCE30: 3000,
+    GUESTBOOK: 200,
+    NO_SPENDING: 2000,
+  };
+  return rewardMap[type] || 0;
 }
