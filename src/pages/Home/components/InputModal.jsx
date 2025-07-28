@@ -61,9 +61,12 @@ export default function InputModal({
   };
 
   const handleAddRow = () => {
-    if (isEditMode) return;
     setRows([...rows, { category: "", amount: "" }]);
   };
+
+  useEffect(() => {
+    console.log("현재 모드:", isEditMode ? "수정 모드" : "입력 모드");
+  }, [isEditMode]);
 
   const handleAddAmount = (index, plus) => {
     const current = Number(rows[index].amount.replace(/,/g, "")) || 0;
@@ -356,11 +359,11 @@ export default function InputModal({
           </div>
         ))}
 
-        {!isEditMode && (
+        
           <button className={styles.addRowBtn} onClick={handleAddRow}>
             +
           </button>
-        )}
+        
 
         <textarea
           className={styles.memo}
