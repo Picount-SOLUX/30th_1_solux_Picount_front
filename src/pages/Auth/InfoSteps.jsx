@@ -48,9 +48,13 @@ export default function InfoSteps() {
         const groupTypePayload = {
           memberGroupType: convertJobToEnum(formData.job), // 아래 함수 참고
         };
+        const token = localStorage.getItem("accessToken");
+        console.log("📤 직군 변경 payload:", groupTypePayload);
+        console.log("🪪 accessToken:", token);
+
         const groupResponse = await updateMemberGroup(groupTypePayload);
         console.log("직군 변경 성공:", groupResponse.data);
-
+        
         // 2. 예산 생성 요청
         const startDate = new Date().toISOString().split("T")[0];
         const endDate = new Date(
@@ -61,6 +65,10 @@ export default function InfoSteps() {
 
         const totalAmount = parseInt(formData.budget.toString().replace(/,/g, ""));
         const budgetPayload = { startDate, endDate, totalAmount };
+        
+        console.log("📤 예산 생성 payload:", budgetPayload);
+        console.log("🪪 accessToken 재확인:", token); // 위에서 선언한 token 그대로 사용
+        
         const budgetResponse = await createBudget(budgetPayload);
         const budgetId = budgetResponse.data.data.budgetId;
         console.log("예산 생성 성공:", budgetResponse.data);
@@ -158,8 +166,13 @@ export default function InfoSteps() {
         navigate("/budget");
       } catch (err) {
         console.error("직군 변경 또는 예산 생성 실패:", err);
+        if (err.response) {
+          console.error("📡 응답 상태 코드:", err.response.status);
+          console.error("📄 응답 내용:", err.response.data);
+        }
         alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");
-        setLoading(false);
+        setLoading(true); // 이거 false
+        navigate("/budget"); // 이거 지워ㅑ
       }
     } else {
       setStep((prev) => prev + 1);
