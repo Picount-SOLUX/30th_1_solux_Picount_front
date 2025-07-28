@@ -8,7 +8,7 @@ import Login from "./pages/Auth/Login";
 import OauthKakao from "./pages/Auth/Callback";
 import Welcome from "./pages/Auth/Welcome";
 import InfoSteps from "./pages/Auth/InfoSteps";
-import ResetPassword from "./pages/Auth/ResetPassword";
+import FindPassword from "./pages/Auth/FindPassword";
 import Callback from "./pages/Auth/Callback";
 
 import Home from "./pages/Home/Home";
@@ -41,21 +41,21 @@ function App() {
     "/login",
     "/welcome",
     "/info-steps",
-    "/reset-password",
+    "/find-password",
   ];
   const isNoLayout = noLayoutRoutes.includes(location.pathname);
 
   return (
     <ThemeProvider>
       <ProfileProvider>
-        <div className="app-wrapper">
+        <div className='app-wrapper'>
           {/* 홈 이후부터 Header/Sidebar 표시 */}
           {!isNoLayout && <Header />}
 
-          <div className="body-wrapper">
+          <div className='body-wrapper'>
             {!isNoLayout && <Sidebar />}
             <main
-              className="main-content"
+              className='main-content'
               style={{
                 // 홈 이후부터 margin 적용
                 marginTop: !isNoLayout ? "60px" : "0",
@@ -65,41 +65,41 @@ function App() {
             >
               <Routes>
                 {/* 로그인 전 페이지 */}
-                <Route path="/" element={<StartingPage />} />
-                <Route path="/join" element={<Join />} />
-                <Route path="/oauth/kakao" element={<OauthKakao />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/callback" element={<Callback />} />
-                <Route path="/welcome" element={<Welcome />} />
-                <Route path="/info-steps" element={<InfoSteps />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path='/' element={<StartingPage />} />
+                <Route path='/join' element={<Join />} />
+                <Route path='/oauth/kakao' element={<OauthKakao />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/callback' element={<Callback />} />
+                <Route path='/welcome' element={<Welcome />} />
+                <Route path='/info-steps' element={<InfoSteps />} />
+                <Route path='/find-password' element={<FindPassword />} />
 
                 {/* 로그인 후 페이지 */}
-                <Route path="/home" element={<Home />} />
-                <Route path="/budget" element={<Budget />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/challenge" element={<Challenge />} />
-                <Route path="/friends/:friendId" element={<FriendHome />} />
-                <Route path="/friends" element={<Friends />} />
-                <Route path="/mypage" element={<MyPage />} />
+                <Route path='/home' element={<Home />} />
+                <Route path='/budget' element={<Budget />} />
+                <Route path='/shop' element={<Shop />} />
+                <Route path='/challenge' element={<Challenge />} />
+                <Route path='/friends/:friendId' element={<FriendHome />} />
+                <Route path='/friends' element={<Friends />} />
+                <Route path='/mypage' element={<MyPage />} />
                 {/*설정페이지 라우터*/}
-                <Route path="/" element={<Home />} />
-                <Route path="/mypage" element={<MyPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
+                <Route path='/' element={<Home />} />
+                <Route path='/mypage' element={<MyPage />} />
+                <Route path='/settings' element={<SettingsPage />} />
                 <Route
-                  path="/settings/edit-profile"
+                  path='/settings/edit-profile'
                   element={<EditProfilePage />}
                 />
                 <Route
-                  path="/settings/change-password"
+                  path='/settings/change-password'
                   element={<ChangePasswordPage />}
                 />
                 <Route
-                  path="/settings/friend-manage"
+                  path='/settings/friend-manage'
                   element={<FriendManagePage />}
                 />
                 <Route
-                  path="/guestbook/history"
+                  path='/guestbook/history'
                   element={<GuestbookHistoryPage />}
                 />
               </Routes>

@@ -1,13 +1,12 @@
 // src/api/budgetApi.js
-import axios from "axios";
+import api from "./axiosInstance";
 
-// axios 인스턴스 생성
-const API = axios.create({
-  baseURL: "http://localhost:8080/api", // 🛑 백엔드 주소 확인 필요
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
 
 // 예산 생성 API (POST)
-export const createBudget = (budgetData) => API.post("/budgets", budgetData);
+export const createBudget = (budgetData) => api.post("/budgets", budgetData);
+
+// 직군 변경 API
+export const updateMemberGroup = (payload) => {
+  return api.put("/members/membergrouptype", payload);
+};

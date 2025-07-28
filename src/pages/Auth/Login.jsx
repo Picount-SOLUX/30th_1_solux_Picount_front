@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/AuthAPI";
+import FindPassword from '../Auth/FindPassword'
 import "./Login.css";
 
 export default function Login() {
@@ -11,7 +12,7 @@ export default function Login() {
   const [showModal, setShowModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
+/////////////////////////로그인 API///////////////////////////
   const handleLogin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
@@ -27,19 +28,15 @@ export default function Login() {
 
       if (response.data.success) {
         let { accessToken, refreshToken, nickname } = response.data.data;
-
         // 🟢 nickname undefined 방지
         nickname = nickname ?? "테스트유저";
-
         // 로컬 스토리지에 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify({ nickname }));
         console.log("localStorage 저장됨:", localStorage.getItem("user"));
-
         setUserInfo({ nickname });
-
         setShowModal(true);
         setErrorMessage("");
       } else {
@@ -52,6 +49,8 @@ export default function Login() {
       );
     }
   };
+//////////////////////////로그인 API//////////////////////////
+
 /// 엔터 치면 로그인
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -83,7 +82,6 @@ const handleKakaoLogin = () => {
   }
 };
 
-
   return (
     <div className="login-container">
       <h2 className="login-title">로그인</h2>
@@ -106,7 +104,7 @@ const handleKakaoLogin = () => {
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         <div className="login-links">
-          <a onClick={goToResetPassword} className="link-text">
+          <a onClick={() => navigate("/find-password")} className="link-text">
             비밀번호 찾기
           </a>
         </div>

@@ -97,7 +97,7 @@ export default function Budget() {
   const [newCategory, setNewCategory] = useState({ name: "", amount: "" });
   const [showHelp, setShowHelp] = useState(true);
 
-  // 🔥 날짜 상태 추가
+  // 날짜 상태 추가
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(new Date().setMonth(new Date().getMonth() + 1))
@@ -126,7 +126,7 @@ export default function Budget() {
     }
   }, [selectedJob, selectedBudget]); // ✅ 값 바뀔 때마다 실행
 
-  // 🔥 endDate가 지났을 때 카테고리 초기화
+  // endDate가 지났을 때 카테고리 초기화
   useEffect(() => {
     const now = new Date();
     if (endDate < now) {
@@ -161,7 +161,7 @@ export default function Budget() {
     );
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = () => {  //카테고리 추가
     if (!newCategory.name.trim()) return;
     const nextId =
       tempCategories.length > 0
@@ -176,7 +176,7 @@ export default function Budget() {
     setNewCategory({ name: "", amount: "" });
   };
 
-  const handleDeleteCategory = (id) => {
+  const handleDeleteCategory = (id) => {  // 카테고리 삭제
     setTempCategories((prev) => prev.filter((cat) => cat.id !== id));
   };
 

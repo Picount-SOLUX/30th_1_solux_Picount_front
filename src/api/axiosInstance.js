@@ -9,9 +9,10 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: false,
 });
 
+// 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
     if (!useBackend) {
@@ -24,6 +25,7 @@ api.interceptors.request.use(
       });
     }
 
+    // accessToken 헤더에 자동 추가
     const accessToken = localStorage.getItem("accessToken");
 
     // ✅ accessToken 제외할 경로 목록
@@ -46,11 +48,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ 응답 인터셉터
+// 응답 인터셉터
 api.interceptors.response.use(
   (response) => response, // 정상 응답 그대로 반환
   async (error) => {
-    // ✅ 백엔드 OFF일 때는 mock 응답 반환
+    // 백엔드 OFF일 때는 mock 응답 반환
     if (import.meta.env.VITE_USE_BACKEND === "false") {
       console.info("✅ 백엔드 OFF → mock 응답 반환:", error.config.url);
 
@@ -106,12 +108,12 @@ api.interceptors.response.use(
         // refreshToken으로 새 accessToken 발급 요청
         const res = await api.post("/members/refresh", {
           refreshToken,
-        });
+        }); //request body 부분
 
         const { accessToken: newAccessToken } = res.data.data;
-
         // 새 accessToken 저장
         localStorage.setItem("accessToken", newAccessToken);
+        //response body 부분
 
         // 실패한 요청 헤더에 새 토큰 추가 후 재시도
         error.config.headers.Authorization = `Bearer ${newAccessToken}`;

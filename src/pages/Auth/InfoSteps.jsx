@@ -1,7 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createBudget } from "../../api/BudgetAPI.js"; // API 함수 불러오기
+import { updateMemberGroup } from "../../api/BudgetAPI";
+
 import "./InfoSteps.css";
+
+const convertJobToEnum = (job) => {
+  switch (job) {
+    case "중·고등학생": return "STUDENT_YOUTH";
+    case "대학생": return "STUDENT_UNIV";
+    case "전업주부": return "FULL_TIME_HOMEMAKER";
+    case "2030대 직장인": return "WORKER_2030";
+    case "4050대 직장인": return "WORKER_4050";
+    case "프리랜서": return "FREELANCER";
+    case "기타": return "OTHERS";
+    default: return "OTHER";
+  }
+};
 
 export default function InfoSteps() {
   const [step, setStep] = useState(1);
@@ -27,17 +42,40 @@ export default function InfoSteps() {
 
     if (step === 3) {
       setLoading(true);
+///////////////////직군 변경＆예산 생성 API//////////////////////////
+      try {
+        // 직군 변경 먼저
+        const groupTypePayload = {
+          memberGroupType: convertJobToEnum(formData.job), // 아래 함수 참고
+        };
+        const groupResponse = await updateMemberGroup(groupTypePayload);
+        console.log("직군 변경 성공:", groupResponse.data);
 
-      // POST 요청 보낼 데이터
-      const budgetPayload = {
-        startDate: new Date().toISOString().split("T")[0], // 오늘 날짜
-        endDate: new Date(new Date().setMonth(new Date().getMonth() + 1))
-          .toISOString()
-          .split("T")[0], // 한 달 뒤 날짜
-        totalAmount: parseInt(
-          formData.budget.toString().replace(/,/g, "")
-        ), // 총예산 숫자로 변환
-      };
+        // 예산 생성 요청
+        const budgetPayload = {
+          startDate: new Date().toISOString().split("T")[0],
+          endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0],
+          totalAmount: parseInt(formData.budget.toString().replace(/,/g, "")),
+        };
+        const budgetResponse = await createBudget(budgetPayload);
+        console.log("예산 생성 성공:", budgetResponse.data);
+        localStorage.setItem("budgetId", budgetResponse.data.id);
+        // 위에 이거 로컬에 저장할 필요가 있나?
+        
+        setTimeout(() => {
+          localStorage.setItem("selectedJob", formData.job);
+          localStorage.setItem(
+            "selectedBudget",
+            formData.budget.toString().replace(/,/g, "")
+          );
+          navigate("/budget");
+        }, 2000);
+      } catch (err) {
+        console.error("직군 변경 또는 예산 생성 실패:", err);
+        alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");
+        setLoading(false);
+      }
+////////////////////직군 변경＆예산 생성 API//////////////////////////////
 
       console.log("보낼 데이터 (POST 준비):", budgetPayload); // ✅ 콘솔 확인
 
@@ -48,14 +86,14 @@ export default function InfoSteps() {
       //   // 생성된 예산 ID 저장
       //   localStorage.setItem("budgetId", response.data.id);
 
-        // setTimeout(() => {
-        //   localStorage.setItem("selectedJob", formData.job);
-        //   localStorage.setItem(
-        //     "selectedBudget",
-        //     formData.budget.toString().replace(/,/g, "")
-        //   );
-        //   navigate("/budget");
-        // }, 2000);
+      //   setTimeout(() => {
+      //     localStorage.setItem("selectedJob", formData.job);
+      //     localStorage.setItem(
+      //       "selectedBudget",
+      //       formData.budget.toString().replace(/,/g, "")
+      //     );
+      //     navigate("/budget");
+      //   }, 2000);
       // } catch (err) {
       //   console.error("예산 생성 실패:", err);
       //   alert("예산 생성에 실패했습니다. 다시 시도해주세요.");
@@ -63,28 +101,28 @@ export default function InfoSteps() {
       // }
 
 /////////////////테스트용 가짜 코드////////////////////////
-      try {
-        // 실제 백엔드 연결 대신 가짜 응답
-        const fakeResponse = {
-          id: 1, // 임의로 예산 ID
-          startDate: budgetPayload.startDate,
-          endDate: budgetPayload.endDate,
-          totalAmount: budgetPayload.totalAmount,
-        };
+      // try {
+      //   // 실제 백엔드 연결 대신 가짜 응답
+      //   const fakeResponse = {
+      //     id: 1, // 임의로 예산 ID
+      //     startDate: budgetPayload.startDate,
+      //     endDate: budgetPayload.endDate,
+      //     totalAmount: budgetPayload.totalAmount,
+      //   };
 
-        console.log("가짜 예산 생성 성공:", fakeResponse);
-        localStorage.setItem("budgetId", fakeResponse.id);
-        setTimeout(() => {
-          localStorage.setItem("selectedJob", formData.job);
-          localStorage.setItem(
-            "selectedBudget",
-            formData.budget.toString().replace(/,/g, "")
-          );
-          navigate("/budget");
-        }, 2000);
-      } catch (err) {
-        console.error("예산 생성 실패:", err);
-      }
+      //   console.log("가짜 예산 생성 성공:", fakeResponse);
+      //   localStorage.setItem("budgetId", fakeResponse.id);
+      //   setTimeout(() => {
+      //     localStorage.setItem("selectedJob", formData.job);
+      //     localStorage.setItem(
+      //       "selectedBudget",
+      //       formData.budget.toString().replace(/,/g, "")
+      //     );
+      //     navigate("/budget");
+      //   }, 2000);
+      // } catch (err) {
+      //   console.error("예산 생성 실패:", err);
+      // }
 //////////////////////가짜 코드/////////////////////////
     } else {
       setStep((prev) => prev + 1);

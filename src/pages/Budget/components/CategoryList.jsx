@@ -9,6 +9,7 @@ export default function CategoryList({
   newCategory,
   setNewCategory,
   totalBudget,
+  categoryOptions = [], // 드롭다운 목록 추가
 }) {
   return (
     <div className="category-list">
@@ -22,14 +23,21 @@ export default function CategoryList({
           <div key={cat.id} className="category-item">
             {isEditing ? (
               <>
-                <input
-                  type="text"
+                <select
                   value={cat.name}
                   onChange={(e) =>
                     handleInputChange(cat.id, "name", e.target.value)
                   }
-                  className="category-input name-input"
-                />
+                  className="category-select name-input"
+                >
+                  <option value="">카테고리 선택</option>
+                  {categoryOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+
                 <div className="category-controls">
                   <input
                     type="number"
@@ -65,15 +73,21 @@ export default function CategoryList({
 
       {isEditing && (
         <div className="category-item add-category-row">
-          <input
-            type="text"
+          <select
             value={newCategory.name}
-            placeholder="새 카테고리 이름"
             onChange={(e) =>
               setNewCategory({ ...newCategory, name: e.target.value })
             }
-            className="category-input name-input"
-          />
+            className="category-select name-input"
+          >
+            <option value="">카테고리 선택</option>
+            {categoryOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
           <div className="category-controls">
             <input
               type="number"

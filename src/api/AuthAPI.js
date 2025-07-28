@@ -10,7 +10,6 @@ export const signup = async (userData) => {
   } else {
     // 테스트용 mock 응답
     console.log("[Mock API] 회원가입 요청:", userData);
-    localStorage.setItem("tempNickname", userData.nickname); // 임시 저장
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -55,15 +54,20 @@ export const login = async (loginData) => {
 // 이메일 존재 여부 확인 API
 export const checkEmailExists = async (email) => {
   if (useBackend) {
-    const url = `/members?email=${encodeURIComponent(email)}`;
-    return await api.get(url); // 백엔드 엔드포인트 확인 필요
+    return await api.get("/members/findAccount", {
+      params: { email }, // Axios가 알아서 encode 해줌
+    });
   } else {
     console.log("[Mock API] 이메일 확인 요청", email);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        const registeredEmails = JSON.parse(
+          localStorage.getItem("registeredEmails") || "[]"
+        );
         // 테스트용: 임의로 특정 이메일만 존재한다고 가정
-        if (email === "test@example.com") {
-          resolve({ data: { exists: true } });
+        // => 아 이거 포기포기
+        if (registeredEmails.includes(email)) {
+          resolve({ data: { data: true } });
         } else {
           reject({
             response: { data: { message: "가입되지 않은 이메일입니다." } },
@@ -74,22 +78,25 @@ export const checkEmailExists = async (email) => {
   }
 };
 
-// 비밀번호 변경 API
-export const changePassword = async ({ prePassword, newPassword }) => {
+// 비밀번호 찾기 - 새비밀번호로 변경
+export const findPassword = async ({ memberId, newPassword }) => {
   if (useBackend) {
-    return await api.patch("/members/password", { prePassword, newPassword });
+    // 실제 백엔드 API 호출
+    return await api.patch(`/members/findAccount/${memberId}`, {
+      password: newPassword,
+    });
   } else {
-    console.log("[Mock API] 비밀번호 변경 요청", { prePassword, newPassword });
+    // 목 데이터: 실제 요청 없이 테스트용 응답
+    console.log("[Mock API] 비밀번호 찾기 요청됨:", { memberId, newPassword });
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           data: {
             success: true,
-            message: "비밀번호 변경 완료 (Mock)",
-            data: null,
+            message: "비밀번호가 성공적으로 변경되었습니다.",
           },
         });
-      }, 1000);
+      }, 500); // 0.5초 지연으로 실제 응답처럼 보이게
     });
   }
 };
@@ -114,25 +121,23 @@ export const logout = async () => {
 };
 
 // 회원탈퇴 API
-// export const deleteAccount = async () => {
-//   const isBackendReady = true; // true로 바꾸면 실제 API 호출
-
-//   if (isBackendReady) {
-//     // 실제 API 호출
-//     return await api.delete("/auth/members");
-//   } else {
-//     // 테스트용 mock 응답
-//     console.log("[Mock API] 회원탈퇴 요청");
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve({
-//           data: {
-//             success: true,
-//             message: "회원탈퇴 완료 (Mock)",
-//             data: null,
-//           },
-//         });
-//       }, 1000);
-//     });
-//   }
-// };
+export const deleteAccount = async () => {
+  if (useBackend) {
+    // 실제 API 호출
+    return await api.patch("/members/withdraw");
+  } else {
+    // 테스트용 mock 응답
+    console.log("[Mock API] 회원탈퇴 요청");
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            success: true,
+            message: "회원탈퇴 완료 (Mock)",
+            data: null,
+          },
+        });
+      }, 1000);
+    });
+  }
+};
