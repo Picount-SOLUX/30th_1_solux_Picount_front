@@ -29,7 +29,11 @@ api.interceptors.request.use(
     const accessToken = localStorage.getItem("accessToken");
 
     // ✅ accessToken 제외할 경로 목록
-    const noAuthUrls = ["/members/signup", "/members/login", "/members/refresh"];
+    const noAuthUrls = [
+      "/members/signup",
+      "/members/login",
+      "/members/refresh",
+    ];
 
     // 현재 요청이 토큰 제외 대상인지 확인
     const isNoAuth = noAuthUrls.some((url) => config.url.includes(url));
@@ -80,7 +84,7 @@ api.interceptors.response.use(
         config: error.config,
       });
     }
-//////////////가짜///////////////
+    //////////////가짜///////////////
 
     // 404 에러는 무시하고 빈 응답 반환
     if (error.response?.status === 404) {
@@ -97,6 +101,9 @@ api.interceptors.response.use(
       error.config._retry = true;
       try {
         const refreshToken = localStorage.getItem("refreshToken");
+        const refreshUrl = useBackend
+          ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh`
+          : "/api/members/refresh";
         // refreshToken으로 새 accessToken 발급 요청
         const res = await api.post("/members/refresh", {
           refreshToken,

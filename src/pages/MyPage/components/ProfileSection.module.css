@@ -50,3 +50,8 @@
   font-size: 0.95rem;
   font-weight: bold;
 }
+.code {
+  font-weight: bold;
+  color: #4f4fcf;
+  margin-left: 8px;
+}
