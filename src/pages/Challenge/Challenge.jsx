@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./Challenge.css";
-import { fetchMyChallenges, claimChallengeReward } from "../../api/ChallengeAPI";
+import { fetchMyChallenges, claimChallengeReward, fetchMyPoint, fetchMyPointHistory } from "../../api/ChallengeAPI";
 
 export default function Challenge() {
-  const [points, setPoints] = useState(1200);
-  const [history, setHistory] = useState([
-    { date: "6.28", description: "케이크 꾸미기 스킨", amount: -500 },
-    { date: "6.28", description: "달력 꾸미기 스킨", amount: -500 },
-    { date: "6.28", description: "출석체크 하기", amount: +100 },
-  ]);
+  const [points, setPoints] = useState(0);
+  const [history, setHistory] = useState([]);
   const [challenges, setChallenges] = useState([]);
 
   useEffect(() => {
     const loadChallenges = async () => {
       try {
         const res = await fetchMyChallenges();
+        console.log("나의 챌린지 현황 조회 성공!!", res.data)
         setChallenges(res.data.data);
       } catch (err) {
         console.error("챌린지 로딩 실패", err);
@@ -22,18 +19,48 @@ export default function Challenge() {
       }
     };
 
+    const loadPointData = async () => {
+      try {
+        const res = await fetchMyPoint();
+        console.log("내 포인트 조회 성공!!", res.data);
+        setPoints(res.data.data.point);
+      } catch (err) {
+        console.error("내 포인트 조회 실패", err);
+      }
+    };
+
+    const loadPointHistory = async () => {
+      try {
+        const res = await fetchMyPointHistory();
+        console.log("포인트 내역 조회 성공!!", res.data);
+        const formatted = res.data.data.history.map((item) => ({
+          date: formatDate(item.createdAt),
+          description: convertReason(item.reason),
+          amount: Number(item.amount),
+        }));
+        setHistory(formatted);
+      } catch (err) {
+        console.error("포인트 내역 조회 실패", err);
+      }
+    };
+
     loadChallenges();
+    loadPointData();
+    loadPointHistory();
   }, []);
 
-  const handleClaim = async (challengeId, challengeName, reward) => {
+  const handleClaim = async (challengeId, challengeName) => {
     try {
-      await claimChallengeReward(challengeId);
-      setPoints((prev) => prev + reward);
+      const res = await claimChallengeReward(challengeId);
+      console.log("챌린지 보상 수령 성공!!", res.data)
+
+      const { rewardPoint } = res.data.data;
+      setPoints((prev) => prev + rewardPoint);
 
       const today = new Date();
       const dateStr = `${today.getMonth() + 1}.${today.getDate()}`;
       setHistory((prev) => [
-        { date: dateStr, description: challengeName, amount: +reward },
+        { date: dateStr, description: challengeName, amount: +rewardPoint },
         ...prev,
       ]);
 
@@ -97,12 +124,11 @@ export default function Challenge() {
                     handleClaim(
                       challenge.challengeId,
                       challenge.name,
-                      getRewardByType(challenge.type)
                     )
                   }
                   disabled={challenge.status !== "ONGOING"}
                 >
-                  {challenge.status === "COMPLETED" ? "완료됨" : "받기"}
+                  {challenge.status === "COMPLETED" ? "완료" : "받기"}
                 </button>
               </div>
             </li>
@@ -113,7 +139,7 @@ export default function Challenge() {
   );
 }
 
-// ✅ 보상 포인트 타입별 매핑 함수
+// 보상 포인트 타입별 매핑 함수
 function getRewardByType(type) {
   const rewardMap = {
     ATTENDANCE: 100,
@@ -123,4 +149,20 @@ function getRewardByType(type) {
     NO_SPENDING: 2000,
   };
   return rewardMap[type] || 0;
+}
+
+// reason 문자열을 한글로 변환하는 함수
+function convertReason(reason) {
+  const reasonMap = {
+    ITEM_PURCHASE: "아이템 구매",
+    BONUS: "보너스",
+    CHALLENGE_REWARD: "챌린지 보상",
+  };
+  return reasonMap[reason] || reason;
+}
+
+// 날짜 포맷 변환 함수 (예: 7.26)
+function formatDate(isoStr) {
+  const date = new Date(isoStr);
+  return `${date.getMonth() + 1}.${date.getDate()}`;
 }
