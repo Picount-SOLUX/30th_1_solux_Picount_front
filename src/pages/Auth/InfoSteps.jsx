@@ -218,6 +218,7 @@ export default function InfoSteps() {
     return false;
   };
 
+  
   return (
     <div className="info-steps-page">
       <div className="info-steps-container">
