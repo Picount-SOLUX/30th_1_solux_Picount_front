@@ -12,7 +12,7 @@ export const updateMemberGroup = (payload) => {
 export const createBudget = (budgetData) => api.post("/budgets", budgetData);
 
 // 카테고리 생성
-export const createCategory = (categoryData) => api.post("/categories", categoryData);
+export const createCategories = (categories) => api.post("/categories", { categories });
 
 // 예산 계획(카테고리별 분배) 수정
 export const updateBudgetPlan = (budgetId, data) => api.put(`/budgets/${budgetId}`, data);

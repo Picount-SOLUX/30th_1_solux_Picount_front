@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createBudget } from "../../api/BudgetAPI.js"; // API 함수 불러오기
-import { updateMemberGroup, createCategory, updateBudgetPlan } from "../../api/BudgetAPI";
+import { updateMemberGroup, createCategories, updateBudgetPlan } from "../../api/BudgetAPI";
 
 import "./InfoSteps.css";
 
@@ -14,7 +14,7 @@ const convertJobToEnum = (job) => {
     case "4050대 직장인": return "WORKER_4050";
     case "프리랜서": return "FREELANCER";
     case "기타": return "OTHERS";
-    default: return "OTHER";
+    default: return "OTHERS";
   }
 };
 
@@ -52,18 +52,22 @@ export default function InfoSteps() {
         console.log("직군 변경 성공:", groupResponse.data);
 
         // 2. 예산 생성 요청
-        const budgetPayload = {
-          startDate: new Date().toISOString().split("T")[0],
-          endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0],
-          totalAmount: parseInt(formData.budget.toString().replace(/,/g, "")),
-        };
-        const budgetResponse = await createBudget(budgetPayload);
-        console.log("예산 생성 성공:", budgetResponse.data);
-        localStorage.setItem("budgetId", budgetResponse.data.id);
-        // 위에 이거 로컬에 저장할 필요가 있나?
-        const budgetId = budgetResponse.data.id;
+        const startDate = new Date().toISOString().split("T")[0];
+        const endDate = new Date(
+          new Date().setMonth(new Date().getMonth() + 1)
+        )
+          .toISOString()
+          .split("T")[0];
 
-        // 3. 직군에 따른 추천 카테고리 출
+        const totalAmount = parseInt(formData.budget.toString().replace(/,/g, ""));
+        const budgetPayload = { startDate, endDate, totalAmount };
+        const budgetResponse = await createBudget(budgetPayload);
+        const budgetId = budgetResponse.data.data.budgetId;
+        console.log("예산 생성 성공:", budgetResponse.data);
+        //localStorage.setItem("budgetId", budgetResponse.data.id);
+        // 위에 이거 로컬에 저장할 필요가 있나? -> 없는 듯
+
+        // 3. 직군에 따른 추천 카테고리 생성
         const jobBudgets = {
           "중·고등학생": [
             { label: "식비", percent: 30 },
@@ -120,40 +124,33 @@ export default function InfoSteps() {
           ],
         };
 
-        const categories = jobBudgets[formData.job] || [];
-        const totalAmount = budgetPayload.totalAmount;
+        const categoriesData =
+          (jobBudgets[formData.job] || []).map((cat) => ({
+            categoryName: cat.label,
+            type: "EXPENSE",
+          }));
 
-        // 4. 각 카테고리에 대해 카테고리 생성 + 예산 계획 구성
-        const budgetPlans = [];
+        // 카테고리 API 요청 (여러 개)
+        const categoriesRes = await createCategories(categoriesData);
+        console.log("카테고리 생성 완료!!", categoriesRes.data);
 
-        for (const cat of categories) {
-          const amount = Math.round((totalAmount * cat.percent) / 100);
+        // 4. budgetAllocationList 구성
+        const createdCategories = categoriesRes.data; // [{id, categoryName}, ...]
+        const budgetPlans = createdCategories.map((cat, idx) => {
+          const percent = jobBudgets[formData.job][idx].percent;
+          const amount = Math.round((totalAmount * percent) / 100);
+          return { categoryId: cat.id, amount };
+        });
 
-          // 카테고리 생성
-          const categoryPayload = {
-            name: cat.label,
-            budgetId,
-          };
-          const categoryRes = await createCategory(categoryPayload);
-          console.log("카테고리 생성 완료!!", categoryRes.data)
-          const categoryId = categoryRes.data.id;
-
-          // 예산 계획 구성에 추가
-          budgetPlans.push({
-            categoryId,
-            amount,
-          });
-        }
-
-        // 5. 예산 계획 저장
+        // 5. 예산 & 세부 예산 계획 수정
         const res = await updateBudgetPlan(budgetId, {
-          startDate: budgetPayload.startDate,
-          endDate: budgetPayload.endDate,
+          startDate,
+          endDate,
           totalAmount,
           budgetAllocationList: budgetPlans,
         });
-        console.log("예산 분배도 완료!!", res.data)
-        // 완료 처리
+        console.log("예산 & 세부예산계획 수정 완료!!", res.data);
+          // 완료 처리
         localStorage.setItem("budgetId", budgetId);
         localStorage.setItem("selectedJob", formData.job);
         localStorage.setItem("selectedBudget", totalAmount.toString());
@@ -164,55 +161,6 @@ export default function InfoSteps() {
         alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");
         setLoading(false);
       }
-////////////////////직군 변경＆예산 생성 API//////////////////////////////
-
-      console.log("보낼 데이터 (POST 준비):", budgetPayload); // ✅ 콘솔 확인
-
-      // try {
-      //   const response = await createBudget(budgetPayload);
-      //   console.log("예산 생성 성공:", response.data);
-
-      //   // 생성된 예산 ID 저장
-      //   localStorage.setItem("budgetId", response.data.id);
-
-      //   setTimeout(() => {
-      //     localStorage.setItem("selectedJob", formData.job);
-      //     localStorage.setItem(
-      //       "selectedBudget",
-      //       formData.budget.toString().replace(/,/g, "")
-      //     );
-      //     navigate("/budget");
-      //   }, 2000);
-      // } catch (err) {
-      //   console.error("예산 생성 실패:", err);
-      //   alert("예산 생성에 실패했습니다. 다시 시도해주세요.");
-      //   setLoading(false);
-      // }
-
-/////////////////테스트용 가짜 코드////////////////////////
-      // try {
-      //   // 실제 백엔드 연결 대신 가짜 응답
-      //   const fakeResponse = {
-      //     id: 1, // 임의로 예산 ID
-      //     startDate: budgetPayload.startDate,
-      //     endDate: budgetPayload.endDate,
-      //     totalAmount: budgetPayload.totalAmount,
-      //   };
-
-      //   console.log("가짜 예산 생성 성공:", fakeResponse);
-      //   localStorage.setItem("budgetId", fakeResponse.id);
-      //   setTimeout(() => {
-      //     localStorage.setItem("selectedJob", formData.job);
-      //     localStorage.setItem(
-      //       "selectedBudget",
-      //       formData.budget.toString().replace(/,/g, "")
-      //     );
-      //     navigate("/budget");
-      //   }, 2000);
-      // } catch (err) {
-      //   console.error("예산 생성 실패:", err);
-      // }
-//////////////////////가짜 코드/////////////////////////
     } else {
       setStep((prev) => prev + 1);
     }
