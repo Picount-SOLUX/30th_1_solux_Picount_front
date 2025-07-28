@@ -77,7 +77,7 @@ export default function InfoSteps() {
       }
 ////////////////////직군 변경＆예산 생성 API//////////////////////////////
 
-      console.log("보낼 데이터 (POST 준비):", budgetPayload); // ✅ 콘솔 확인
+      //console.log("보낼 데이터 (POST 준비):", budgetPayload); // ✅ 콘솔 확인
 
       // try {
       //   const response = await createBudget(budgetPayload);
