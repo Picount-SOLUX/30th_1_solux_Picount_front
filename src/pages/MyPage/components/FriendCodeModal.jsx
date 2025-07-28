@@ -21,7 +21,7 @@ export default function FriendCodeModal({ onClose }) {
 
     try {
       const response = await api.post(
-        "https://6e45bd638524.ngrok-free.app/api/friends/request",
+        "/friends/request",
         { friendCode: code },
         {
           headers: {

@@ -34,18 +34,18 @@ export default function Join() {
         return;
       }
 
-      console.log("응답 데이터: ", response.data); // 응답 확인용
-      if (response.data.success) {
-        console.log("응답 데이터: ", response.data);
+      console.log("응답 데이터: ", response.data); // 응답 확인
 
-        const accessToken = response.data.data.accessToken;
-        localStorage.setItem("token", accessToken);
-        console.log("✅ 저장됨!", localStorage.getItem("token"));
-        if (accessToken) {
-          localStorage.setItem("token", accessToken); // ← 핵심!
-        }
+      if (response.data.success) {
+        const { accessToken, refreshToken } = response.data.data;
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        console.log("✅ 저장됨!", localStorage.getItem("accessToken"));
 
         setShowModal(true);
+
+        // 모달 열기
       } else {
         setError(response.data.message || "회원가입에 실패");
       }

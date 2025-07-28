@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Shop.css";
+import api from "../../api/axiosInstance";
 
 function Shop() {
   const [shopItems, setShopItems] = useState([]);
@@ -9,7 +10,7 @@ function Shop() {
 
   const fetchPoint = async () => {
     try {
-      const res = await axios.get("/api/points/my");
+      const res = await api.get("/points/my");
       if (res.data.success) {
         setPoint(res.data.data.point);
       }
@@ -21,25 +22,25 @@ function Shop() {
   const fetchItems = async () => {
     try {
       const [cakeRes, calendarRes, webRes] = await Promise.all([
-        axios.get("/api/items/cake-skins"),
-        axios.get("/api/items/calendar-skins"),
-        axios.get("/api/items/web-skins"),
+        api.get("/items/cake-skins"),
+        api.get("/items/calendar-skins"),
+        api.get("/items/web-skins"),
       ]);
 
       const cake = cakeRes.data.data.map((item) => ({
         ...item,
         category: "케이크 꾸미기 스킨",
-        image: `/assets/ShopItems/CakeSkin/${item.imageUrl}`,
+        image: item.imageUrl,
       }));
       const calendar = calendarRes.data.data.map((item) => ({
         ...item,
         category: "달력 꾸미기 스킨",
-        image: `/assets/ShopItems/CalendarSkin/${item.imageUrl}`,
+        image: item.imageUrl,
       }));
       const web = webRes.data.data.map((item) => ({
         ...item,
         category: "테마 색상 변경",
-        image: `/assets/ShopItems/Theme/${item.imageUrl}`,
+        image: item.imageUrl,
       }));
 
       setShopItems([...cake, ...calendar, ...web]);
@@ -55,7 +56,7 @@ function Shop() {
 
   const handlePurchase = async (itemId) => {
     try {
-      const res = await axios.post("/api/items/purchases", { itemId });
+      const res = await api.post("/items/purchases", { itemId });
       if (res.data.success) {
         setMessage(`🎉 ${res.data.message}`);
         fetchPoint(); // ✅ 구매 성공 시 포인트 다시 불러오기

@@ -3,7 +3,6 @@ import styles from "./ProfileSection.module.css";
 import FriendsSection from "./FriendsSection";
 import FriendAddButton from "./FriendAddButton";
 import { useProfile } from "../../../context/useProfile";
-import axios from "axios";
 import api from "../../../api/axiosInstance";
 
 export default function ProfileSection() {
@@ -14,20 +13,20 @@ export default function ProfileSection() {
   useEffect(() => {
     const fetchFriendCode = async () => {
       try {
-        const response = await api.get("/api/members/friend-code", {
+        const response = await api.get("/members/friend-code", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          withCredentials: true, // ✅ headers 밖에 있어야 함!
+          withCredentials: true,
         });
 
-        console.log("응답 확인:", response.data); // <-- 꼭 콘솔로 구조 확인!
+        console.log("응답 확인:", response.data);
 
-        const code = response.data?.data?.friendCode;
+        const code = response.data?.data; // data는 바로 코드 문자열
         if (code) {
           setFriendCode(code);
         } else {
-          setError("불러오기 실패"); // 여기 타면 data는 있었는데 friendCode가 undefined임
+          setError("불러오기 실패");
         }
       } catch (err) {
         console.error("API 오류:", err);
@@ -35,7 +34,7 @@ export default function ProfileSection() {
       }
     };
 
-    fetchFriendCode();
+    fetchFriendCode(); // ✅ 함수 호출이 useEffect 바깥에 있어야 함
   }, []);
 
   return (

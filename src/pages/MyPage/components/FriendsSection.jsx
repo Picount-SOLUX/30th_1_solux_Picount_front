@@ -11,7 +11,7 @@ export default function FriendsSection() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await api.get("/api/friends/my", {
+        const res = await api.get("/friends/my", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

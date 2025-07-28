@@ -129,8 +129,8 @@ export default function SettingsPage() {
               setIsMainVisible(newValue); // UI 즉시 반영
 
               try {
-                const res = await api.post(
-                  "/api/members/visibility/main",
+                const res = await api.patch(
+                  "/members/visibility/main",
                   { isMainVisible: newValue },
                   {
                     headers: {

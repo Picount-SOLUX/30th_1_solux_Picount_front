@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./ViewModal.module.css";
 import { MdPhotoCamera } from "react-icons/md";
+import api from "../../../api/axiosInstance";
 
 export default function ViewModal({ onClose, data, onEdit }) {
   const { date, entries = [], memo = "", photo } = data || {};

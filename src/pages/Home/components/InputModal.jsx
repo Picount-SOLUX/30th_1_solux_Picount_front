@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import styles from "./InputModal.module.css";
 import CategoryModal from "./CategoryModal";
+import api from "../../../api/axiosInstance";
 
 export default function InputModal({
   onClose,
@@ -77,8 +78,8 @@ export default function InputModal({
     const ownerId = localStorage.getItem("userId");
 
     try {
-      const fetchRes = await axios.get(
-        `/api/calendar/record?date=${date}&ownerId=${ownerId}`
+      const fetchRes = await api.get(
+        `/calendar/record?date=${date}&ownerId=${ownerId}`
       );
       const prevData = fetchRes.data?.data || {};
       const prevIncomeList = prevData.incomes || [];
@@ -113,15 +114,11 @@ export default function InputModal({
       );
       if (photo) formData.append("photos", photo);
 
-      const res = await axios.post(
-        "https://6e45bd638524.ngrok-free.app/api/calendar/record",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await api.post("/calendar/record", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       onSubmit?.({
         date,
@@ -181,8 +178,8 @@ export default function InputModal({
     const fetchExistingData = async () => {
       const ownerId = localStorage.getItem("userId");
       try {
-        const res = await axios.get(
-          `/api/calendar/record?date=${inputDate}&ownerId=${ownerId}`
+        const res = await api.get(
+          `/calendar/record?date=${inputDate}&ownerId=${ownerId}`
         );
         const result = res.data;
 
