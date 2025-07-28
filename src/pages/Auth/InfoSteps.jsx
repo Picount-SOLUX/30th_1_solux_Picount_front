@@ -178,7 +178,7 @@ export default function InfoSteps() {
           }
         }
 
-        // 5. 예산 & 세부 예산 계획 수정
+        // 10. 예산 & 세부 예산 계획 수정
         const res = await updateBudgetPlan(budgetId, {
           startDate,
           endDate,
