@@ -171,8 +171,8 @@ export default function InfoSteps() {
           console.error("📄 응답 내용:", err.response.data);
         }
         alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");
-        setLoading(true); // 이거 false
-        navigate("/budget"); // 이거 지워ㅑ
+        setLoading(true); // 해결되면 이거 false로 바꾸고
+        navigate("/budget"); // 이거 지워야 됨
       }
     } else {
       setStep((prev) => prev + 1);

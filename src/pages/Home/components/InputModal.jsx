@@ -38,7 +38,7 @@ export default function InputModal({
   };
 
   const getCategoryId = (type, name) => {
-    const list = categories?.[type] || [];
+    const list = fetchedCategories?.[type] || [];
     const match = list.find((c) => c.name === name);
     return match?.id || null;
   };
@@ -222,6 +222,34 @@ export default function InputModal({
     if (file) setPreview(URL.createObjectURL(file));
   };
 
+  const [fetchedCategories, setFetchedCategories] = useState({ income: [], expense: [] });
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const ownerId = localStorage.getItem("userId");
+
+      try {
+        const res = await axios.get(`/api/categories?ownerId=${ownerId}`);
+        const categoryList = res.data?.data || [];
+
+        // 분류
+        const income = categoryList
+          .filter((c) => c.type === "INCOME")
+          .map((c) => ({ id: c.id, name: c.name }));
+
+        const expense = categoryList
+          .filter((c) => c.type === "EXPENSE")
+          .map((c) => ({ id: c.id, name: c.name }));
+
+        setFetchedCategories({ income, expense });
+      } catch (e) {
+        console.error("카테고리 불러오기 실패:", e);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContainer} ref={containerRef}>
@@ -281,7 +309,7 @@ export default function InputModal({
               <option value="" disabled hidden>
                 카테고리
               </option>
-              {categories[type]?.map((cat) => (
+              {fetchedCategories[type]?.map((cat) => (
                 <option key={cat.name || cat} value={cat.name || cat}>
                   {cat.name || cat}
                 </option>
