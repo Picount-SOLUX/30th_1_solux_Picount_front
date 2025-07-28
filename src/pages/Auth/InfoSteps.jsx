@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createBudget } from "../../api/BudgetAPI.js"; // API 함수 불러오기
-import { updateMemberGroup, createCategories, updateBudgetPlan } from "../../api/BudgetAPI";
+import { updateMemberGroup, createCategories, updateBudgetPlan, getCategories } from "../../api/BudgetAPI";
 
 import "./InfoSteps.css";
 
@@ -132,23 +132,51 @@ export default function InfoSteps() {
           ],
         };
 
-        const categoriesData =
-          (jobBudgets[formData.job] || []).map((cat) => ({
-            categoryName: cat.label,
-            type: "EXPENSE",
-          }));
+        const jobCategoryList = (jobBudgets[formData.job] || []).map((cat) => ({
+          categoryName: cat.label,
+          type: "EXPENSE",
+        }));
 
-        // 카테고리 API 요청 (여러 개)
-        const categoriesRes = await createCategories(categoriesData);
-        console.log("카테고리 생성 완료!!", categoriesRes.data);
+        // 4. 기존 등록된 카테고리 모두 조회
+        const existingCategoriesRes = await getCategories();
+        const existingCategories = existingCategoriesRes.data.data.categories || [];
 
-        // 4. budgetAllocationList 구성
-        const createdCategories = categoriesRes.data; // [{id, categoryName}, ...]
-        const budgetPlans = createdCategories.map((cat, idx) => {
-          const percent = jobBudgets[formData.job][idx].percent;
-          const amount = Math.round((totalAmount * percent) / 100);
-          return { categoryId: cat.id, amount };
-        });
+        // 5. 기존 카테고리 이름만 집합으로
+        const existingCategoryNames = new Set(
+          existingCategories.map((cat) => cat.categoryName)
+        );
+
+        // 6. 새로 생성할 카테고리 필터링 (중복 제거)
+        const categoriesToCreate = jobCategoryList.filter(
+          (cat) => !existingCategoryNames.has(cat.categoryName)
+        );
+
+        // 7. 새 카테고리 생성 (중복 없을 때만)
+        let newCategories = [];
+        if (categoriesToCreate.length > 0) {
+          const createRes = await createCategories(categoriesToCreate);
+          newCategories = createRes.data.data.categories || [];
+        }        
+
+        // 8. 최종 카테고리 목록 = 기존 + 새로 생성된 카테고리
+        const allCategories = [...existingCategories, ...newCategories];
+
+        // 9. budgetAllocationList 만들기
+         // 직군별 카테고리 순서대로 percent 가져와서 금액 계산
+        const budgetPlans = [];
+        for (const catInfo of jobBudgets[formData.job] || []) {
+          // allCategories 에서 이름 같은 카테고리 찾기
+          const matchedCategory = allCategories.find(
+            (cat) => cat.categoryName === catInfo.label
+          );
+          if (matchedCategory) {
+            const amount = Math.round((totalAmount * catInfo.percent) / 100);
+            budgetPlans.push({
+              categoryId: matchedCategory.categoryId, // categoryId 필드 사용
+              amount,
+            });
+          }
+        }
 
         // 5. 예산 & 세부 예산 계획 수정
         const res = await updateBudgetPlan(budgetId, {
@@ -171,8 +199,8 @@ export default function InfoSteps() {
           console.error("📄 응답 내용:", err.response.data);
         }
         alert("예산 생성 또는 직군 설정에 실패했습니다. 다시 시도해주세요.");
-        setLoading(true); // 해결되면 이거 false로 바꾸고
-        navigate("/budget"); // 이거 지워야 됨
+        setLoading(false); // 해결되면 이거 false로 바꾸고
+        // navigate("/budget"); // 이거 지워야 됨
       }
     } else {
       setStep((prev) => prev + 1);

@@ -16,3 +16,6 @@ export const createCategories = (categories) => api.post("/categories", { catego
 
 // 예산 계획(카테고리별 분배) 수정
 export const updateBudgetPlan = (budgetId, data) => api.put(`/budgets/${budgetId}`, data);
+
+// 카테고리 전체 조회
+export const getCategories = () => api.get("/categories");
