@@ -8,6 +8,22 @@ export default function Challenge() {
   const [challenges, setChallenges] = useState([]);
 
   useEffect(() => {
+    const typeToName = {
+      ATTENDANCE: "출석 체크",
+      ATTENDANCE7: "7일 연속 출석",
+      ATTENDANCE30: "30일 연속 출석",
+      GUESTBOOK: "방명록 작성",
+      NO_SPENDING: "무지출 달성",
+    };
+
+    const typeToReward = {
+      ATTENDANCE: 100,
+      ATTENDANCE7: 1000,
+      ATTENDANCE30: 3000,
+      GUESTBOOK: 200,
+      NO_SPENDING: 2000,
+    };
+
     const loadChallenges = async () => {
       try {
         const res = await fetchMyChallenges();
@@ -49,12 +65,12 @@ export default function Challenge() {
     loadPointHistory();
   }, []);
 
-  const handleClaim = async (challengeId, challengeName) => {
+  const handleClaim = async (challengeId, challengeName, challengeType) => {
     try {
       const res = await claimChallengeReward(challengeId);
       console.log("챌린지 보상 수령 성공!!", res.data)
-
-      const { rewardPoint } = res.data.data;
+      // rewardPoint 대신 type 기반으로 계산
+      const rewardPoint = getRewardByType(challengeType);
       setPoints((prev) => prev + rewardPoint);
 
       const today = new Date();
@@ -124,6 +140,7 @@ export default function Challenge() {
                     handleClaim(
                       challenge.challengeId,
                       challenge.name,
+                      challenge.type
                     )
                   }
                   disabled={challenge.status !== "ONGOING"}
