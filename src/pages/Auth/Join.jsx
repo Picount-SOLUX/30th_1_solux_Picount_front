@@ -33,16 +33,16 @@ export default function Join() {
         return;
       }
 
-      console.log("응답 데이터: ", response.data); // 응답 확인
+      console.log("회원가입 성공: ", response.data); // 응답 확인
 
       if (response.data.success) {
         const { accessToken, refreshToken } = response.data.data;
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-
         console.log("✅ 저장됨!", localStorage.getItem("accessToken"));
-
         setShowModal(true);
+
+        //localStorage.setItem("hasLoggedIn", "true");
 
         // 모달 열기
       } else {
