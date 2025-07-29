@@ -11,23 +11,25 @@ export const updateMemberGroup = (payload) => {
 // 예산 생성 API (POST)
 export const createBudget = (budgetData) => api.post("/budgets", budgetData);
 
-// 카테고리 생성
-export const createCategories = (categories) => api.post("/categories", { categories });
-
 // 예산 계획(카테고리별 분배) 수정
 export const updateBudgetPlan = (budgetId, data) => api.put(`/budgets/${budgetId}`, data);
+
+
 
 // 카테고리 전체 조회
 export const getCategories = () => api.get("/categories");
 
+// 카테고리 생성
+export const createCategories = (categories) => api.post("/categories", { categories });
 
-// ✅ [아래에 추가한 부분]
-
-// 단일 카테고리 추가
-export const createCategory = (categoryData) => api.post("/categories", categoryData);
-
-// 카테고리 이름 수정
-export const updateCategory = (categoryId, data) => api.put(`/categories/${categoryId}`, data);
+// 카테고리 수정
+export const updateCategory = async (categoryId, data) => {
+  console.log("카테고리 수정 요청:", categoryId, data);
+  return api.put(`/categories/${categoryId}`, data);
+};
 
 // 카테고리 삭제
-export const deleteCategory = (categoryId) => api.delete(`/categories/${categoryId}`);
+export const deleteCategory = async (categoryId) => {
+  console.log("카테고리 삭제 요청:", categoryId);
+  return api.delete(`/categories/${categoryId}`);
+};

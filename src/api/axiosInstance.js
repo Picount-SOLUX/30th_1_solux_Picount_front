@@ -104,16 +104,16 @@ api.interceptors.response.use(
         const refreshUrl = useBackend
           ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh`
           : "/api/members/refresh";
+
         // refreshToken으로 새 accessToken 발급 요청
         const res = await api.post("/members/refresh", {
           refreshToken,
-        }); //request body 부분
-        console.log("토큰 재발급 성공", res.data)
-        
+        }); // request body 부분
+        console.log("토큰 재발급 성공", res.data);
+
         const { accessToken: newAccessToken } = res.data.data;
         // 새 accessToken 저장
-        localStorage.setItem("accessToken", newAccessToken);
-        //response body 부분
+        localStorage.setItem("accessToken", newAccessToken); // response body 부분
 
         // 실패한 요청 헤더에 새 토큰 추가 후 재시도
         error.config.headers.Authorization = `Bearer ${newAccessToken}`;

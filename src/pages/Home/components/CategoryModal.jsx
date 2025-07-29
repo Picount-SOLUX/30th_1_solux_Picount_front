@@ -2,10 +2,23 @@ import React, { useEffect, useState } from "react";
 import styles from "./CategoryModal.module.css";
 import {
   getCategories,
-  createCategory,
+  createCategories,
   updateCategory,
   deleteCategory,
 } from "../../../api/BudgetAPI";
+
+function isTokenExpired(token) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const payloadJson = atob(base64);
+    const payload = JSON.parse(payloadJson);
+    const now = Math.floor(Date.now() / 1000);
+    return now > payload.exp;
+  } catch (err) {
+    return true;
+  }
+}
 
 export default function CategoryModal({ onClose }) {
   const [activeTab, setActiveTab] = useState("EXPENSE");
@@ -20,6 +33,8 @@ export default function CategoryModal({ onClose }) {
   const fetchCategories = async () => {
     try {
       const res = await getCategories();
+      //console.log("fetchCategories 응답:", res.data?.data?.categories);
+
       const list = res.data?.data?.categories || [];
       setCategories(list);
     } catch (e) {
@@ -38,10 +53,13 @@ export default function CategoryModal({ onClose }) {
       return;
     }
     try {
-      await createCategory({
-        name: newCategory.trim(),
-        type: activeTab,
-      });
+      const res = await createCategories([
+        {
+          categoryName: newCategory.trim(),
+          type: activeTab,
+        },
+      ]);
+      console.log("카테고리 추가 성공: ", res);
       setNewCategory("");
       setShowAddModal(false);
       fetchCategories();
@@ -58,9 +76,11 @@ export default function CategoryModal({ onClose }) {
     }
     try {
       const categoryToEdit = filteredCategories[editIndex];
-      await updateCategory(categoryToEdit.categoryId, {
-        name: editName.trim(),
+      const res = await updateCategory(categoryToEdit.categoryId, {
+        categoryName: editName.trim(),
+        type: categoryToEdit.type,
       });
+      console.log("카테고리 수정 성공: ", res);
       setShowEditModal(false);
       setEditIndex(null);
       setEditName("");
@@ -72,11 +92,23 @@ export default function CategoryModal({ onClose }) {
 
   // 삭제
   const handleDelete = async (categoryId) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken || isTokenExpired(accessToken)) {
+      alert("로그인 토큰이 만료되었습니다. 다시 로그인 해주세요.");
+      return;
+    }
     console.log("삭제 시도 중, categoryId:", categoryId); // 이게 안 찍히면 버튼 자체 문제
+    // 실제로 그 ID가 있는지 확인
+    const categories = await getCategories();
+    console.log("현재 존재하는 카테고리 목록:", categories.data.data);
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
+      const accessToken = localStorage.getItem("accessToken");
+      //console.log("[deleteCategory] accessToken:", accessToken); // 여기서 확인!
+
       const res = await deleteCategory(categoryId);
-      console.log("카테고리 삭제 API 성공", res)
+      console.log("카테고리 삭제 API 성공", res);
       fetchCategories();
     } catch (e) {
       console.error("카테고리 삭제 실패", e);
@@ -84,22 +116,24 @@ export default function CategoryModal({ onClose }) {
   };
 
   // 탭에 따른 필터링
-  const filteredCategories = categories.filter(
-    (cat) => cat.type === activeTab
-  );
+  const filteredCategories = categories.filter((cat) => cat.type === activeTab);
 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContainer}>
         <div className={styles.tabGroup}>
           <button
-            className={activeTab === "INCOME" ? styles.tabActive : styles.tabInactive}
+            className={
+              activeTab === "INCOME" ? styles.tabActive : styles.tabInactive
+            }
             onClick={() => setActiveTab("INCOME")}
           >
             수입
           </button>
           <button
-            className={activeTab === "EXPENSE" ? styles.tabActive : styles.tabInactive}
+            className={
+              activeTab === "EXPENSE" ? styles.tabActive : styles.tabInactive
+            }
             onClick={() => setActiveTab("EXPENSE")}
           >
             지출
@@ -107,37 +141,40 @@ export default function CategoryModal({ onClose }) {
         </div>
 
         <div className={styles.categoryList}>
-          {filteredCategories.map((cat, idx) => (
-            <div key={cat.categoryId} className={styles.row}>
-              
-              <button
-                className={styles.deleteBtn}
-                onClick={() => {
-                  console.log("버튼 클릭됨");
-                  handleDelete(cat.categoryId);
-                }}
-              >
-                <span className={styles.deleteCircle}>–</span>
-              </button>
-              <span className={styles.name}>{cat.categoryName}</span>
-              
-              <button
-                className={styles.editBtn}
-                onClick={() => {
-                  setEditIndex(idx);
-                  setEditName(cat.categoryName);
-                  setShowEditModal(true);
-                }}
-              >
-                ✎
-              </button>
-            </div>
-          ))}
+          {filteredCategories.map((cat, idx) => {
+            //console.log("렌더링되는 카테고리:", cat);
+            return (
+              <div key={cat.categoryId} className={styles.row}>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => {
+                    console.log("버튼 클릭됨");
+                    handleDelete(cat.categoryId);
+                  }}
+                >
+                  <span className={styles.deleteCircle}>–</span>
+                </button>
+                <span className={styles.name}>{cat.categoryName}</span>
+                <button
+                  className={styles.editBtn}
+                  onClick={() => {
+                    setEditIndex(idx);
+                    setEditName(cat.categoryName);
+                    setShowEditModal(true);
+                  }}
+                >
+                  ✎
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         <div className={styles.addRow}>
-          
-          <button className={styles.addBtn} onClick={() => setShowAddModal(true)}>
+          <button
+            className={styles.addBtn}
+            onClick={() => setShowAddModal(true)}
+          >
             ＋
           </button>
         </div>
@@ -151,14 +188,17 @@ export default function CategoryModal({ onClose }) {
           <div className={styles.innerModalOverlay}>
             <div className={styles.innerModal}>
               <input
-                type="text"
+                type='text'
                 className={styles.input}
-                placeholder="새 카테고리 입력"
+                placeholder='새 카테고리 입력'
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
               />
               <div className={styles.modalButtons}>
-                <button className={styles.confirmBtn} onClick={handleAddCategory}>
+                <button
+                  className={styles.confirmBtn}
+                  onClick={handleAddCategory}
+                >
                   저장
                 </button>
                 <button
@@ -177,9 +217,9 @@ export default function CategoryModal({ onClose }) {
           <div className={styles.innerModalOverlay}>
             <div className={styles.innerModal}>
               <input
-                type="text"
+                type='text'
                 className={styles.input}
-                placeholder="수정할 이름 입력"
+                placeholder='수정할 이름 입력'
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
               />
