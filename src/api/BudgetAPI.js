@@ -19,3 +19,15 @@ export const updateBudgetPlan = (budgetId, data) => api.put(`/budgets/${budgetId
 
 // 카테고리 전체 조회
 export const getCategories = () => api.get("/categories");
+
+
+// ✅ [아래에 추가한 부분]
+
+// 단일 카테고리 추가
+export const createCategory = (categoryData) => api.post("/categories", categoryData);
+
+// 카테고리 이름 수정
+export const updateCategory = (categoryId, data) => api.put(`/categories/${categoryId}`, data);
+
+// 카테고리 삭제
+export const deleteCategory = (categoryId) => api.delete(`/categories/${categoryId}`);
