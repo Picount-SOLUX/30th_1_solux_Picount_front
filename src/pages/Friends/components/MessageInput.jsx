@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import styles from "./MessageInput.module.css";
-import axios from "axios";
+import api from "../../../api/axiosInstance"; // ✅ 전역 api 사용
 
-// ✅ 이름만 맞춤
 export default function MessageInput({ ownerId, onMessageSubmit }) {
   const [message, setMessage] = useState("");
 
@@ -10,27 +9,22 @@ export default function MessageInput({ ownerId, onMessageSubmit }) {
     e.preventDefault();
     if (!message.trim()) return;
 
+    const writerNickname = localStorage.getItem("nickname");
+    const writerProfileImage = localStorage.getItem("profileImage");
+
     try {
-      const res = await axios.post(
-        "/api/guestbook",
-        {
-          ownerId: parseInt(ownerId), // ← 그대로 사용
-          content: message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await api.post("/guestbook", {
+        ownerId: parseInt(ownerId),
+        content: message,
+      });
 
       if (res.data.success) {
         const newMsg = {
-          id: res.data.guestbookId,
-          nickname: "나",
-          time: new Date().toLocaleString(),
+          guestbookId: res.data.data?.guestbookId || Math.random(),
+          writerNickname: writerNickname || "나",
+          writerProfileImage: writerProfileImage || null,
           content: message,
-          profileImg: null,
+          createdAt: new Date().toISOString(),
         };
         onMessageSubmit(newMsg);
         setMessage("");
@@ -38,8 +32,8 @@ export default function MessageInput({ ownerId, onMessageSubmit }) {
         alert("작성 실패: " + res.data.message);
       }
     } catch (err) {
-      alert("요청 실패");
-      console.error(err);
+      console.error("작성 실패", err);
+      alert("작성 요청 실패");
     }
   };
 
@@ -47,11 +41,11 @@ export default function MessageInput({ ownerId, onMessageSubmit }) {
     <form onSubmit={handleSubmit} className={styles.inputBox}>
       <input
         type="text"
-        placeholder="메시지를 입력하세요..."
+        placeholder="친구에게 방명록을 남겨보세요!"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-      <button type="submit">작성</button>
+      <button type="submit">➤</button>
     </form>
   );
 }

@@ -19,12 +19,28 @@ import skin2 from "../../../assets/ShopItems/CakeSkin/WhiteCake.png";
 import skin3 from "../../../assets/ShopItems/CakeSkin/CherryCake.png";
 
 // 이미지 배열
-const cakeImages = [cake1, cake2, cake3, cake4, cake5, cake6, cake7, cake8, cake9, cake10];
+const cakeImages = [
+  cake1,
+  cake2,
+  cake3,
+  cake4,
+  cake5,
+  cake6,
+  cake7,
+  cake8,
+  cake9,
+  cake10,
+];
 
 export default function CakeGraph({ totalBudget, totalSpent }) {
   const [selectedSkin, setSelectedSkin] = useState(null); // 선택된 스킨
   const [showModal, setShowModal] = useState(false); // 모달 표시 여부
   const [tempSkin, setTempSkin] = useState(null); // 모달 내 임시 선택 스킨
+
+  // ✅ 더미 데이터로 대체 (undefined일 경우)
+  const safeTotalBudget =
+    typeof totalBudget === "number" ? totalBudget : 100000;
+  const safeTotalSpent = typeof totalSpent === "number" ? totalSpent : 30000;
 
   const remainingPercent =
     totalBudget > 0 ? ((totalBudget - totalSpent) / totalBudget) * 100 : 0;
@@ -58,8 +74,8 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
 
       <div className="budget-info-box">
         <div className="budget-text">
-          <div>전체 예산: {totalBudget.toLocaleString()}원</div>
-          <div>지출: {totalSpent.toLocaleString()}원</div>
+          <div>전체 예산: {(safeTotalBudget ?? 0).toLocaleString()}원</div>
+          <div>지출: {(safeTotalSpent ?? 0).toLocaleString()}원</div>
         </div>
         <button className="edit-btnn" onClick={() => setShowModal(true)}>
           변경
@@ -74,13 +90,28 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
             onClick={(e) => e.stopPropagation()} // 모달 클릭 시 닫힘 방지
           >
             {/* 스프링 */}
-            <img className="spring1" src="src/assets/cakes/Spring.png" alt="spring" />
-            <img className="spring2" src="src/assets/cakes/Spring.png" alt="spring" />
-            <img className="spring3" src="src/assets/cakes/Spring.png" alt="spring" />
-            <img className="spring4" src="src/assets/cakes/Spring.png" alt="spring" />
+            <img
+              className="spring1"
+              src="src/assets/cakes/Spring.png"
+              alt="spring"
+            />
+            <img
+              className="spring2"
+              src="src/assets/cakes/Spring.png"
+              alt="spring"
+            />
+            <img
+              className="spring3"
+              src="src/assets/cakes/Spring.png"
+              alt="spring"
+            />
+            <img
+              className="spring4"
+              src="src/assets/cakes/Spring.png"
+              alt="spring"
+            />
 
             <div className="pages">
-
               {/* 왼쪽 페이지 */}
               <div className="book-page left-page">
                 <img
@@ -125,7 +156,6 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
                   적용
                 </button>
               </div>
-
             </div>
           </div>
         </div>

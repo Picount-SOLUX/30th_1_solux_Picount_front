@@ -1,7 +1,9 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/AuthAPI";
+import FindPassword from "../Auth/FindPassword";
 import "./Login.css";
+import api from "../../api/axiosInstance";
 
 export default function Login() {
   const emailRef = useRef(null);
@@ -11,7 +13,7 @@ export default function Login() {
   const [showModal, setShowModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
+  /////////////////////////로그인 API///////////////////////////
   const handleLogin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
@@ -26,22 +28,32 @@ export default function Login() {
       console.log("로그인 응답:", response.data);
 
       if (response.data.success) {
-        let { accessToken, refreshToken, nickname, memberId } =
-          response.data.data;
-
+        let { accessToken, refreshToken, nickname } = response.data.data;
         // 🟢 nickname undefined 방지
         nickname = nickname ?? "테스트유저";
-
         // 로컬 스토리지에 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify({ nickname }));
 
+        // ✅ 🔽 여기 추가: memberId 가져오기
+        try {
+          const meRes = await api.get("/members/profile"); // ✅ axiosInstance 사용!
+          const memberId = meRes.data?.data?.memberId;
+
+          if (memberId) {
+            localStorage.setItem("memberId", memberId);
+            console.log("✅ memberId 저장 완료:", memberId);
+          } else {
+            console.warn("❗ memberId 응답 없음:", meRes.data);
+          }
+        } catch (meErr) {
+          console.error("❌ memberId 불러오기 실패:", meErr);
+        }
+
         console.log("localStorage 저장됨:", localStorage.getItem("user"));
-
         setUserInfo({ nickname });
-
         setShowModal(true);
         setErrorMessage("");
       } else {
@@ -54,15 +66,13 @@ export default function Login() {
       );
     }
   };
+  //////////////////////////로그인 API//////////////////////////
+
   /// 엔터 치면 로그인
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleLogin();
     }
-  };
-  /// 비밀번호 재설정
-  const goToResetPassword = () => {
-    navigate("/reset-password");
   };
 
   const closeModal = () => {
@@ -108,7 +118,7 @@ export default function Login() {
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         <div className="login-links">
-          <a onClick={goToResetPassword} className="link-text">
+          <a onClick={() => navigate("/find-password")} className="link-text">
             비밀번호 찾기
           </a>
         </div>

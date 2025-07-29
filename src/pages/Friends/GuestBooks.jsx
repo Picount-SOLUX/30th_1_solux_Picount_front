@@ -40,10 +40,10 @@ export default function Guestbook({
 
   return (
     <div className={styles.container}>
+      <MessageList messages={messages} />
       {showInput && (
         <MessageInput ownerId={ownerId} onMessageSubmit={addMessage} />
       )}
-      <MessageList messages={messages} />
     </div>
   );
 }

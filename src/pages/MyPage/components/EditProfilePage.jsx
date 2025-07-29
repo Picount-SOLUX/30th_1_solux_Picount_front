@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./EditProfilePage.module.css";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../../context/useProfile";
-import axios from "axios";
-import { useEffect } from "react";
+import api from "../../../api/axiosInstance";
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
@@ -23,21 +22,21 @@ export default function EditProfilePage() {
     { id: 4, name: "데코크림", image: "/skins/꾸미기 스킨 4.png" },
   ]);
 
-  const [guestbookList, setGuestbookList] = useState([
-    { id: 1, content: "친구 닉네임 (0000-00-00 00:00)" },
-    { id: 2, content: "친구 닉네임 (0000-00-00 00:00)" },
-    { id: 3, content: "친구 닉네임 (0000-00-00 00:00)" },
-  ]);
+  const [guestbookList, setGuestbookList] = useState([]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result); // base64로 저장
+        setProfileImage(reader.result); // base64 저장
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleResetImage = () => {
+    setProfileImage("/assets/profile_default.png"); // ✅ 기본 이미지로 초기화
   };
 
   const handleRemoveSkin = (id) => {
@@ -46,11 +45,7 @@ export default function EditProfilePage() {
 
   const handleDeleteGuestbook = async (id) => {
     try {
-      await axios.delete(`/api/guestbook/my/${id}`, {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      });
+      await api.delete(`/guestbook/my/${id}`);
       setGuestbookList((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("방명록 삭제 실패", error);
@@ -60,11 +55,7 @@ export default function EditProfilePage() {
 
   const handleDeleteAllGuestbook = async () => {
     try {
-      await axios.delete("/api/guestbook/my", {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      });
+      await api.delete("/guestbook/my");
       setGuestbookList([]);
     } catch (error) {
       console.error("전체 방명록 삭제 실패", error);
@@ -77,13 +68,17 @@ export default function EditProfilePage() {
       const payload = {
         nickname,
         intro,
-        profileImage, // base64 문자열 또는 null
+        profileImage,
       };
 
-      await axios.patch("/api/members/profile", payload);
+      const res = await api.patch("/members/profile", payload);
 
-      alert("프로필이 성공적으로 수정되었습니다!");
-      navigate("/settings");
+      if (res.data.success) {
+        alert("프로필이 성공적으로 수정되었습니다!");
+        navigate("/settings");
+      } else {
+        alert(res.data.message || "프로필 수정에 실패했습니다.");
+      }
     } catch (error) {
       console.error("프로필 수정 실패:", error);
       alert("프로필 수정에 실패했습니다. 다시 시도해주세요.");
@@ -91,24 +86,37 @@ export default function EditProfilePage() {
   };
 
   useEffect(() => {
-    axios
-      .get("/api/guestbook/my?page=0&size=10", {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          const formatted = res.data.data.content.map((item) => ({
-            id: item.guestbookId,
-            content: `${item.ownerNickname} (${item.createdAt
-              .slice(0, 16)
-              .replace("T", " ")}) - ${item.content}`,
-          }));
-          setGuestbookList(formatted);
-        }
-      });
-  }, []);
+    // ✅ 초기 프로필 정보 불러오기
+    const memberId = localStorage.getItem("memberId");
+    if (memberId) {
+      api
+        .get(`/members/${memberId}`)
+        .then((res) => {
+          const data = res.data.data;
+          setNickname(data.nickname || "");
+          setIntro(data.intro || "");
+          setProfileImage(
+            data.profileImageUrl || "/assets/profile_default.png"
+          );
+        })
+        .catch((err) => {
+          console.error("프로필 정보 불러오기 실패:", err);
+        });
+    }
+
+    // ✅ 방명록 불러오기
+    api.get("/guestbook/my?page=0&size=10").then((res) => {
+      if (res.data.success) {
+        const formatted = res.data.data.content.map((item) => ({
+          id: item.guestbookId,
+          content: `${item.ownerNickname} (${item.createdAt
+            .slice(0, 16)
+            .replace("T", " ")}) - ${item.content}`,
+        }));
+        setGuestbookList(formatted);
+      }
+    });
+  }, [setNickname, setIntro, setProfileImage]);
 
   return (
     <div className={styles.container}>
@@ -119,18 +127,18 @@ export default function EditProfilePage() {
       <div className={styles.profileSection}>
         <div className={styles.profileImageBox}>
           <div className={styles.profileImage}>
-            {profileImage ? (
-              <img src={profileImage} alt="프로필" className={styles.preview} />
-            ) : (
-              <div className={styles.placeholder}>이미지 없음</div>
-            )}
+            <img
+              src={profileImage || "/assets/profile_default.png"}
+              alt="프로필"
+              className={styles.preview}
+            />
             <label className={styles.changeImageBtn}>
               ✎ 프로필 이미지 변경
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{ display: "none" }}
+                hidden
               />
             </label>
           </div>
@@ -156,6 +164,9 @@ export default function EditProfilePage() {
           </label>
         </div>
       </div>
+      <button onClick={handleResetImage} className={styles.resetBtn}>
+        기본 이미지로 변경
+      </button>
 
       <div className={styles.skinSection}>
         <h3>보유한 꾸미기 스킨</h3>

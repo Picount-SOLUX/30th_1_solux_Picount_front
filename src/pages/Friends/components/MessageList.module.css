@@ -1,5 +1,15 @@
 .messageList {
-  width: 100%;
-  padding: 0 0 24px 0; /* 좌우 여백 제거 (또는 최소한) */
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #f6f6f6;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.messageItem {
+  background-color: #f2f2f2;
+  padding: 10px 12px;
+  border-radius: 10px;
 }

@@ -11,3 +11,15 @@
   color: #333;
   cursor: pointer;
 }
+.graphSection {
+  margin-top: 24px;
+  padding: 0 16px;
+}
+
+.graphRow {
+  display: flex;
+  flex-direction: row;
+  gap: 24px; /* 컴포넌트 사이 간격 */
+  align-items: flex-start; /* 위쪽 정렬 */
+  justify-content: center; /* 가운데 정렬 (선택) */
+}

@@ -8,6 +8,12 @@ import styles from "./FriendHome.module.css";
 import api from "../../api/axiosInstance";
 
 export default function FriendHome() {
+  // 👇 컴포넌트 상단
+  const dummyGraphData = {
+    labels: ["식비", "쇼핑", "교통"],
+    values: [40000, 30000, 20000],
+  };
+
   const { friendId } = useParams();
   const navigate = useNavigate();
   const [friendData, setFriendData] = useState(null);
@@ -16,7 +22,8 @@ export default function FriendHome() {
   useEffect(() => {
     const fetchFriendData = async () => {
       try {
-        const res = await api.get(`/friends/main-page?ownerId=${friendId}`, {
+        const res = await api.get("/friends/main-page", {
+          params: { ownerId: friendId }, // ✅ 쿼리 파라미터는 params로 분리
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -28,7 +35,7 @@ export default function FriendHome() {
           setErrorMessage(res.data.message || "친구 정보 조회에 실패했습니다.");
         }
       } catch (err) {
-        console.error(err);
+        console.error("❌ 친구 정보 요청 중 오류 발생:", err);
         setErrorMessage("친구 정보를 불러오는 중 오류가 발생했습니다.");
       }
     };
@@ -50,19 +57,22 @@ export default function FriendHome() {
         <div className={styles.title}>{friendData.nickname} 님의 페이지</div>
       </div>
 
-      {/* ✅ 방명록 먼저 표시 */}
-      <div className={styles.guestbookSection}>
-        <Guestbook ownerId={friendId} showInput={true} />
+      <div className={styles.graphSection}>
+        <div className={styles.graphRow}>
+          <CakeGraph ownerId={friendId} />
+          <BarGraph ownerId={friendId} />
+        </div>
       </div>
 
-      <div className={styles.graphSection}>
-        <CakeGraph ownerId={friendId} />
-        <BarGraph ownerId={friendId} />
+      <div className={styles.guestbookSection}>
+        <Guestbook ownerId={friendId} showInput={true} />
       </div>
 
       <div className={styles.calendarSection}>
         <Calendar ownerId={friendId} isFriend={true} />
       </div>
+
+      <div className={styles.graphSection}></div>
     </div>
   );
 }

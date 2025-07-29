@@ -1,48 +1,59 @@
-import React, { useState, useEffect } from "react";
-import MessageInput from "./components/MessageInput";
-import MessageList from "./components/MessageList";
-import styles from "./Guestbooks.module.css";
+// GuestbookHistoryPage.jsx
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance";
-import { useParams } from "react-router-dom";
-import getOwnerId from "../../api/getOwnerId"; // ✅ ownerId 가져오기
+import getOwnerId from "../../api/getOwnerId";
+import MessageListReadOnly from "./components/MessageListReadOnly"; // ✅ 새 컴포넌트 import
 
-export default function Guestbook({
-  showInput = true,
-  friendId: propFriendId,
-}) {
-  const { friendId: paramFriendId } = useParams();
-  const ownerId = propFriendId || paramFriendId || getOwnerId();
-
+export default function GuestbookHistoryPage() {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchGuestbookDetails = async () => {
+      const ownerId = getOwnerId();
+      if (!ownerId) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
+
       try {
-        const res = await api.get(`/guestbook/summary`, {
-          params: { ownerId, page: 0, size: 3 },
+        const res = await api.get("/guestbook/details", {
+          params: { ownerId, page: 0, size: 100 },
         });
 
         if (res.data.success) {
           setMessages(res.data.data.content);
+        } else {
+          console.warn("불러오기 실패", res.data.message);
         }
       } catch (err) {
-        console.error("방명록 불러오기 실패:", err.message || err);
+        console.error("❌ 방명록 상세 조회 실패", err);
       }
     };
 
-    fetchMessages();
-  }, [ownerId]);
-
-  const addMessage = (newMessage) => {
-    setMessages((prev) => [newMessage, ...prev]); // 최신순 추가
-  };
+    fetchGuestbookDetails();
+  }, [navigate]);
 
   return (
-    <div className={styles.container}>
-      {showInput && (
-        <MessageInput ownerId={ownerId} onMessageSubmit={addMessage} />
-      )}
-      <MessageList messages={messages} />
+    <div style={{ padding: "24px" }}>
+      <button
+        onClick={() => navigate("/home")}
+        style={{
+          color: "#e25b45",
+          fontWeight: "bold",
+          marginBottom: "20px",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "0.9rem",
+        }}
+      >
+        &lt; 되돌아가기
+      </button>
+
+      <MessageListReadOnly messages={messages} />
     </div>
   );
 }

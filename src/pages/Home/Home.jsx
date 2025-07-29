@@ -12,6 +12,7 @@ import api from "../../api/axiosInstance";
 
 export default function Home() {
   const navigate = useNavigate();
+  const ownerId = localStorage.getItem("memberId"); // 또는 getOwnerId() 사용
 
   // 예산 데이터 가져오기
   const savedCategories =
@@ -36,18 +37,9 @@ export default function Home() {
   useEffect(() => {
     const fetchGuestbooks = async () => {
       try {
-        const ownerId = getOwnerId(); // ✅ 내 ownerId 가져오기
-
-        const res = await api.get(
-          `/guestbook/summary?ownerId={ownerId}&page={page}&size={size}`,
-          {
-            params: {
-              ownerId,
-              page: 0,
-              size: 3, // 요약만 3개
-            },
-          }
-        );
+        const res = await api.get("/guestbook/summary", {
+          params: { page: 0, size: 3 }, // ✅ ownerId 제거
+        });
 
         if (res.data.success) {
           setGuestbookData(res.data.data.content);
@@ -95,18 +87,10 @@ export default function Home() {
           </button>
         </div>
 
-        <MessageList messages={guestbookData} />
+        <div className="guestbook-list-wrapper">
+          <MessageList messages={guestbookData} />
+        </div>
 
-        {/* <div className="guestbook-list">
-          {guestbookData.map((entry) => (
-            <div key={entry.guestbookId} className="guest-entry">
-              <img src={entry.writerProfileImage} alt="profile" />
-              <span>{entry.content}</span>
-            </div>
-          ))}
-        </div> */}
-
-        {/* ===== 달력 영역 ===== */}
         <div className="calendar-section">
           <Calendar />
         </div>
