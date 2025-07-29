@@ -1,0 +1,63 @@
+.guestbookList {
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.guestEntry {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.profileCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #ddd;
+  flex-shrink: 0;
+}
+
+/* ✅ 가로형 말풍선 (전체 너비) */
+.messageContent {
+  flex: 1;
+  background-color: #f0f0f0;
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ✅ 왼쪽: 닉네임 + 내용 */
+.messageText {
+  display: flex;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #333;
+  flex-wrap: wrap;
+  word-break: break-word;
+}
+
+/* 닉네임 강조 */
+.nickname {
+  font-weight: bold;
+  color: #333;
+  margin-right: 10px;
+}
+
+/* 시간은 오른쪽에 고정 */
+.time {
+  color: #888;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+}

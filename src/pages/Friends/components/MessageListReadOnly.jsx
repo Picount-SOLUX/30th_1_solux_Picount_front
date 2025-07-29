@@ -1,10 +1,9 @@
-// MessageListReadOnly.jsx
 import React from "react";
-import styles from "./MessageList.module.css";
+import styles from "./MessageListReadOnly.module.css";
 
 export default function MessageListReadOnly({ messages }) {
   if (!messages.length) {
-    return <div>아직 방명록이 없습니다.</div>;
+    return <div className={styles.empty}>아직 방명록이 없습니다.</div>;
   }
 
   return (
@@ -16,14 +15,10 @@ export default function MessageListReadOnly({ messages }) {
             alt="프로필"
             className={styles.profileCircle}
           />
-          <div className={styles.messageBubble}>
-            <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
-              {msg.senderNickname}{" "}
-              <span style={{ color: "#888", fontSize: "0.8rem" }}>
-                ({msg.createdAt})
-              </span>
-            </div>
-            <div>{msg.content}</div>
+          <div className={styles.messageContent}>
+            <span className={styles.nickname}>{msg.senderNickname}</span>
+            <span className={styles.content}>{msg.content}</span>
+            <span className={styles.time}>{msg.createdAt}</span>
           </div>
         </div>
       ))}

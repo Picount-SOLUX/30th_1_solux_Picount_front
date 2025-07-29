@@ -6,7 +6,7 @@ import BarGraph from "./components/BarGraph";
 import Calendar from "./components/Calendar";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import MessageList from "../Friends/components/MessageList";
+import MessageListReadOnly from "../Friends/components/MessageListReadOnly";
 import getOwnerId from "../../api/getOwnerId";
 import api from "../../api/axiosInstance";
 
@@ -37,15 +37,38 @@ export default function Home() {
   useEffect(() => {
     const fetchGuestbooks = async () => {
       try {
+        const ownerId = localStorage.getItem("memberId");
+        if (!ownerId) {
+          console.warn("⛔ ownerId 없음. 로그인 필요");
+          return;
+        }
+
         const res = await api.get("/guestbook/summary", {
-          params: { page: 0, size: 3 }, // ✅ ownerId 제거
+          params: {
+            ownerId,
+            page: 0,
+            size: 3,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 혹시 인증이 필요할 경우
+          },
         });
 
         if (res.data.success) {
-          setGuestbookData(res.data.data.content);
+          const formatted = res.data.data.content.map((msg) => ({
+            id: msg.guestbookId,
+            senderNickname: "익명", // 또는 msg.writerNickname 받아올 수 있다면 교체
+            senderProfileUrl: msg.writerProfileImage
+              ? `/assets/profile/${msg.writerProfileImage}`
+              : "/assets/profile_default.png",
+            createdAt: msg.createdAt.slice(0, 16).replace("T", " "),
+            content: msg.content,
+          }));
+
+          setGuestbookData(formatted);
         }
       } catch (err) {
-        console.error("방명록 요약 조회 실패:", err.message || err);
+        console.error("❌ 방명록 요약 조회 실패:", err.message || err);
       }
     };
 
@@ -88,7 +111,7 @@ export default function Home() {
         </div>
 
         <div className="guestbook-list-wrapper">
-          <MessageList messages={guestbookData} />
+          <MessageListReadOnly messages={guestbookData} />
         </div>
 
         <div className="calendar-section">
