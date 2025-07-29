@@ -18,6 +18,7 @@ export default function BudgetDetail({
   newCategory,
   setNewCategory,
   totalBudget,
+  categoryOptions,
 }) {
   const displayCategories = isEditing ? tempCategories : categories;
 
@@ -68,6 +69,7 @@ export default function BudgetDetail({
         newCategory={newCategory}
         setNewCategory={setNewCategory}
         totalBudget={totalBudget}
+        categoryOptions={categoryOptions}
       />
     </section>
   );
