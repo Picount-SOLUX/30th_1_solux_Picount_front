@@ -5,21 +5,101 @@
   box-sizing: border-box;
   padding: 20px;
   margin: 0 auto;
-  /* background: linear-gradient(to bottom, #fff5f5, #ffd9d9); */
   background-image: var(--bg-img);
-  background-color: var(--cell-bg);
+  background-color: transparent;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-size: 0.88rem;
   font-family: "Noto Sans KR", sans-serif;
+  z-index: 0;
+}
+
+.backgroundWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cell-bg, white); /* 기본 배경 따로 설정 가능 */
+  z-index: 0;
+}
+
+.frameOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 108%; /* 프레임 커버 범위 확장 */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain; /* 또는 cover → 스킨별 JS에서 frameSize 지정 */
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.stickerBar {
+  flex-grow: 1;
+  background-color: white;
+  border: 1.5px solid #f0d4ca;
+  border-radius: 100px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 6px 8px;
+  height: 24px;
+  min-width: 320px;
+}
+
+.stickerTrack {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.placedSticker {
+  width: 32px;
+  height: 40px;
+  position: absolute;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.stickerItem {
+  font-size: 13px;
+  padding: 2px 4px;
+  border-radius: 8px;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.stickerItem:hover {
+  transform: scale(1.2);
+}
+
+.stickerIcon {
+  width: 32px;
+  height: 32px;
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+.stickerIcon:hover {
+  transform: scale(1.2);
 }
 
 .headerRow {
+  z-index: 3;
+  position: relative;
+  background: rgba(255, 255, 255, 0.9);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  margin-bottom: 4px;
-  gap: 16px;
+  margin-bottom: 8px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -34,17 +114,15 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-
   background-color: #f8e6d5;
   border: none;
   border-radius: 24px;
-  padding: 6px 24px 6px 12px;
+  padding: 6px 20px 12px 24px;
   font-size: 0.85rem;
   font-weight: 500;
   width: 120px;
   line-height: 1;
   cursor: pointer;
-
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1),
     inset -2px -2px 4px rgba(255, 255, 255, 0.6);
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='black' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
@@ -53,61 +131,47 @@
   background-size: 12px 12px;
 }
 
-.stickerBar {
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0;
-  width: 100%;
+.reportBtn {
+  all: unset;
+  border: 1px solid rgb(195, 195, 195);
   background-color: white;
-  border-radius: 100px;
-  border: 1.5px solid #f0d4ca;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  min-width: 0;
-  min-height: 32px;
-  padding: 2px 8px;
-}
-
-.stickerTrack {
-  display: flex;
-  gap: 8px;
-  white-space: nowrap;
-}
-.placedSticker {
-  width: 32px;
-  height: 40px;
-  position: absolute;
-  z-index: 1000;
-  pointer-events: auto;
-}
-.stickerItem {
-  font-size: 13px;
-  padding: 2px 4px;
+  color: black;
+  padding: 6px 12px;
+  font-size: 0.85rem;
   border-radius: 8px;
-  cursor: grab;
-  user-select: none;
-  transition: transform 0.2s ease;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.stickerItem:hover {
-  transform: scale(1.2);
+.reportBtn:hover {
+  background-color: #f0f0f0;
 }
-.stickerIcon {
-  width: 32px;
-  height: 32px;
-  cursor: grab;
-  transition: transform 0.2s ease;
-}
-.stickerIcon:hover {
-  transform: scale(1.2);
-}
+
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0;
-  margin-top: 0;
+  position: relative;
+  z-index: 3; /* 프레임 위로 */
+  margin-top: 80px; /* ← 이게 핵심! 프레임 이미지 하단에 요일이 맞게 */
+  height: 36px;
+}
+
+.weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.78rem;
+  color: #333;
+  background-color: transparent;
+}
+
+/* .weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  z-index: 2;
+  position: relative;
+  background-color: transparent; 
 }
 
 .weekday {
@@ -115,12 +179,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5a9a7;
+  background-color: transparent; 
   color: #333;
   font-weight: bold;
   font-size: 0.78rem;
-  box-sizing: border-box;
-}
+} */
 
 .days {
   display: grid;
@@ -134,7 +197,6 @@
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0;
-  box-sizing: border-box;
   padding: 8px 20px;
   font-size: 0.8rem;
   min-height: 135px;
@@ -142,6 +204,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  box-sizing: border-box;
 }
 
 .date {
@@ -175,6 +238,7 @@
 .day:nth-child(42) {
   border-bottom-right-radius: 12px;
 }
+
 .day:nth-child(36) {
   border-bottom-left-radius: 12px;
 }
@@ -208,33 +272,4 @@
   border: none;
   font-size: 20px;
   cursor: pointer;
-}
-
-.reportBtn {
-  all: unset; /* 브라우저 기본 버튼 스타일 제거 */
-  border: 1px solid rgb(195, 195, 195);
-  background-color: white;
-  color: black;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.reportBtn:hover {
-  background-color: #f0f0f0;
-}
-
-.frameOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  z-index: 2;
-  pointer-events: none;
 }

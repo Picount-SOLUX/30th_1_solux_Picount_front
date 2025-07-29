@@ -13,7 +13,7 @@ export default function SettingsPage() {
   const [showModal, setShowModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-////////////////////////로그아웃 API////////////////////////////
+  ////////////////////////로그아웃 API////////////////////////////
   const handleLogout = async () => {
     try {
       const res = await logout(); // ✅ 로그아웃 API 호출
@@ -30,9 +30,9 @@ export default function SettingsPage() {
       alert("로그아웃 중 오류가 발생했습니다.");
     }
   };
-///////////////////////로그아웃 API/////////////////////////////
+  ///////////////////////로그아웃 API/////////////////////////////
 
-///////////////////////회원탈퇴 API///////////////////////////
+  ///////////////////////회원탈퇴 API///////////////////////////
   const handleDeleteAccount = () => {
     setShowModal(true); // 경고 모달 열기
   };
@@ -44,8 +44,8 @@ export default function SettingsPage() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         // 서버 로그아웃 처리
-        setShowModal(false);      // 확인 모달 닫기
-        setShowSuccess(true);     // 성공 모달 열기
+        setShowModal(false); // 확인 모달 닫기
+        setShowSuccess(true); // 성공 모달 열기
       } else {
         alert(res.data.message || "회원탈퇴 실패");
       }
@@ -58,7 +58,7 @@ export default function SettingsPage() {
     setShowSuccess(false);
     navigate("/"); // StartingPage로 이동
   };
-///////////////////////회원탈퇴 API///////////////////////////
+  ///////////////////////회원탈퇴 API///////////////////////////
 
   const goToEditProfile = () => {
     navigate("/settings/edit-profile");
@@ -79,7 +79,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await api.get("/api/friends/my", {
+        const res = await api.get("/friends/my", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -99,7 +99,7 @@ export default function SettingsPage() {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
     try {
-      const res = await api.delete(`/api/friends/${friendId}`, {
+      const res = await api.delete(`/friends/${friendId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

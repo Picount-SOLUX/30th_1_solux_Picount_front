@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/AuthAPI";
-import FindPassword from '../Auth/FindPassword'
 import "./Login.css";
 
 export default function Login() {
@@ -12,7 +11,7 @@ export default function Login() {
   const [showModal, setShowModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-/////////////////////////로그인 API///////////////////////////
+
   const handleLogin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
@@ -27,16 +26,22 @@ export default function Login() {
       console.log("로그인 응답:", response.data);
 
       if (response.data.success) {
-        let { accessToken, refreshToken, nickname } = response.data.data;
+        let { accessToken, refreshToken, nickname, memberId } =
+          response.data.data;
+
         // 🟢 nickname undefined 방지
         nickname = nickname ?? "테스트유저";
+
         // 로컬 스토리지에 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify({ nickname }));
+
         console.log("localStorage 저장됨:", localStorage.getItem("user"));
+
         setUserInfo({ nickname });
+
         setShowModal(true);
         setErrorMessage("");
       } else {
@@ -49,15 +54,13 @@ export default function Login() {
       );
     }
   };
-//////////////////////////로그인 API//////////////////////////
-
-/// 엔터 치면 로그인
+  /// 엔터 치면 로그인
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleLogin();
     }
   };
-/// 비밀번호 재설정
+  /// 비밀번호 재설정
   const goToResetPassword = () => {
     navigate("/reset-password");
   };
@@ -70,17 +73,18 @@ export default function Login() {
   };
 
   // 카카오 로그인 핸들러 수정
-const handleKakaoLogin = () => {
-  // 백엔드가 꺼져있을 때는 콜백 URL로 바로 이동 (가짜 토큰 포함)
-  if (import.meta.env.VITE_USE_BACKEND === "false") {
-    console.log("⚠️ 백엔드 OFF 상태 → mock 콜백 흐름으로 이동");
-    window.location.href =
-      "/callback?access_token=mock-access-token&refresh_token=mock-refresh-token&is_new=false";
-  } else {
-    // 백엔드 연동 ON일 때 실제 카카오 로그인 URL로 이동
-    window.location.href = "https://7ace74aa4830.ngrok-free.app/api/login/oauth2/authorization/kakao";
-  }
-};
+  const handleKakaoLogin = () => {
+    // 백엔드가 꺼져있을 때는 콜백 URL로 바로 이동 (가짜 토큰 포함)
+    if (import.meta.env.VITE_USE_BACKEND === "false") {
+      console.log("⚠️ 백엔드 OFF 상태 → mock 콜백 흐름으로 이동");
+      window.location.href =
+        "/callback?access_token=mock-access-token&refresh_token=mock-refresh-token&is_new=false";
+    } else {
+      // 백엔드 연동 ON일 때 실제 카카오 로그인 URL로 이동
+      window.location.href =
+        "https://7ace74aa4830.ngrok-free.app/api/login/oauth2/authorization/kakao";
+    }
+  };
 
   return (
     <div className="login-container">
@@ -104,7 +108,7 @@ const handleKakaoLogin = () => {
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         <div className="login-links">
-          <a onClick={() => navigate("/find-password")} className="link-text">
+          <a onClick={goToResetPassword} className="link-text">
             비밀번호 찾기
           </a>
         </div>
@@ -123,8 +127,8 @@ const handleKakaoLogin = () => {
             <a
               href="https://7ace74aa4830.ngrok-free.app/api/login/oauth2/authorization/kakao" // ✅ 백엔드 URL 연결
               //onClick={(e) => {
-                //e.preventDefault();
-                //handleKakaoLogin();
+              //e.preventDefault();
+              //handleKakaoLogin();
               //}}
               style={{ cursor: "pointer" }}
             >
@@ -141,9 +145,7 @@ const handleKakaoLogin = () => {
             </a>
           </div>
         </div>
-
       </div>
-
 
       {showModal && (
         <div className="modal-backdrop">

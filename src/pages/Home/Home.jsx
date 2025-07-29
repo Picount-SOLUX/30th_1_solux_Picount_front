@@ -7,6 +7,8 @@ import Calendar from "./components/Calendar";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import MessageList from "../Friends/components/MessageList";
+import getOwnerId from "../../api/getOwnerId";
+import api from "../../api/axiosInstance";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -31,19 +33,27 @@ export default function Home() {
   );
 
   const [guestbookData, setGuestbookData] = useState([]);
-
   useEffect(() => {
     const fetchGuestbooks = async () => {
       try {
-        const ownerId = localStorage.getItem("ownerId");
-        const res = await axios.get(
-          `/api/guestbook/summary?ownerId=${ownerId}&page=0&size=3`
+        const ownerId = getOwnerId(); // ✅ 내 ownerId 가져오기
+
+        const res = await api.get(
+          `/guestbook/summary?ownerId={ownerId}&page={page}&size={size}`,
+          {
+            params: {
+              ownerId,
+              page: 0,
+              size: 3, // 요약만 3개
+            },
+          }
         );
+
         if (res.data.success) {
           setGuestbookData(res.data.data.content);
         }
       } catch (err) {
-        console.error("방명록 불러오기 실패:", err);
+        console.error("방명록 요약 조회 실패:", err.message || err);
       }
     };
 

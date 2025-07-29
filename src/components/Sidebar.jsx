@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import api from "../api/axiosInstance";
 import "./Sidebar.css";
@@ -10,45 +10,12 @@ export default function Sidebar() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [friendError, setFriendError] = useState("");
 
-  // ✅ 공통 fetch 함수
-  const fetchFriendsFromServer = async () => {
-    const ownerId = localStorage.getItem("memberId");
-    if (!ownerId) return;
-
-    try {
-      const res = await api.get(`/friends/main?ownerId=${ownerId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (res.data.success) {
-        setFriends(res.data.data);
-        setIsPrivate(false);
-        setFriendError("");
-      } else {
-        setFriends([]);
-        setIsPrivate(true);
-        setFriendError(res.data.message || "친구 목록 불러오기 실패");
-      }
-    } catch (err) {
-      console.error("친구 목록 조회 오류", err);
-      setFriends([]);
-      setIsPrivate(true);
-      setFriendError("친구 목록을 불러오는 중 오류가 발생했습니다.");
-    }
-  };
-
   const handleFriendClick = async () => {
     const nextOpen = !isFriendOpen;
     setIsFriendOpen(nextOpen);
-
     if (nextOpen) {
-      const ownerId = localStorage.getItem("memberId");
-      if (!ownerId) return;
-
       try {
-        const res = await api.get(`/api/friends/main?ownerId=${ownerId}`, {
+        const res = await api.get("/friends/main", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -64,7 +31,7 @@ export default function Sidebar() {
           setFriendError(res.data.message || "비공개 또는 접근 불가");
         }
       } catch (err) {
-        console.error("친구 목록 불러오기 실패", err);
+        console.error("❌ 친구 목록 불러오기 실패", err);
         setFriends([]);
         setIsPrivate(true);
         setFriendError("친구 목록을 불러오는 중 오류가 발생했습니다.");
@@ -75,7 +42,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="profile-section">
-        <div className="profile-image"></div>
+        <div className="profile-image" />
         <p className="profile-name">닉네임</p>
         <p className="profile-status">친구들에게 나를 소개해보자!</p>
       </div>
@@ -125,7 +92,7 @@ export default function Sidebar() {
 
           <li onClick={handleFriendClick}>
             <div className="menu-item">
-              👥 친구 토글
+              👥 친구 목록
               <span className={`arrow ${isFriendOpen ? "open" : ""}`}>▾</span>
             </div>
           </li>
@@ -139,14 +106,14 @@ export default function Sidebar() {
                     className="friend-lock"
                     alt="비공개"
                   />
-                  <span className="friend-name">친구 목록 비공개</span>
+                  <span className="friend-name">{friendError}</span>
                 </div>
               ) : friends.length === 0 ? (
                 <div className="friend-item">친구가 없습니다.</div>
               ) : (
-                friends.map((friend, idx) => (
+                friends.map((friend) => (
                   <div
-                    key={idx}
+                    key={friend.memberId}
                     className="friend-item"
                     onClick={() => navigate(`/friends/${friend.memberId}`)}
                   >
@@ -155,15 +122,18 @@ export default function Sidebar() {
                       alt="profile"
                       className="friend-avatar"
                     />
-                    <span className="friend-name">{friend.nickname}</span>
-                    <span className="friend-status">
-                      ({friend.statusMessage})
-                    </span>
+                    <div className="friend-info">
+                      <span className="friend-name">{friend.nickname}</span>
+                      <span className="friend-status">
+                        {friend.statusMessage}
+                      </span>
+                    </div>
                   </div>
                 ))
               )}
             </div>
           )}
+
           <li>
             <NavLink
               to="/mypage"

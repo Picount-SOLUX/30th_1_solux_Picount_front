@@ -1,20 +1,21 @@
+// src/pages/Friends/components/MessageList.jsx
+
 import React from "react";
-import styles from "./MessageItem.module.css";
+import MessageItem from "./MessageItem";
+import styles from "./MessageList.module.css";
 
-export default function MessageItem({ nickname, time, content, profileImg }) {
+export default function MessageList({ messages }) {
   return (
-    <div className={styles.messageItem}>
-      <div className={styles.header}>
-        <div className={styles.avatar} />
-        <div className={styles.meta}>
-          <span className={styles.nickname}>{nickname}</span>
-          <span className={styles.time}>({time})</span>
-        </div>
-      </div>
-
-      <div className={styles.contentBox}>{content}</div>
-
-      <hr className={styles.divider} />
+    <div className={styles.messageList}>
+      {messages.map((msg) => (
+        <MessageItem
+          key={msg.guestbookId || msg.id}
+          nickname={msg.nickname || "익명"}
+          time={new Date(msg.createdAt).toLocaleString()}
+          content={msg.content}
+          profileImg={msg.writerProfileImage}
+        />
+      ))}
     </div>
   );
 }

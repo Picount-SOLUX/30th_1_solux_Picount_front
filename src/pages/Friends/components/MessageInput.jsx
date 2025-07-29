@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import styles from "./MessageInput.module.css";
 import axios from "axios";
 
-export default function MessageInput({ friendId, onMessageSubmit }) {
+// ✅ 이름만 맞춤
+export default function MessageInput({ ownerId, onMessageSubmit }) {
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
@@ -13,7 +14,7 @@ export default function MessageInput({ friendId, onMessageSubmit }) {
       const res = await axios.post(
         "/api/guestbook",
         {
-          ownerId: parseInt(friendId),
+          ownerId: parseInt(ownerId), // ← 그대로 사용
           content: message,
         },
         {
@@ -26,7 +27,7 @@ export default function MessageInput({ friendId, onMessageSubmit }) {
       if (res.data.success) {
         const newMsg = {
           id: res.data.guestbookId,
-          nickname: "나", // 또는 내 닉네임 상태에서 가져오기
+          nickname: "나",
           time: new Date().toLocaleString(),
           content: message,
           profileImg: null,
