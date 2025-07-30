@@ -40,6 +40,8 @@ export default function Join() {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         console.log("✅ 저장됨!", localStorage.getItem("accessToken"));
+        // nickname까지 함께 저장
+        localStorage.setItem("user", JSON.stringify({ nickname }));
         setShowModal(true);
 
         //localStorage.setItem("hasLoggedIn", "true");
