@@ -48,6 +48,7 @@ export default function Challenge() {
     const loadPointHistory = async () => {
       try {
         const res = await fetchMyPointHistory();
+        console.log("포인트 내역 원본:", res.data.data.history);
         console.log("포인트 내역 조회 성공!!", res.data);
         const formatted = res.data.data.history.map((item) => ({
           date: formatDate(item.createdAt),
@@ -70,7 +71,7 @@ export default function Challenge() {
       const res = await claimChallengeReward(challengeId);
       console.log("챌린지 보상 수령 성공!!", res.data)
       // rewardPoint 대신 type 기반으로 계산
-      const rewardPoint = getRewardByType(challengeType);
+      const rewardPoint = res.data.data.rewardPoint;
       setPoints((prev) => prev + rewardPoint);
 
       const today = new Date();
@@ -159,7 +160,7 @@ export default function Challenge() {
 // 보상 포인트 타입별 매핑 함수
 function getRewardByType(type) {
   const rewardMap = {
-    ATTENDANCE: 100,
+    ATTENDANCE: "랜덤지급(50/100/150)",
     ATTENDANCE7: 1000,
     ATTENDANCE30: 3000,
     GUESTBOOK: 200,
@@ -173,10 +174,15 @@ function convertReason(reason) {
   const reasonMap = {
     ITEM_PURCHASE: "아이템 구매",
     BONUS: "보너스",
-    CHALLENGE_REWARD: "챌린지 보상",
+    ATTENDANCE: "출석 체크",
+    GUESTBOOK: "방명록 1회 작성",
+    NO_SPENDING: "무지출 사유 10일 이상",
+    ROLLBACK: "회수",
+    INVITE_FRIEND: "친구 초대",
   };
   return reasonMap[reason] || reason;
 }
+
 
 // 날짜 포맷 변환 함수 (예: 7.26)
 function formatDate(isoStr) {
