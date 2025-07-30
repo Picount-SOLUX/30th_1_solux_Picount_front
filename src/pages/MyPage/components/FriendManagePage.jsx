@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./FriendManagePage.module.css";
 import { useNavigate } from "react-router-dom";
+import api from "../../../api/axiosInstance";
 
 export default function FriendManagePage() {
   const [friends, setFriends] = useState([]);
@@ -9,7 +10,7 @@ export default function FriendManagePage() {
 
   useEffect(() => {
     axios
-      .get("https://37cf286da836.ngrok-free.app/api/friends/my", {
+      .api("https://6e45bd638524.ngrok-free.app/api/friends/my", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -29,14 +30,11 @@ export default function FriendManagePage() {
     if (!confirmDelete) return;
 
     try {
-      const res = await axios.delete(
-        `https://37cf286da836.ngrok-free.app/api/friends/${friendId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await axios.delete(`/api/friends/${friendId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       if (res.data.success) {
         alert("친구가 삭제되었습니다.");

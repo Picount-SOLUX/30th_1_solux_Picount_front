@@ -6,6 +6,7 @@ import DeleteSuccessModal from "./DeleteSuccessModal";
 import { logout, deleteAccount } from "../../../api/AuthAPI"; // ✅ 로그아웃 API 임포트
 import { useEffect } from "react";
 import axios from "axios";
+import api from "../../../api/axiosInstance";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function SettingsPage() {
       // 로컬스토리지 토큰 제거
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-
+      localStorage.removeItem("hasLoggedIn");  // 여기!
       alert(res.data.message || "로그아웃 되었습니다."); // ✅ API 메시지 출력
       navigate("/login"); // 로그인 페이지로 이동
     } catch (error) {
@@ -78,14 +79,11 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const res = await axios.get(
-          "https://37cf286da836.ngrok-free.app/api/friends/my",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const res = await api.get("/api/friends/my", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         if (res.data.success) {
           setFriends(res.data.data);
         }
@@ -101,14 +99,11 @@ export default function SettingsPage() {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
     try {
-      const res = await axios.delete(
-        `https://37cf286da836.ngrok-free.app/api/friends/${friendId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await api.delete(`/api/friends/${friendId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (res.data.success) {
         alert("삭제 성공");
         setFriends((prev) => prev.filter((f) => f.memberId !== friendId));
@@ -147,8 +142,8 @@ export default function SettingsPage() {
               setIsMainVisible(newValue); // UI 즉시 반영
 
               try {
-                const res = await axios.post(
-                  "https://37cf286da836.ngrok-free.app/api/members/visibility/main",
+                const res = await api.patch(
+                  "/members/visibility/main",
                   { isMainVisible: newValue },
                   {
                     headers: {

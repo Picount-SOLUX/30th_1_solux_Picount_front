@@ -1,19 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import api from "../api/axiosInstance";
 import "./Sidebar.css";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const [isFriendOpen, setIsFriendOpen] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [friendError, setFriendError] = useState("");
 
-  const handleFriendClick = () => {
-    setIsFriendOpen(!isFriendOpen);
+  // ✅ 공통 fetch 함수
+  const fetchFriendsFromServer = async () => {
+    const ownerId = localStorage.getItem("memberId");
+    if (!ownerId) return;
+
+    try {
+      const res = await api.get(`/friends/main?ownerId=${ownerId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (res.data.success) {
+        setFriends(res.data.data);
+        setIsPrivate(false);
+        setFriendError("");
+      } else {
+        setFriends([]);
+        setIsPrivate(true);
+        setFriendError(res.data.message || "친구 목록 불러오기 실패");
+      }
+    } catch (err) {
+      console.error("친구 목록 조회 오류", err);
+      setFriends([]);
+      setIsPrivate(true);
+      setFriendError("친구 목록을 불러오는 중 오류가 발생했습니다.");
+    }
   };
-  const friends = [
-    { id: "user1", name: "민지", status: "오늘도 절약 중!" },
-    { id: "user2", name: "수현", status: "커피 한 잔의 여유" },
-    { id: "user3", name: "지우", status: "파이낸셜 마스터" },
-  ];
+
+  const handleFriendClick = async () => {
+    const nextOpen = !isFriendOpen;
+    setIsFriendOpen(nextOpen);
+
+    if (nextOpen) {
+      const ownerId = localStorage.getItem("memberId");
+      if (!ownerId) return;
+
+      try {
+        const res = await api.get(`/api/friends/main?ownerId=${ownerId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (res.data.success) {
+          setFriends(res.data.data);
+          setIsPrivate(false);
+          setFriendError("");
+        } else {
+          setFriends([]);
+          setIsPrivate(true);
+          setFriendError(res.data.message || "비공개 또는 접근 불가");
+        }
+      } catch (err) {
+        console.error("친구 목록 불러오기 실패", err);
+        setFriends([]);
+        setIsPrivate(true);
+        setFriendError("친구 목록을 불러오는 중 오류가 발생했습니다.");
+      }
+    }
+  };
 
   return (
     <aside className="sidebar">
@@ -35,7 +92,6 @@ export default function Sidebar() {
               🏠 홈
             </NavLink>
           </li>
-
           <li>
             <NavLink
               to="/budget"
@@ -46,7 +102,6 @@ export default function Sidebar() {
               💸 예산 설정
             </NavLink>
           </li>
-
           <li>
             <NavLink
               to="/shop"
@@ -57,7 +112,6 @@ export default function Sidebar() {
               🛒 상점
             </NavLink>
           </li>
-
           <li>
             <NavLink
               to="/challenge"
@@ -69,30 +123,47 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          {/* ✅ 하나의 친구 버튼으로 기능 통합 */}
           <li onClick={handleFriendClick}>
             <div className="menu-item">
               👥 친구 토글
               <span className={`arrow ${isFriendOpen ? "open" : ""}`}>▾</span>
             </div>
           </li>
-          {/* 친구 목록 */}
+
           {isFriendOpen && (
             <div className="friend-list">
-              {friends.map((friend) => (
-                <div
-                  key={friend.id}
-                  className="friend-item"
-                  onClick={() => navigate(`/friends/${friend.id}`)}
-                >
-                  <span className="friend-dot"></span>
-                  <span className="friend-name">{friend.name}</span>
-                  <span className="friend-status">({friend.status})</span>
+              {isPrivate ? (
+                <div className="friend-item">
+                  <img
+                    src="/assets/icons/lock-icon.png"
+                    className="friend-lock"
+                    alt="비공개"
+                  />
+                  <span className="friend-name">친구 목록 비공개</span>
                 </div>
-              ))}
+              ) : friends.length === 0 ? (
+                <div className="friend-item">친구가 없습니다.</div>
+              ) : (
+                friends.map((friend, idx) => (
+                  <div
+                    key={idx}
+                    className="friend-item"
+                    onClick={() => navigate(`/friends/${friend.memberId}`)}
+                  >
+                    <img
+                      src={friend.profileImageUrl}
+                      alt="profile"
+                      className="friend-avatar"
+                    />
+                    <span className="friend-name">{friend.nickname}</span>
+                    <span className="friend-status">
+                      ({friend.statusMessage})
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           )}
-
           <li>
             <NavLink
               to="/mypage"

@@ -4,10 +4,6 @@ export default function CategoryList({
   isEditing,
   categories,
   handleInputChange,
-  handleAddCategory,
-  handleDeleteCategory,
-  newCategory,
-  setNewCategory,
   totalBudget,
   categoryOptions = [], // 드롭다운 목록 추가
 }) {
@@ -47,13 +43,13 @@ export default function CategoryList({
                     }
                     className="category-input amount-input"
                   />
-                  <button
+                  {/* <button
                     className="delete-btn"
                     onClick={() => handleDeleteCategory(cat.id)}
                     title="삭제"
                   >
                     삭제
-                  </button>
+                  </button> */}
                 </div>
               </>
             ) : (
@@ -71,7 +67,7 @@ export default function CategoryList({
         );
       })}
 
-      {isEditing && (
+      {/* {isEditing && (
         <div className="category-item add-category-row">
           <select
             value={newCategory.name}
@@ -86,9 +82,9 @@ export default function CategoryList({
                 {option}
               </option>
             ))}
-          </select>
+          </select> */}
 
-          <div className="category-controls">
+          {/* <div className="category-controls">
             <input
               type="number"
               value={newCategory.amount}
@@ -105,9 +101,9 @@ export default function CategoryList({
             >
               추가
             </button>
-          </div>
-        </div>
-      )}
+          </div> */}
+        {/* </div>
+      )} */}
     </div>
   );
 }

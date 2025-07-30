@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styles from "./FriendCodeModal.module.css";
+import api from "../../../api/axiosInstance";
 
 export default function FriendCodeModal({ onClose }) {
   const [code, setCode] = useState("");
@@ -19,8 +20,8 @@ export default function FriendCodeModal({ onClose }) {
     }
 
     try {
-      const response = await axios.post(
-        "https://37cf286da836.ngrok-free.app/api/friends/request",
+      const response = await api.post(
+        "/friends/request",
         { friendCode: code },
         {
           headers: {

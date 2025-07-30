@@ -37,7 +37,7 @@
   border: 1px solid #f0d9a3;
   border-radius: 12px;
   padding: 15px;
-  width: 250px;
+  width: 300px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 100;
 }
@@ -378,4 +378,11 @@
   color: #e74d2e;
   font-size: 0.85rem;
   margin-right: 10px;
+}
+
+.help-graph-image {
+  width: 105%;
+  max-width: 400px;
+  margin-top: 10px;
+  border-radius: 8px;
 }

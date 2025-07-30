@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import styles from "./InputModal.module.css";
 import CategoryModal from "./CategoryModal";
+import api from "../../../api/axiosInstance";
+import { getCategories } from "../../../api/BudgetAPI";
+
 
 export default function InputModal({
   onClose,
@@ -30,6 +33,8 @@ export default function InputModal({
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState(null);
 
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const containerRef = useRef();
 
   const formatWithComma = (value) => {
@@ -38,7 +43,7 @@ export default function InputModal({
   };
 
   const getCategoryId = (type, name) => {
-    const list = categories?.[type] || [];
+    const list = fetchedCategories?.[type] || [];
     const match = list.find((c) => c.name === name);
     return match?.id || null;
   };
@@ -56,9 +61,12 @@ export default function InputModal({
   };
 
   const handleAddRow = () => {
-    if (isEditMode) return;
     setRows([...rows, { category: "", amount: "" }]);
   };
+
+  useEffect(() => {
+    console.log("현재 모드:", isEditMode ? "수정 모드" : "입력 모드");
+  }, [isEditMode]);
 
   const handleAddAmount = (index, plus) => {
     const current = Number(rows[index].amount.replace(/,/g, "")) || 0;
@@ -77,8 +85,8 @@ export default function InputModal({
     const ownerId = localStorage.getItem("userId");
 
     try {
-      const fetchRes = await axios.get(
-        `/api/calendar/record?date=${date}&ownerId=${ownerId}`
+      const fetchRes = await api.get(
+        `/calendar/record?date=${date}&ownerId=${ownerId}`
       );
       const prevData = fetchRes.data?.data || {};
       const prevIncomeList = prevData.incomes || [];
@@ -113,15 +121,11 @@ export default function InputModal({
       );
       if (photo) formData.append("photos", photo);
 
-      const res = await axios.post(
-        "https://37cf286da836.ngrok-free.app/api/calendar/record",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await api.post("/calendar/record", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       onSubmit?.({
         date,
@@ -181,8 +185,8 @@ export default function InputModal({
     const fetchExistingData = async () => {
       const ownerId = localStorage.getItem("userId");
       try {
-        const res = await axios.get(
-          `/api/calendar/record?date=${inputDate}&ownerId=${ownerId}`
+        const res = await api.get(
+          `/calendar/record?date=${inputDate}&ownerId=${ownerId}`
         );
         const result = res.data;
 
@@ -221,6 +225,40 @@ export default function InputModal({
     setPhoto(file);
     if (file) setPreview(URL.createObjectURL(file));
   };
+
+  const [fetchedCategories, setFetchedCategories] = useState({ income: [], expense: [] });
+  useEffect(() => {
+    const fetchCategories = async () => {
+      // const ownerId = localStorage.getItem("userId");
+
+      try {
+        const res = await getCategories();
+        console.log("카테고리 GET API 응답:", res);
+        const categoryList = res.data?.data || [];
+        console.log("categoryList:", categoryList);
+
+        const categoriesArray = categoryList.categories || [];
+        console.log("categoriesArray", categoriesArray)
+        // 수입/지출 분류
+        const income = categoriesArray
+          .filter((c) => c.type === "INCOME")
+          .map((c) => ({ id: c.categoryId, name: c.categoryName }));
+
+        const expense = categoriesArray
+          .filter((c) => c.type === "EXPENSE")
+          .map((c) => ({ id: c.categoryId, name: c.categoryName }));
+
+        console.log("income:", income);
+        console.log("expense:", expense);
+        setFetchedCategories({ income, expense });
+      } catch (e) {
+        console.error("카테고리 불러오기 실패:", e);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
 
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
@@ -273,20 +311,21 @@ export default function InputModal({
         {rows.map((row, idx) => (
           <div key={idx} className={styles.amountRow}>
             <select
-              className={styles.categorySelect}
               value={row.category}
               onChange={(e) => handleCategoryChange(idx, e.target.value)}
-              required
             >
-              <option value="" disabled hidden>
-                카테고리
-              </option>
-              {categories[type]?.map((cat) => (
-                <option key={cat.name || cat} value={cat.name || cat}>
-                  {cat.name || cat}
-                </option>
-              ))}
+              <option value="">카테고리</option>
+              {fetchedCategories[type].length === 0 ? (
+                <option disabled>카테고리 불러오는 중...</option>
+              ) : (
+                fetchedCategories[type].map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))
+              )}
             </select>
+
 
             <input
               className={styles.amountInput}
@@ -320,11 +359,11 @@ export default function InputModal({
           </div>
         ))}
 
-        {!isEditMode && (
+        
           <button className={styles.addRowBtn} onClick={handleAddRow}>
             +
           </button>
-        )}
+        
 
         <textarea
           className={styles.memo}

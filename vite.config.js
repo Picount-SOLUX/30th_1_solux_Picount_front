@@ -12,7 +12,7 @@ export default ({ mode }) => {
       proxy: {
         // ✅ 프록시 설정 추가
         "/api": {
-          target: "https://7ace74aa4830.ngrok-free.app", // ✅ 백엔드 주소 (ngrok이면 그 주소로 변경)
+          target: "https://picount.site", // ✅ 백엔드 주소 (ngrok이면 그 주소로 변경)
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },

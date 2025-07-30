@@ -14,6 +14,7 @@ import "../../../styles/CalendarThemes.css";
 import CategoryModal from "./CategoryModal";
 import ReportModal from "./ReportModal";
 import useSkin from "../../../context/useSkin";
+import api from "../../../api/axiosInstance";
 
 function Calendar() {
   const today = new Date();
@@ -38,19 +39,37 @@ function Calendar() {
   ];
 
   const handleStickerDrop = async (dateStr, emotionObj) => {
+    const ownerId = localStorage.getItem("memberId"); // ← 반드시 가져오기
+    console.log(
+      "📤 POST /calendar/emotion",
+      JSON.stringify(
+        {
+          date: dateStr,
+          emotion: emotionObj.emotion,
+          ownerId,
+        },
+        null,
+        2
+      )
+    );
+    if (!ownerId) {
+      console.error("❌ ownerId가 없습니다. 로그인 정보를 확인하세요.");
+      return;
+    }
+
     try {
-      const res = await axios.post("/api/calendar/emotion", {
+      const res = await api.post("/calendar/emotion", {
         date: dateStr,
         emotion: emotionObj.emotion,
+        // ownerId 생략 가능!
       });
 
       const result = res.data;
 
       if (result.success) {
-        // 성공했을 때만 표시
         setPlacedStickers((prev) => ({
           ...prev,
-          [dateStr]: emotionObj.src, // 표시용
+          [dateStr]: emotionObj.src, // 표시용 src는 그대로
         }));
       } else {
         console.warn("스티커 등록 실패:", result.message);
@@ -62,7 +81,7 @@ function Calendar() {
 
   const handleStickerDelete = async (dateStr) => {
     try {
-      const res = await axios.delete(`/api/calendar/emotion?date=${dateStr}`);
+      const res = await api.delete(`/calendar/emotion?date=${dateStr}`);
       const result = res.data;
 
       if (result.status === "success") {
@@ -121,8 +140,8 @@ function Calendar() {
   const handleDayClick = async (dateStr) => {
     const ownerId = localStorage.getItem("userId");
     try {
-      const res = await axios.get(
-        `/api/calendar/record?date=${dateStr}&ownerId=${ownerId}`
+      const res = await api.get(
+        `/calendar/record?date=${dateStr}&ownerId=${ownerId}`
       );
       const result = res.data;
 
@@ -155,19 +174,19 @@ function Calendar() {
   };
 
   // 테스트용으로 angel 스킨 바로 적용
-  useEffect(() => {
-    setCalendarSkinUrl({
-      backgroundUrl: "angel-bg.png",
-      frameUrl: "angel_frame.png",
-    });
-  }, [setCalendarSkinUrl]);
+  // useEffect(() => {
+  //   setCalendarSkinUrl({
+  //     backgroundUrl: "angel-bg.png",
+  //     frameUrl: "angel_frame.png",
+  //   });
+  // }, [setCalendarSkinUrl]);
 
   useEffect(() => {
     const fetchCalendarSummary = async () => {
       const ownerId = localStorage.getItem("userId");
       try {
-        const res = await axios.get(
-          `/api/calendar/summary?year=${currentYear}&month=${
+        const res = await api.get(
+          `/calendar/summary?year=${currentYear}&month=${
             currentMonth + 1
           }&ownerId=${ownerId}`
         );
@@ -197,8 +216,8 @@ function Calendar() {
     if (showReport) {
       const fetchEmotionReport = async () => {
         try {
-          const res = await axios.get(
-            `/api/calendar/report/emotion?year=${currentYear}&month=${
+          const res = await api.get(
+            `/calendar/report/emotion?year=${currentYear}&month=${
               currentMonth + 1
             }`
           );
@@ -219,10 +238,8 @@ function Calendar() {
 
   const fetchEmotionReport = async () => {
     try {
-      const res = await axios.get(
-        `/api/calendar/report/emotion?year=${currentYear}&month=${
-          currentMonth + 1
-        }`
+      const res = await api.get(
+        `/calendar/report/emotion?year=${currentYear}&month=${currentMonth + 1}`
       );
       const result = res.data;
       if (result.success) {

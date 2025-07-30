@@ -17,7 +17,7 @@ export default function DroppableDay({
     accept: "sticker",
     canDrop: () => isCurrentMonth,
     drop: (item) => {
-      onDrop?.(date, item.src);
+      onDrop?.(date, item);
       wasDropped.current = true;
     },
     collect: (monitor) => ({

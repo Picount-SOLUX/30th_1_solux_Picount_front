@@ -57,17 +57,22 @@ export default function Login() {
       handleLogin();
     }
   };
-/// 비밀번호 재설정
-  const goToResetPassword = () => {
-    navigate("/reset-password");
-  };
 
   const closeModal = () => {
     setShowModal(false);
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const nickname = storedUser.nickname || "테스트유저";
-    navigate("/welcome", { state: { nickname } });
+
+    const hasLoggedIn = localStorage.getItem("hasLoggedIn") === "true";
+
+    if (!hasLoggedIn) {
+      localStorage.setItem("hasLoggedIn", "true");
+      navigate("/welcome", { state: { nickname } });
+    } else {
+      navigate("/home");
+    }
   };
+
 
   // 카카오 로그인 핸들러 수정
 const handleKakaoLogin = () => {

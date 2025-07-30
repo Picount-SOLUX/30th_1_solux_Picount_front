@@ -4,6 +4,7 @@ import BudgetDetail from "./components/BudgetDetail";
 import DatePicker from "react-datepicker"; // 달력
 import "react-datepicker/dist/react-datepicker.css"; // 스타일
 import "./Budget.css";
+import { getCategories } from "../../api/BudgetAPI";
 
 export default function Budget() {
   const jobData = [
@@ -72,7 +73,7 @@ export default function Budget() {
       description: "유동적인 소득에 맞춘 예산 분배를 고려했습니다.",
       budgets: [
         { label: "식비", percent: 20 },
-        { label: "업무비(장비 등)", percent: 20 },
+        { label: "업무비(장비)", percent: 20 },
         { label: "고정지출", percent: 15 },
         { label: "저축/투자", percent: 20 },
         { label: "자기계발", percent: 15 },
@@ -109,6 +110,27 @@ export default function Budget() {
   );
 
   const jobInfo = jobData.find((job) => job.title === selectedJob);
+
+  const [categoryOptions, setCategoryOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getCategories(); // 전체 조회 API 사용
+        const categories = res.data.data.categories;
+        console.log("카테고리 불러오기 성공:", categories);
+
+        // 중복 제거 + 이름만 추출
+        const expenseCategories = categories.filter(cat => cat.type === "EXPENSE");
+        const names = [...new Set(expenseCategories.map((cat) => cat.categoryName))];        
+        setCategoryOptions(names);
+      } catch (error) {
+        console.error("카테고리 불러오기 실패:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // 🔥 InfoSteps 값으로 기본 예산 세팅
   useEffect(() => {
@@ -155,28 +177,28 @@ export default function Budget() {
 
   const handleInputChange = (id, field, value) => {
     setTempCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === id ? { ...cat, [field]: value } : cat
-      )
+      prev.map((cat) => (cat.id === id ? { ...cat, [field]: value } : cat))
     );
   };
 
-  const handleAddCategory = () => {  //카테고리 추가
-    if (!newCategory.name.trim()) return;
-    const nextId =
-      tempCategories.length > 0
-        ? Math.max(...tempCategories.map((c) => c.id)) + 1
-        : 1;
-    const newCat = {
-      id: nextId,
-      name: newCategory.name,
-      amount: newCategory.amount || "0",
-    };
-    setTempCategories([...tempCategories, newCat]);
-    setNewCategory({ name: "", amount: "" });
-  };
+  //카테고리 추가
+  // const handleAddCategory = () => {
+  //   if (!newCategory.name.trim()) return;
+  //   const nextId =
+  //     tempCategories.length > 0
+  //       ? Math.max(...tempCategories.map((c) => c.id)) + 1
+  //       : 1;
+  //   const newCat = {
+  //     id: nextId,
+  //     name: newCategory.name,
+  //     amount: newCategory.amount || "0",
+  //   };
+  //   setTempCategories([...tempCategories, newCat]);
+  //   setNewCategory({ name: "", amount: "" });
+  // };
 
-  const handleDeleteCategory = (id) => {  // 카테고리 삭제
+  const handleDeleteCategory = (id) => {
+    // 카테고리 삭제
     setTempCategories((prev) => prev.filter((cat) => cat.id !== id));
   };
 
@@ -185,7 +207,7 @@ export default function Budget() {
   };
 
   return (
-    <div className="budget-wrapper">
+    <div className='budget-wrapper'>
       <BudgetGraph
         categories={categories}
         isEditing={isEditing}
@@ -207,11 +229,12 @@ export default function Budget() {
         categories={categories}
         tempCategories={tempCategories}
         handleInputChange={handleInputChange}
-        handleAddCategory={handleAddCategory}
+        //handleAddCategory={handleAddCategory}
         handleDeleteCategory={handleDeleteCategory}
         newCategory={newCategory}
         setNewCategory={setNewCategory}
         totalBudget={totalBudget}
+        categoryOptions={categoryOptions}
       />
     </div>
   );
