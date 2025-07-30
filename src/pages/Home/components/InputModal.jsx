@@ -86,7 +86,7 @@ export default function InputModal({
 
     try {
       const fetchRes = await api.get(
-        `/calendar/record?date=${date}&ownerId=${ownerId}`
+        `/calendar/record?date=${date}`
       );
       const prevData = fetchRes.data?.data || {};
       const prevIncomeList = prevData.incomes || [];
@@ -96,6 +96,7 @@ export default function InputModal({
         .filter((row) => row.category && row.amount)
         .map((row) => ({
           categoryId: getCategoryId("income", row.category),
+          categoryName: row.category,
           amount: Number(row.amount.replace(/,/g, "")),
         }));
 
@@ -103,6 +104,7 @@ export default function InputModal({
         .filter((row) => row.category && row.amount)
         .map((row) => ({
           categoryId: getCategoryId("expense", row.category),
+          categoryName: row.category, 
           amount: Number(row.amount.replace(/,/g, "")),
         }));
 
@@ -127,17 +129,33 @@ export default function InputModal({
         },
       });
 
-      onSubmit?.({
+      // 부모 컴포넌트(Calendar)에 업데이트된 데이터 전달
+      const updatedData = {
         date,
-        incomeList: newIncomeList,
-        expenseList: newExpenseList,
         memo,
-      });
+        photo: photo ? URL.createObjectURL(photo) : preview,
+        entries: [
+          ...newIncomeList.map(item => ({
+            type: "income",
+            category: item.categoryName,
+            amount: item.amount.toLocaleString(),
+          })),
+          ...newExpenseList.map(item => ({
+            type: "expense", 
+            category: item.categoryName,
+            amount: item.amount.toLocaleString(),
+          })),
+        ]
+      };
+
+      onSubmit?.(updatedData);
       onClose();
     } catch (e) {
       console.error("가계부 저장 실패:", e);
     }
   };
+
+  
 
   const handleDeleteRow = (index) => {
     const updated = [...rows];
