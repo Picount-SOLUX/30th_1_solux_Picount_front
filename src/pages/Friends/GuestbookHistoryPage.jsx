@@ -1,9 +1,8 @@
-// GuestbookHistoryPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosInstance";
 import getOwnerId from "../../api/getOwnerId";
-import MessageListReadOnly from "./components/MessageListReadOnly"; // ✅ 새 컴포넌트 import
+import MessageListReadOnly from "./components/MessageListReadOnly";
 
 export default function GuestbookHistoryPage() {
   const navigate = useNavigate();
@@ -20,16 +19,32 @@ export default function GuestbookHistoryPage() {
 
       try {
         const res = await api.get("/guestbook/details", {
-          params: { ownerId, page: 0, size: 100 },
+          params: {
+            ownerId,
+            page: 0,
+            size: 3,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         });
 
         if (res.data.success) {
-          setMessages(res.data.data.content);
-        } else {
-          console.warn("불러오기 실패", res.data.message);
+          console.log("✅ 응답 확인:", res.data.data.content);
+          const formatted = res.data.data.content.map((item) => ({
+            id: item.guestbookId,
+            senderNickname: item.writerNickname || "익명", // ✅ 작성자 닉네임
+            senderProfileUrl:
+              item.writerProfileImage ||
+              "/images/profile/default-member-profile.png",
+            createdAt: item.createdAt.slice(0, 16).replace("T", " "),
+            content: item.content,
+          }));
+
+          setMessages(formatted);
         }
       } catch (err) {
-        console.error("❌ 방명록 상세 조회 실패", err);
+        console.error("❌ 방명록 요약 조회 실패:", err.message || err);
       }
     };
 

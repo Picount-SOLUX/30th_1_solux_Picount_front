@@ -43,26 +43,27 @@ export default function Home() {
           return;
         }
 
-        const res = await api.get("/guestbook/summary", {
+        const res = await api.get("/guestbook/details", {
           params: {
             ownerId,
             page: 0,
             size: 3,
           },
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 혹시 인증이 필요할 경우
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
 
         if (res.data.success) {
-          const formatted = res.data.data.content.map((msg) => ({
-            id: msg.guestbookId,
-            senderNickname: "익명", // 또는 msg.writerNickname 받아올 수 있다면 교체
-            senderProfileUrl: msg.writerProfileImage
-              ? `/assets/profile/${msg.writerProfileImage}`
-              : "/assets/profile_default.png",
-            createdAt: msg.createdAt.slice(0, 16).replace("T", " "),
-            content: msg.content,
+          console.log("✅ 응답 확인:", res.data.data.content);
+          const formatted = res.data.data.content.map((item) => ({
+            id: item.guestbookId,
+            senderNickname: item.writerNickname || "익명", // ✅ 작성자 닉네임
+            senderProfileUrl:
+              item.writerProfileImage ||
+              "/images/profile/default-member-profile.png",
+            createdAt: item.createdAt.slice(0, 16).replace("T", " "),
+            content: item.content,
           }));
 
           setGuestbookData(formatted);
