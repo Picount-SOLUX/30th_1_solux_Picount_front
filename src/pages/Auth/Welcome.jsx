@@ -6,13 +6,8 @@ export default function Welcome() {
   const navigate = useNavigate(); // useNavigate로 라우팅 준비
 
   console.log("location.state:", location.state);
-<<<<<<< HEAD
-  console.log("localStorage user:", localStorage.getItem("user"));
-
-=======
   //console.log("localStorage user:", localStorage.getItem('user'));
-  
->>>>>>> 7b3e665893bcbffbbeb624811e7c6f35ec8fd842
+
   const nickname =
     location.state?.nickname ||
     JSON.parse(localStorage.getItem("user"))?.nickname;

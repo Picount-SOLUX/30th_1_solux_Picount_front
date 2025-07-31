@@ -1,10 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/AuthAPI";
-<<<<<<< HEAD
-import FindPassword from "../Auth/FindPassword";
-=======
->>>>>>> 7b3e665893bcbffbbeb624811e7c6f35ec8fd842
 import "./Login.css";
 import api from "../../api/axiosInstance";
 
@@ -31,36 +27,18 @@ export default function Login() {
       console.log("로그인 응답:", response.data);
 
       if (response.data.success) {
-        let { accessToken, refreshToken, } = response.data.data;
+        let { accessToken, refreshToken } = response.data.data;
         // 👉 localStorage에 저장된 nickname을 꺼내기
-        let storedNickname = JSON.parse(localStorage.getItem("user") || "{}").nickname;
+        let storedNickname = JSON.parse(
+          localStorage.getItem("user") || "{}"
+        ).nickname;
         const nickname = storedNickname ?? "회원"; // nickname 없으면 fallback
         // 로컬 스토리지에 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify({ nickname }));
-<<<<<<< HEAD
-
-        // ✅ 🔽 여기 추가: memberId 가져오기
-        try {
-          const meRes = await api.get("/members/profile"); // ✅ axiosInstance 사용!
-          const memberId = meRes.data?.data?.memberId;
-
-          if (memberId) {
-            localStorage.setItem("memberId", memberId);
-            console.log("✅ memberId 저장 완료:", memberId);
-          } else {
-            console.warn("❗ memberId 응답 없음:", meRes.data);
-          }
-        } catch (meErr) {
-          console.error("❌ memberId 불러오기 실패:", meErr);
-        }
-
-        console.log("localStorage 저장됨:", localStorage.getItem("user"));
-=======
         //console.log("localStorage 저장됨:", localStorage.getItem("user"));
->>>>>>> 7b3e665893bcbffbbeb624811e7c6f35ec8fd842
         setUserInfo({ nickname });
         setShowModal(true);
         setErrorMessage("");
@@ -97,7 +75,6 @@ export default function Login() {
       navigate("/home");
     }
   };
-
 
   // 카카오 로그인 핸들러 수정
   const handleKakaoLogin = () => {

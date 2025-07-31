@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./ProfileSection.module.css";
 import FriendsSection from "./FriendsSection";
 import { useProfile } from "../../../context/useProfile";
-import api from "../../api/axiosInstance";
+import api from "../../../api/axiosInstance";
 
 export default function ProfileSection() {
   const { intro, profileImage } = useProfile();
