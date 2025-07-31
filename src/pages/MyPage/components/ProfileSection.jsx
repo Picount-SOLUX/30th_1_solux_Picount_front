@@ -6,9 +6,11 @@ import { useProfile } from "../../../context/useProfile";
 import api from "../../../api/axiosInstance";
 
 export default function ProfileSection() {
-  const { nickname, intro, profileImage } = useProfile();
+  const { intro, profileImage } = useProfile();
   const [friendCode, setFriendCode] = useState("");
   const [error, setError] = useState("");
+  const nickname =
+    location.state?.nickname || JSON.parse(localStorage.getItem('user'))?.nickname;
 
   useEffect(() => {
     const fetchFriendCode = async () => {
@@ -37,6 +39,7 @@ export default function ProfileSection() {
     fetchFriendCode(); // ✅ 함수 호출이 useEffect 바깥에 있어야 함
   }, []);
 
+  
   return (
     <div className={styles.profileSection}>
       <div className={styles.profileImage}>

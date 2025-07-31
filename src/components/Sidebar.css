@@ -66,6 +66,34 @@
   margin: 0;
 }
 
+.menu-icon-home {
+  height: 21px;
+  margin-left: 3px;
+  margin-right: 12px;
+}
+.menu-icon-budget {
+  height: 21px;
+  margin-left: 2px;
+  margin-right: 12px;
+}
+.menu-icon-shop {
+  height: 19px;
+  margin-right: 12px;
+}
+.menu-icon-challenge {
+  height: 22px;
+  margin-left: 3px;
+  margin-right: 13px;
+}
+.menu-icon-friends {
+  height: 19px;
+  margin-right: 11px;
+}
+.menu-icon-mypage {
+  height: 20px;
+  margin-right: 13px;
+}
+
 .menu li {
   display: flex;
   align-items: center;
