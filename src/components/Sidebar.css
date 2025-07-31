@@ -31,7 +31,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   font-weight: bold;
   width: 200px;
-  padding: 10px;
+  padding: 12px;
 }
 
 .profile-section {
@@ -51,8 +51,10 @@
 }
 
 .profile-name {
-  font-weight: bold;
-  font-size: 0.85rem;
+  font-weight: 500;
+  font-size: 1rem;
+  margin: -1px;
+  margin-bottom: -7px;
 }
 
 .profile-status {
@@ -87,7 +89,8 @@
 }
 .menu-icon-friends {
   height: 19px;
-  margin-right: 11.5px;
+  margin-left: 0.5px;
+  margin-right: 11px;
 }
 .menu-icon-mypage {
   height: 20px;
@@ -98,8 +101,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px;
-  width: 100%;
+  padding: 9px;
+  width: 110%;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -107,6 +110,7 @@
 
 .menu li:hover {
   background-color: white;
+  padding: 10px;
 }
 /* ▼ 화살표 회전 효과 */
 .arrow {

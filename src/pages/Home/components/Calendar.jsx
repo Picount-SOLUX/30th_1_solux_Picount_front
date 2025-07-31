@@ -478,7 +478,7 @@ function Calendar() {
               <InputModal
                 categories={categories}
                 initialData={editData}
-                isEditMode={!!editData}
+                isEditMode={!editData}
                 calendarData={calendarData}
                 onClose={() => {
                   setEditData(null);

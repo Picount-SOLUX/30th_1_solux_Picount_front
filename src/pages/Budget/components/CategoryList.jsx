@@ -43,13 +43,6 @@ export default function CategoryList({
                     }
                     className="category-input amount-input"
                   />
-                  {/* <button
-                    className="delete-btn"
-                    onClick={() => handleDeleteCategory(cat.id)}
-                    title="삭제"
-                  >
-                    삭제
-                  </button> */}
                 </div>
               </>
             ) : (
@@ -66,44 +59,6 @@ export default function CategoryList({
           </div>
         );
       })}
-
-      {/* {isEditing && (
-        <div className="category-item add-category-row">
-          <select
-            value={newCategory.name}
-            onChange={(e) =>
-              setNewCategory({ ...newCategory, name: e.target.value })
-            }
-            className="category-select name-input"
-          >
-            <option value="">카테고리 선택</option>
-            {categoryOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select> */}
-
-          {/* <div className="category-controls">
-            <input
-              type="number"
-              value={newCategory.amount}
-              placeholder="금액"
-              onChange={(e) =>
-                setNewCategory({ ...newCategory, amount: e.target.value })
-              }
-              className="category-input amount-input"
-            />
-            <button
-              className="add-btn"
-              onClick={handleAddCategory}
-              title="카테고리 추가"
-            >
-              추가
-            </button>
-          </div> */}
-        {/* </div>
-      )} */}
     </div>
   );
 }
