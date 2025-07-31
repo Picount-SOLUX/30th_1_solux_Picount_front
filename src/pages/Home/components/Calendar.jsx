@@ -481,8 +481,8 @@ function Calendar() {
                 isEditMode={!!editData}
                 calendarData={calendarData}
                 onClose={() => {
-                  setIsInputOpen(false);
                   setEditData(null);
+                  setIsInputOpen(false);
                 }}
                 onSubmit={handleModalSubmit}
                 onOpenCategoryModal={() => {
