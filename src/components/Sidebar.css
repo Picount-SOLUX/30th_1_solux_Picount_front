@@ -14,9 +14,6 @@
   padding: 20px;
 }
 
-<<<<<<< HEAD
-/* ===== 프로필 영역 ===== */
-=======
 .menu-item {
   display: flex;
   align-items: center;
@@ -37,7 +34,6 @@
   padding: 12px;
 }
 
->>>>>>> feat/Budget-API
 .profile-section {
   background: #fff9e7;
   border: 1px solid #ddd;

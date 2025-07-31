@@ -78,8 +78,6 @@ export default function Login() {
     }
   };
 
-<<<<<<< HEAD
-=======
   function saveUserIdFromToken() {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
@@ -97,8 +95,6 @@ export default function Login() {
     }
   }
 
-
->>>>>>> feat/Budget-API
   // 카카오 로그인 핸들러 수정
   const handleKakaoLogin = () => {
     // 백엔드가 꺼져있을 때는 콜백 URL로 바로 이동 (가짜 토큰 포함)
