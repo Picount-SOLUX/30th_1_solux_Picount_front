@@ -152,6 +152,7 @@ export default function InputModal({
         const res = await updateCalendarRecord(date, formData);
         console.log("📬 서버 응답:", res);
       } else {
+        console.log("여까진 들어오는겨?")
         const res = await createCalendarRecord(formData);
         console.log("📬 서버 응답:", res);
       }
