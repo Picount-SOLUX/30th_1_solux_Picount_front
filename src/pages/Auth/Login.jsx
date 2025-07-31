@@ -25,6 +25,8 @@ export default function Login() {
     try {
       const response = await login({ email, password });
       console.log("로그인 응답:", response.data);
+      // 로그인 성공 시 호출
+      saveUserIdFromToken();
 
       if (response.data.success) {
         let { accessToken, refreshToken } = response.data.data;
@@ -76,6 +78,27 @@ export default function Login() {
     }
   };
 
+<<<<<<< HEAD
+=======
+  function saveUserIdFromToken() {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    try {
+      const base64Payload = token.split(".")[1];
+      const decodedPayload = JSON.parse(atob(base64Payload));
+      const memberId = Number(decodedPayload.memberId);
+
+      if (memberId) {
+        localStorage.setItem("userId", memberId);
+      }
+    } catch (err) {
+      console.error("userId 추출 실패:", err);
+    }
+  }
+
+
+>>>>>>> feat/Budget-API
   // 카카오 로그인 핸들러 수정
   const handleKakaoLogin = () => {
     // 백엔드가 꺼져있을 때는 콜백 URL로 바로 이동 (가짜 토큰 포함)

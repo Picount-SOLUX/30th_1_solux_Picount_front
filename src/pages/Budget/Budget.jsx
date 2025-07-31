@@ -4,7 +4,7 @@ import BudgetDetail from "./components/BudgetDetail";
 import DatePicker from "react-datepicker"; // 달력
 import "react-datepicker/dist/react-datepicker.css"; // 스타일
 import "./Budget.css";
-import { getCategories } from "../../api/BudgetAPI";
+import { getCategories, getActiveBudget, updateBudgetPlan } from "../../api/BudgetAPI";
 
 export default function Budget() {
   const jobData = [
@@ -132,8 +132,34 @@ export default function Budget() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const fetchActiveBudget = async () => {
+      try {
+        const res = await getActiveBudget();
+        const data = res.data.data;
+
+        const serverCategories = data.budgetAllocationList.map((item) => ({
+          id: item.budgetAllocationId,
+          name: item.categoryName,
+          amount: item.amount.toString(),
+        }));
+
+        setCategories(serverCategories);
+        localStorage.setItem("budgetCategories", JSON.stringify(serverCategories));
+        localStorage.setItem("budgetId", data.budgetId); // PUT용으로 저장
+      } catch (err) {
+        console.error("활성화된 예산 가져오기 실패", err);
+      }
+    };
+
+    fetchActiveBudget();
+  }, []);
+
   // 🔥 InfoSteps 값으로 기본 예산 세팅
   useEffect(() => {
+    // const localCategories = localStorage.getItem("budgetCategories");
+    // const hasActiveBudget = localCategories && JSON.parse(localCategories).length > 0;
+
     if (jobInfo && selectedBudget > 0) {
       const initializedCategories = jobInfo.budgets.map((item, idx) => ({
         id: idx + 1,
@@ -164,42 +190,52 @@ export default function Budget() {
     ? getTotalBudget(tempCategories)
     : getTotalBudget(categories);
 
+  // 수정 버튼
   const handleEditClick = () => {
     setIsEditing(true);
     setTempCategories([...categories]);
   };
 
-  const handleSaveClick = () => {
-    setCategories([...tempCategories]);
-    localStorage.setItem("budgetCategories", JSON.stringify(tempCategories));
-    setIsEditing(false);
+  // 저장 버튼
+  const handleSaveClick = async () => {
+    try {
+      const budgetId = localStorage.getItem("budgetId");
+      if (!budgetId) {
+        throw new Error("예산 ID 없음");
+      }
+      const startDate = localStorage.getItem("budgetStartDate");
+      const endDate = localStorage.getItem("budgetEndDate");
+      const totalAmount = localStorage.getItem("budgetTotalAmount");
+      if (!startDate || !endDate || !totalAmount) {
+        throw new Error("예산 필수 정보 누락");
+      }
+      const payload = {
+        startDate,
+        endDate,
+        totalAmount: parseInt(totalAmount),
+        budgetAllocationList: tempCategories.map((cat) => ({
+          categoryId: cat.categoryId,
+          amount: parseInt(cat.amount),
+        })),
+      };
+      console.log("보내는 payload", payload.budgetAllocationList);
+      console.log("여기까진 오냐?")
+      const res = await updateBudgetPlan(budgetId, payload); // PUT 요청
+      console.log("세부예산 수정 완료:", res)
+      setCategories([...tempCategories]);
+      localStorage.setItem("budgetCategories", JSON.stringify(tempCategories));
+      setIsEditing(false);
+      alert("저장되었습니다.");
+    } catch (error) {
+      console.error("예산 저장 실패", error);
+      alert("예산 저장 중 오류 발생");
+    }
   };
 
   const handleInputChange = (id, field, value) => {
     setTempCategories((prev) =>
       prev.map((cat) => (cat.id === id ? { ...cat, [field]: value } : cat))
     );
-  };
-
-  //카테고리 추가
-  // const handleAddCategory = () => {
-  //   if (!newCategory.name.trim()) return;
-  //   const nextId =
-  //     tempCategories.length > 0
-  //       ? Math.max(...tempCategories.map((c) => c.id)) + 1
-  //       : 1;
-  //   const newCat = {
-  //     id: nextId,
-  //     name: newCategory.name,
-  //     amount: newCategory.amount || "0",
-  //   };
-  //   setTempCategories([...tempCategories, newCat]);
-  //   setNewCategory({ name: "", amount: "" });
-  // };
-
-  const handleDeleteCategory = (id) => {
-    // 카테고리 삭제
-    setTempCategories((prev) => prev.filter((cat) => cat.id !== id));
   };
 
   const toggleHelp = () => {
@@ -229,8 +265,6 @@ export default function Budget() {
         categories={categories}
         tempCategories={tempCategories}
         handleInputChange={handleInputChange}
-        //handleAddCategory={handleAddCategory}
-        handleDeleteCategory={handleDeleteCategory}
         newCategory={newCategory}
         setNewCategory={setNewCategory}
         totalBudget={totalBudget}

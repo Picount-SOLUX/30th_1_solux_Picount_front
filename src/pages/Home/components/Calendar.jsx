@@ -527,24 +527,25 @@ function Calendar() {
             />
           )}
 
-          {isInputOpen && (
-            <InputModal
-              categories={categories}
-              initialData={editData}
-              isEditMode={!!editData}
-              calendarData={calendarData}
-              onClose={() => {
-                setEditData(null);
-                setIsInputOpen(false);
-              }}
-              onSubmit={handleModalSubmit}
-              onOpenCategoryModal={() => {
-                setShowInputModal(false);
-                setIsInputOpen(false);
-                setShowCategoryModal(true);
-              }}
-            />
-          )}
+
+            {isInputOpen && (
+              <InputModal
+                categories={categories}
+                initialData={editData}
+                isEditMode={!editData}
+                calendarData={calendarData}
+                onClose={() => {
+                  setEditData(null);
+                  setIsInputOpen(false);
+                }}
+                onSubmit={handleModalSubmit}
+                onOpenCategoryModal={() => {
+                  setShowInputModal(false);
+                  setIsInputOpen(false);
+                  setShowCategoryModal(true);
+                }}
+              />
+            )}
 
           {/* ReportModal */}
           {showReport && reportData && (

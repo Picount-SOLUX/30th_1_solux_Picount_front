@@ -69,7 +69,8 @@
   border-radius: 20px;
   padding: 5px 12px;
   cursor: pointer;
-  width: 90px;
+  width: 80px;
+  font-size: 0.85rem;
   margin-right: 630px;
   margin-top: 5px;
 }

@@ -3,7 +3,7 @@ import axios from "axios";
 import styles from "./InputModal.module.css";
 import CategoryModal from "./CategoryModal";
 import api from "../../../api/axiosInstance";
-import { getCategories } from "../../../api/BudgetAPI";
+import { getCategories, createCalendarRecord, updateCalendarRecord } from "../../../api/BudgetAPI";
 
 
 export default function InputModal({
@@ -45,6 +45,7 @@ export default function InputModal({
   const getCategoryId = (type, name) => {
     const list = fetchedCategories?.[type] || [];
     const match = list.find((c) => c.name === name);
+    console.log(`[DEBUG] 찾은 카테고리 (${type}) - 이름: ${name}, ID: ${match?.id}`);
     return match?.id || null;
   };
 
@@ -82,92 +83,108 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
-  const ownerId = localStorage.getItem("userId");
+    const memberId = localStorage.getItem("userId");
+    console.log(memberId)
+    try {
+      let prevIncomeList = [];
+      let prevExpenseList = [];
+      console.log(isEditMode);
+      if (!isEditMode) { // 수정 모드가 아닌 입력 모드일 때
+        const fetchRes = await api.get(`/calendar/record?date=${date}&memberId=${memberId}`);
+        console.log("개헷갈리네getAPI되냐", fetchRes)
+        const prevData = fetchRes.data?.data || {};
+        prevIncomeList = prevData.incomes || [];
+        prevExpenseList = prevData.expenses || [];
+      }
 
-  try {
-    let prevIncomeList = [];
-    let prevExpenseList = [];
-
-    if (isEditMode) { // 수정 모드가 아닌 입력 모드일 때
-      const fetchRes = await api.patch(`/calendar/record?date=${date}`);
-      const prevData = fetchRes.data?.data || {};
-      prevIncomeList = prevData.incomes || [];
-      prevExpenseList = prevData.expenses || [];
-    }
-
-    const newIncomeList = incomeRows
-      .filter((row) => row.category && row.amount)
-      .map((row) => ({
-        categoryId: getCategoryId("income", row.category),
-        categoryName: row.category,
-        amount: Number(row.amount.replace(/,/g, "")),
-      }));
-
-    const newExpenseList = expenseRows
-      .filter((row) => row.category && row.amount)
-      .map((row) => ({
-        categoryId: getCategoryId("expense", row.category),
-        categoryName: row.category,
-        amount: Number(row.amount.replace(/,/g, "")),
-      }));
-
-    const formData = new FormData();
-    formData.append("ownerId", ownerId);
-    formData.append("entryDate", date);
-    formData.append("memo", memo);
-    formData.append(
-      "incomeList",
-      JSON.stringify(
-        isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList
-      )
-    );
-    formData.append(
-      "expenseList",
-      JSON.stringify(
-        isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList
-      )
-    );
-    if (photo) formData.append("photos", photo);
-
-    const res = isEditMode
-      ? await api.patch("/calendar/record?date=${date}", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-      : await api.post("/calendar/record", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const newIncomeList = incomeRows
+        .filter((row) => row.category && row.amount)
+        .map((row) => {
+          const id = getCategoryId("income", row.category);
+          if (!id) throw new Error(`수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
+          return {
+            categoryId: id,
+            //categoryName: row.category,
+            amount: Number(row.amount.replace(/,/g, "")),
+          };
         });
 
-    const formattedDate = new Date(date).toISOString().split("T")[0];
+      const newExpenseList = expenseRows
+        .filter((row) => row.category && row.amount)
+        .map((row) => {
+          const id = getCategoryId("expense", row.category);
+          if (!id) throw new Error(`지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
+          return {
+            categoryId: id,
+            //categoryName: row.category,
+            amount: Number(row.amount.replace(/,/g, "")),
+          };
+        });
 
-    const updatedData = {
-      date: formattedDate,
-      memo,
-      photo: photo ? URL.createObjectURL(photo) : preview,
-      entries: [
-        ...newIncomeList.map((item) => ({
-          type: "income",
-          category: item.categoryName,
-          amount: item.amount.toLocaleString(),
-        })),
-        ...newExpenseList.map((item) => ({
-          type: "expense",
-          category: item.categoryName,
-          amount: item.amount.toLocaleString(),
-        })),
-      ],
-    };
+      const formData = new FormData();
+      //formData.append("memberId", memberId);
+      formData.append("entryDate", date);
+      formData.append("memo", memo);
+      formData.append(
+        "incomeList",
+        JSON.stringify(
+          isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList
+        )
+      );
+      formData.append(
+        "expenseList",
+        JSON.stringify(
+          isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList
+        )
+      );
+      if (photo) formData.append("photos", photo);
 
-    console.log("🧪 updatedData.date:", updatedData.date);
-    onSubmit?.(updatedData);
-    onClose();
-  } catch (e) {
-    console.error("가계부 저장 실패:", e);
-  }
-};
+      console.log("📦 전송할 FormData:", {
+        entryDate: date,
+        //memberId,
+        memo,
+        incomeList: isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList,
+        expenseList: isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList,
+      });
+      console.log(isEditMode);
+      
+      if (isEditMode) {
+        const res = await updateCalendarRecord(date, formData);
+        console.log("📬 서버 응답:", res);
+      } else {
+        console.log("여까진 들어오는겨?")
+        const res = await createCalendarRecord(formData);
+        console.log("📬 서버 응답:", res);
+      }
+      
+
+      //const formattedDate = new Date(date).toISOString().split("T")[0];
+
+      const updatedData = {
+        date,
+        memo,
+        photo: photo ? URL.createObjectURL(photo) : preview,
+        entries: [
+          ...newIncomeList.map((item) => ({
+            type: "income",
+            category: item.categoryName,
+            amount: item.amount.toLocaleString(),
+          })),
+          ...newExpenseList.map((item) => ({
+            type: "expense",
+            category: item.categoryName,
+            amount: item.amount.toLocaleString(),
+          })),
+        ],
+      };
+
+      console.log("🧪 updatedData.date:", updatedData.date);
+      onSubmit?.(updatedData);
+      onClose();
+    } catch (e) {
+      console.error("가계부 저장 실패:", e);
+    }
+  };
 
   const handleDeleteRow = (index) => {
     const updated = [...rows];
@@ -213,10 +230,10 @@ export default function InputModal({
 
   useEffect(() => {
     const fetchExistingData = async () => {
-      const ownerId = localStorage.getItem("userId");
+      const memberId = localStorage.getItem("userId");
       try {
         const res = await api.get(
-          `/calendar/record?date=${inputDate}&ownerId=${ownerId}`
+          `/calendar/record?date=${inputDate}&memberId=${memberId}`
         );
         const result = res.data;
 
@@ -320,7 +337,7 @@ export default function InputModal({
             setInputDate(e.target.value);
             setDate(e.target.value);
           }}
-          disabled={!isEditMode}
+          disabled={isEditMode}
         />
 
         <div
@@ -373,7 +390,7 @@ export default function InputModal({
               </button>
             ))}
 
-            {isEditMode &&
+            {!isEditMode &&
               !(
                 rows.length === 1 &&
                 row.category === "" &&
@@ -389,11 +406,11 @@ export default function InputModal({
           </div>
         ))}
 
-        
+        {!isEditMode && (
           <button className={styles.addRowBtn} onClick={handleAddRow}>
             +
           </button>
-        
+        )}
 
         <textarea
           className={styles.memo}
