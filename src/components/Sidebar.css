@@ -177,3 +177,18 @@
   height: 16px;
   margin-right: 6px;
 }
+.friend-lock {
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.friend-lock {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+}
+.friend-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  cursor: pointer;
+}

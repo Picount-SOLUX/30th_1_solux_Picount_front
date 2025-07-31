@@ -12,6 +12,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isMainVisible, setIsMainVisible] = useState(null); // 로딩 전 상태는 null
 
   ////////////////////////로그아웃 API////////////////////////////
   const handleLogout = async () => {
@@ -22,7 +23,7 @@ export default function SettingsPage() {
       // 로컬스토리지 토큰 제거
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      localStorage.removeItem("hasLoggedIn");  // 여기!
+      localStorage.removeItem("hasLoggedIn"); // 여기!
       alert(res.data.message || "로그아웃 되었습니다."); // ✅ API 메시지 출력
       navigate("/login"); // 로그인 페이지로 이동
     } catch (error) {
@@ -74,7 +75,6 @@ export default function SettingsPage() {
     navigate("/settings/friend-manage");
   };
   const [friends, setFriends] = useState([]);
-  const [isMainVisible, setIsMainVisible] = useState(false);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -114,6 +114,30 @@ export default function SettingsPage() {
       alert("삭제 실패");
     }
   };
+
+  useEffect(() => {
+    const fetchVisibility = async () => {
+      try {
+        const res = await api.get("/members/visibility/main", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (res.data.success) {
+          setIsMainVisible(res.data.data); // true 또는 false 설정
+        } else {
+          console.warn("초기 공개 여부 불러오기 실패:", res.data.message);
+          setIsMainVisible(false); // fallback
+        }
+      } catch (err) {
+        console.error("공개 여부 API 실패:", err);
+        setIsMainVisible(false); // fallback
+      }
+    };
+
+    fetchVisibility();
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>마이페이지 &gt; 설정</div>

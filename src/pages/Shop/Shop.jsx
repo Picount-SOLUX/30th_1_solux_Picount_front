@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Shop.css";
 import api from "../../api/axiosInstance";
+import PreviewModal from "./PreviewModal";
 
 function Shop() {
   const [shopItems, setShopItems] = useState([]);
   const [point, setPoint] = useState(0);
   const [message, setMessage] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const fetchPoint = async () => {
     try {
@@ -82,13 +84,25 @@ function Shop() {
 
   return (
     <div className="shop-container">
-      <div className="point-box">
-        <span className="point-label">사용 가능 포인트</span>
-        <div className="point-value">
-          <span>P</span>
-          <strong>{point.toLocaleString()} p</strong>
+      <div className="shop-header">
+        <div className="point-box">
+          <span className="point-label">사용 가능 포인트</span>
+          <div className="point-value">
+            <span>P</span>
+            <strong>{point.toLocaleString()} p</strong>
+          </div>
+        </div>
+
+        <div className="shop-header">
+          <button className="preview-btn" onClick={() => setPreviewOpen(true)}>
+            미리보기
+          </button>
         </div>
       </div>
+
+      {previewOpen && (
+        <PreviewModal items={shopItems} onClose={() => setPreviewOpen(false)} />
+      )}
 
       {message && <div className="purchase-message">{message}</div>}
 
