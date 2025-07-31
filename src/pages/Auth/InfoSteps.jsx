@@ -155,6 +155,7 @@ export default function InfoSteps() {
         let newCategories = [];
         if (categoriesToCreate.length > 0) {
           const createRes = await createCategories(categoriesToCreate);
+          console.log("카테고리 생성 완료: ", createRes)
           newCategories = createRes.data.data.categories || [];
         }        
 

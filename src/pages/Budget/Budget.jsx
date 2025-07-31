@@ -4,6 +4,7 @@ import BudgetDetail from "./components/BudgetDetail";
 import DatePicker from "react-datepicker"; // 달력
 import "react-datepicker/dist/react-datepicker.css"; // 스타일
 import "./Budget.css";
+import { getCategories } from "../../api/BudgetAPI";
 
 export default function Budget() {
   const jobData = [
@@ -110,6 +111,27 @@ export default function Budget() {
 
   const jobInfo = jobData.find((job) => job.title === selectedJob);
 
+  const [categoryOptions, setCategoryOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getCategories(); // 전체 조회 API 사용
+        const categories = res.data.data.categories;
+        console.log("카테고리 불러오기 성공:", categories);
+
+        // 중복 제거 + 이름만 추출
+        const expenseCategories = categories.filter(cat => cat.type === "EXPENSE");
+        const names = [...new Set(expenseCategories.map((cat) => cat.categoryName))];        
+        setCategoryOptions(names);
+      } catch (error) {
+        console.error("카테고리 불러오기 실패:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   // 🔥 InfoSteps 값으로 기본 예산 세팅
   useEffect(() => {
     if (jobInfo && selectedBudget > 0) {
@@ -159,21 +181,21 @@ export default function Budget() {
     );
   };
 
-  const handleAddCategory = () => {
-    //카테고리 추가
-    if (!newCategory.name.trim()) return;
-    const nextId =
-      tempCategories.length > 0
-        ? Math.max(...tempCategories.map((c) => c.id)) + 1
-        : 1;
-    const newCat = {
-      id: nextId,
-      name: newCategory.name,
-      amount: newCategory.amount || "0",
-    };
-    setTempCategories([...tempCategories, newCat]);
-    setNewCategory({ name: "", amount: "" });
-  };
+  //카테고리 추가
+  // const handleAddCategory = () => {
+  //   if (!newCategory.name.trim()) return;
+  //   const nextId =
+  //     tempCategories.length > 0
+  //       ? Math.max(...tempCategories.map((c) => c.id)) + 1
+  //       : 1;
+  //   const newCat = {
+  //     id: nextId,
+  //     name: newCategory.name,
+  //     amount: newCategory.amount || "0",
+  //   };
+  //   setTempCategories([...tempCategories, newCat]);
+  //   setNewCategory({ name: "", amount: "" });
+  // };
 
   const handleDeleteCategory = (id) => {
     // 카테고리 삭제
@@ -207,11 +229,12 @@ export default function Budget() {
         categories={categories}
         tempCategories={tempCategories}
         handleInputChange={handleInputChange}
-        handleAddCategory={handleAddCategory}
+        //handleAddCategory={handleAddCategory}
         handleDeleteCategory={handleDeleteCategory}
         newCategory={newCategory}
         setNewCategory={setNewCategory}
         totalBudget={totalBudget}
+        categoryOptions={categoryOptions}
       />
     </div>
   );

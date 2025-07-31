@@ -14,3 +14,13 @@ export const fetchMyChallenges = () => {
 export const claimChallengeReward = (challengeId) => {
   return api.post(`/challenges/${challengeId}/complete`);
 };
+
+// 내 포인트 조회
+export const fetchMyPoint = () => {
+  return api.get("/points/my");
+};
+
+// 내 포인트 내역 조회
+export const fetchMyPointHistory = () => {
+  return api.get("/points/history");
+};

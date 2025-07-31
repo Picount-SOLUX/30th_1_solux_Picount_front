@@ -94,6 +94,60 @@ function Calendar() {
     }
   };
 
+  // Calendar.jsx
+
+  // 1. handleModalSubmit 함수 수정
+  const handleModalSubmit = async (newEntry) => {
+    // 해당 날짜의 최신 데이터를 서버에서 다시 가져오기
+    const ownerId = localStorage.getItem("userId");
+    try {
+      const res = await api.get(
+        `/calendar/record?date=${newEntry.date}&ownerId=${ownerId}`
+      );
+      const result = res.data;
+
+      if (result.success && result.data) {
+        const { memo, incomes, expenses, imageUrls } = result.data;
+
+        const combinedEntries = [
+          ...incomes.map((item) => ({
+            type: "income",
+            category: item.categoryName,
+            amount: item.amount.toLocaleString(), // 서버에서 오는 숫자를 포맷
+          })),
+          ...expenses.map((item) => ({
+            type: "expense",
+            category: item.categoryName,
+            amount: item.amount.toLocaleString(), // 서버에서 오는 숫자를 포맷
+          })),
+        ];
+
+        const updatedData = {
+          date: newEntry.date,
+          memo,
+          photo: imageUrls?.[0] || null,
+          entries: combinedEntries,
+        };
+
+        // calendarData 업데이트
+        setCalendarData((prev) => ({
+          ...prev,
+          [newEntry.date]: updatedData,
+        }));
+      }
+    } catch (error) {
+      console.error("데이터 새로고침 실패:", error);
+      // 실패 시 전달받은 데이터로라도 업데이트
+      setCalendarData((prev) => ({
+        ...prev,
+        [newEntry.date]: newEntry,
+      }));
+    }
+    // 모달 닫기
+    setIsInputOpen(false);
+    setEditData(null);
+  };
+
   const [editData, setEditData] = useState(null);
 
   const { themeKey, updateTheme } = useTheme();
@@ -473,12 +527,22 @@ function Calendar() {
             />
           )}
 
-          {/* CategoryModal */}
-          {showCategoryModal && (
-            <CategoryModal
-              onClose={() => setShowCategoryModal(false)}
+          {isInputOpen && (
+            <InputModal
               categories={categories}
-              setCategories={setCategories}
+              initialData={editData}
+              isEditMode={!!editData}
+              calendarData={calendarData}
+              onClose={() => {
+                setEditData(null);
+                setIsInputOpen(false);
+              }}
+              onSubmit={handleModalSubmit}
+              onOpenCategoryModal={() => {
+                setShowInputModal(false);
+                setIsInputOpen(false);
+                setShowCategoryModal(true);
+              }}
             />
           )}
 

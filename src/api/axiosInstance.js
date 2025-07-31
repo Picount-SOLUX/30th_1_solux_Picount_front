@@ -93,16 +93,19 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
+        const refreshUrl = useBackend
+          ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh`
+          : "/api/members/refresh";
 
-        const res = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh`,
-          { refreshToken }
-        );
+        // refreshToken으로 새 accessToken 발급 요청
+        const res = await api.post("/members/refresh", {
+          refreshToken,
+        }); // request body 부분
+        console.log("토큰 재발급 성공", res.data);
 
         const { accessToken: newAccessToken } = res.data.data;
-
-        // 새 토큰 저장
-        localStorage.setItem("accessToken", newAccessToken);
+        // 새 accessToken 저장
+        localStorage.setItem("accessToken", newAccessToken); // response body 부분
 
         // 재시도 요청에 토큰 업데이트
         originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;

@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/AuthAPI";
+<<<<<<< HEAD
 import FindPassword from "../Auth/FindPassword";
+=======
+>>>>>>> 7b3e665893bcbffbbeb624811e7c6f35ec8fd842
 import "./Login.css";
 import api from "../../api/axiosInstance";
 
@@ -28,14 +31,16 @@ export default function Login() {
       console.log("로그인 응답:", response.data);
 
       if (response.data.success) {
-        let { accessToken, refreshToken, nickname } = response.data.data;
-        // 🟢 nickname undefined 방지
-        nickname = nickname ?? "테스트유저";
+        let { accessToken, refreshToken, } = response.data.data;
+        // 👉 localStorage에 저장된 nickname을 꺼내기
+        let storedNickname = JSON.parse(localStorage.getItem("user") || "{}").nickname;
+        const nickname = storedNickname ?? "회원"; // nickname 없으면 fallback
         // 로컬 스토리지에 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userEmail", email);
         localStorage.setItem("user", JSON.stringify({ nickname }));
+<<<<<<< HEAD
 
         // ✅ 🔽 여기 추가: memberId 가져오기
         try {
@@ -53,6 +58,9 @@ export default function Login() {
         }
 
         console.log("localStorage 저장됨:", localStorage.getItem("user"));
+=======
+        //console.log("localStorage 저장됨:", localStorage.getItem("user"));
+>>>>>>> 7b3e665893bcbffbbeb624811e7c6f35ec8fd842
         setUserInfo({ nickname });
         setShowModal(true);
         setErrorMessage("");
@@ -79,8 +87,17 @@ export default function Login() {
     setShowModal(false);
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const nickname = storedUser.nickname || "테스트유저";
-    navigate("/welcome", { state: { nickname } });
+
+    const hasLoggedIn = localStorage.getItem("hasLoggedIn") === "true";
+
+    if (!hasLoggedIn) {
+      localStorage.setItem("hasLoggedIn", "true");
+      navigate("/welcome", { state: { nickname } });
+    } else {
+      navigate("/home");
+    }
   };
+
 
   // 카카오 로그인 핸들러 수정
   const handleKakaoLogin = () => {

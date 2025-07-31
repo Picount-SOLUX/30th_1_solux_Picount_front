@@ -10,6 +10,10 @@ export default function Sidebar() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [friendError, setFriendError] = useState("");
 
+  const nickname =
+    location.state?.nickname ||
+    JSON.parse(localStorage.getItem("user"))?.nickname;
+
   const handleFriendClick = async () => {
     const nextOpen = !isFriendOpen;
     setIsFriendOpen(nextOpen);
@@ -42,8 +46,8 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="profile-section">
-        <div className="profile-image" />
-        <p className="profile-name">닉네임</p>
+        <div className="profile-image"></div>
+        <p className="profile-name">{nickname}</p>
         <p className="profile-status">친구들에게 나를 소개해보자!</p>
       </div>
 
@@ -56,7 +60,12 @@ export default function Sidebar() {
                 isActive ? "menu-item active" : "menu-item"
               }
             >
-              🏠 홈
+              <img
+                src="src/assets/icons/Home.png"
+                alt="홈"
+                className="menu-icon-home"
+              />
+              홈
             </NavLink>
           </li>
           <li>
@@ -66,7 +75,12 @@ export default function Sidebar() {
                 isActive ? "menu-item active" : "menu-item"
               }
             >
-              💸 예산 설정
+              <img
+                src="src/assets/icons/Budget.png"
+                alt="예산"
+                className="menu-icon-budget"
+              />
+              예산 설정
             </NavLink>
           </li>
           <li>
@@ -76,7 +90,12 @@ export default function Sidebar() {
                 isActive ? "menu-item active" : "menu-item"
               }
             >
-              🛒 상점
+              <img
+                src="src/assets/icons/Shop.png"
+                alt="상점"
+                className="menu-icon-shop"
+              />
+              상점
             </NavLink>
           </li>
           <li>
@@ -86,13 +105,23 @@ export default function Sidebar() {
                 isActive ? "menu-item active" : "menu-item"
               }
             >
-              🏆 포인트&챌린지
+              <img
+                src="src/assets/icons/Challenge.png"
+                alt="챌린지"
+                className="menu-icon-challenge"
+              />
+              포인트&챌린지
             </NavLink>
           </li>
 
           <li onClick={handleFriendClick}>
             <div className="menu-item">
-              👥 친구 목록
+              <img
+                src="src/assets/icons/Friends.png"
+                alt="친구"
+                className="menu-icon-friends"
+              />
+              친구 토글
               <span className={`arrow ${isFriendOpen ? "open" : ""}`}>▾</span>
             </div>
           </li>
@@ -141,7 +170,12 @@ export default function Sidebar() {
                 isActive ? "menu-item active" : "menu-item"
               }
             >
-              📄 마이 페이지
+              <img
+                src="src/assets/icons/MyPage.png"
+                alt="마이페이지"
+                className="menu-icon-mypage"
+              />
+              마이 페이지
             </NavLink>
           </li>
         </ul>

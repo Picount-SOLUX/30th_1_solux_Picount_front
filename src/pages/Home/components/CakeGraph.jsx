@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./CakeGraph.css";
 
 // 기본 케이크 이미지 10장 import
+import cake0 from "../../../assets/cakes/BasicCake/0.png";
 import cake1 from "../../../assets/cakes/BasicCake/1.png";
 import cake2 from "../../../assets/cakes/BasicCake/2.png";
 import cake3 from "../../../assets/cakes/BasicCake/3.png";
@@ -20,6 +21,7 @@ import skin3 from "../../../assets/ShopItems/CakeSkin/CherryCake.png";
 
 // 이미지 배열
 const cakeImages = [
+  cake0,
   cake1,
   cake2,
   cake3,
@@ -47,13 +49,11 @@ export default function CakeGraph({ totalBudget, totalSpent }) {
 
   // 비율에 따라 케이크 이미지 선택 (1~10 단계)
   let cakeStage = Math.ceil((remainingPercent / 100) * 10);
-  if (cakeStage < 1) cakeStage = 1;
+  //if (cakeStage < 1) cakeStage = 1;
   if (cakeStage > 10) cakeStage = 10;
 
   // 현재 케이크 이미지 (스킨 적용 여부에 따라 결정)
-  const currentCakeImage = selectedSkin
-    ? selectedSkin
-    : cakeImages[cakeStage - 1];
+  const currentCakeImage = selectedSkin ? selectedSkin : cakeImages[cakeStage];
 
   // 더미 데이터: 보유 중인 스킨들
   const ownedSkins = [

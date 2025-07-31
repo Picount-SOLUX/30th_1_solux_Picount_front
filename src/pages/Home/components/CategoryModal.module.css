@@ -17,6 +17,18 @@
   cursor: pointer;
 }
 
+.tabGroup {
+  margin-right: auto;
+}
+
+.tabInactive {
+  width: 100px;
+}
+
+.tabActive {
+  width: 100px;
+}
+
 .deleteCircle {
   background-color: #ff4d4f;
   color: white;
@@ -29,6 +41,7 @@
   font-size: 14px;
   font-weight: bold;
 }
+
 
 /* 카테고리 이름 */
 .name {
@@ -70,12 +83,13 @@
 .addBtn {
   background-color: #fff;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  width: 80px;
   padding: 4px 10px;
   cursor: pointer;
   color: #333;
-  height: 32px;
+  height: 40px;
 }
 
 .addBtn:hover {
@@ -86,9 +100,11 @@
 .doneBtn {
   padding: 4px 12px;
   font-size: 0.85rem;
-  background-color: #f3b8b5;
-  border: none;
-  border-radius: 16px;
+  padding: 8px 16px;
+  width: 70px;
+  background: linear-gradient(to top, #FEBBB3, #FFFFFF);
+  border: 1px solid #DD938A;
+  border-radius: 20px;
   color: black;
   font-weight: bold;
   cursor: pointer;

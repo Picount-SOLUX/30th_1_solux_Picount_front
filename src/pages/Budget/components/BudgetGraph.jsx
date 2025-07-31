@@ -1,4 +1,6 @@
 import React from "react";
+import graphHelpImage from "../../../assets/도움말그래프.png"; // 경로 확인!
+import "../Budget.css";
 
 export default function BudgetGraph({
   categories,
@@ -28,6 +30,13 @@ export default function BudgetGraph({
         <div className="help-bubble">
           <h4>{jobInfo.title} 추천 예산안</h4>
           <p>{jobInfo.description}</p>
+          {jobInfo.title === "대학생" && (
+            <img
+              src={graphHelpImage}
+              alt="대학생 추천 예산 그래프"
+              className="help-graph-image"
+            />
+          )}
           <button onClick={toggleHelp} className="close-btn">
             닫기
           </button>

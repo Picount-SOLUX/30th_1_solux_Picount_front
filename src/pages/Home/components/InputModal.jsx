@@ -82,62 +82,92 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
-    const ownerId = localStorage.getItem("userId");
+  const ownerId = localStorage.getItem("userId");
 
-    try {
-      const fetchRes = await api.get(
-        `/calendar/record?date=${date}&ownerId=${ownerId}`
-      );
+  try {
+    let prevIncomeList = [];
+    let prevExpenseList = [];
+
+    if (isEditMode) { // 수정 모드가 아닌 입력 모드일 때
+      const fetchRes = await api.patch(`/calendar/record?date=${date}`);
       const prevData = fetchRes.data?.data || {};
-      const prevIncomeList = prevData.incomes || [];
-      const prevExpenseList = prevData.expenses || [];
-
-      const newIncomeList = incomeRows
-        .filter((row) => row.category && row.amount)
-        .map((row) => ({
-          categoryId: getCategoryId("income", row.category),
-          amount: Number(row.amount.replace(/,/g, "")),
-        }));
-
-      const newExpenseList = expenseRows
-        .filter((row) => row.category && row.amount)
-        .map((row) => ({
-          categoryId: getCategoryId("expense", row.category),
-          amount: Number(row.amount.replace(/,/g, "")),
-        }));
-
-      // ✅ FormData 구성
-      const formData = new FormData();
-      formData.append("ownerId", ownerId);
-      formData.append("entryDate", date);
-      formData.append("memo", memo);
-      formData.append(
-        "incomeList",
-        JSON.stringify([...prevIncomeList, ...newIncomeList])
-      );
-      formData.append(
-        "expenseList",
-        JSON.stringify([...prevExpenseList, ...newExpenseList])
-      );
-      if (photo) formData.append("photos", photo);
-
-      const res = await api.post("/calendar/record", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      onSubmit?.({
-        date,
-        incomeList: newIncomeList,
-        expenseList: newExpenseList,
-        memo,
-      });
-      onClose();
-    } catch (e) {
-      console.error("가계부 저장 실패:", e);
+      prevIncomeList = prevData.incomes || [];
+      prevExpenseList = prevData.expenses || [];
     }
-  };
+
+    const newIncomeList = incomeRows
+      .filter((row) => row.category && row.amount)
+      .map((row) => ({
+        categoryId: getCategoryId("income", row.category),
+        categoryName: row.category,
+        amount: Number(row.amount.replace(/,/g, "")),
+      }));
+
+    const newExpenseList = expenseRows
+      .filter((row) => row.category && row.amount)
+      .map((row) => ({
+        categoryId: getCategoryId("expense", row.category),
+        categoryName: row.category,
+        amount: Number(row.amount.replace(/,/g, "")),
+      }));
+
+    const formData = new FormData();
+    formData.append("ownerId", ownerId);
+    formData.append("entryDate", date);
+    formData.append("memo", memo);
+    formData.append(
+      "incomeList",
+      JSON.stringify(
+        isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList
+      )
+    );
+    formData.append(
+      "expenseList",
+      JSON.stringify(
+        isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList
+      )
+    );
+    if (photo) formData.append("photos", photo);
+
+    const res = isEditMode
+      ? await api.patch("/calendar/record?date=${date}", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+      : await api.post("/calendar/record", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+    const formattedDate = new Date(date).toISOString().split("T")[0];
+
+    const updatedData = {
+      date: formattedDate,
+      memo,
+      photo: photo ? URL.createObjectURL(photo) : preview,
+      entries: [
+        ...newIncomeList.map((item) => ({
+          type: "income",
+          category: item.categoryName,
+          amount: item.amount.toLocaleString(),
+        })),
+        ...newExpenseList.map((item) => ({
+          type: "expense",
+          category: item.categoryName,
+          amount: item.amount.toLocaleString(),
+        })),
+      ],
+    };
+
+    console.log("🧪 updatedData.date:", updatedData.date);
+    onSubmit?.(updatedData);
+    onClose();
+  } catch (e) {
+    console.error("가계부 저장 실패:", e);
+  }
+};
 
   const handleDeleteRow = (index) => {
     const updated = [...rows];
@@ -290,7 +320,7 @@ export default function InputModal({
             setInputDate(e.target.value);
             setDate(e.target.value);
           }}
-          disabled={isEditMode}
+          disabled={!isEditMode}
         />
 
         <div
@@ -304,7 +334,7 @@ export default function InputModal({
             className={styles.categoryEditBtn}
             onClick={handleOpenCategoryModal}
           >
-            카테고리 수정
+            카테고리 수정/추가/삭제
           </button>
         </div>
 
