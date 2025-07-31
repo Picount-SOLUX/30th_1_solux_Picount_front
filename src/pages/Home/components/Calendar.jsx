@@ -333,6 +333,7 @@ function Calendar() {
             />
           )}
 
+<<<<<<< HEAD
           {showCategoryModal && (
             <CategoryModal
               onClose={() => setShowCategoryModal(false)}
@@ -340,6 +341,27 @@ function Calendar() {
               setCategories={setCategories}
             />
           )}
+=======
+
+            {isInputOpen && (
+              <InputModal
+                categories={categories}
+                initialData={editData}
+                isEditMode={!editData}
+                calendarData={calendarData}
+                onClose={() => {
+                  setEditData(null);
+                  setIsInputOpen(false);
+                }}
+                onSubmit={handleModalSubmit}
+                onOpenCategoryModal={() => {
+                  setShowInputModal(false);
+                  setIsInputOpen(false);
+                  setShowCategoryModal(true);
+                }}
+              />
+            )}
+>>>>>>> 9f4ae7a64a9690812db0dbed93414b85d01bd1cc
 
           {showReport && reportData && (
             <ReportModal

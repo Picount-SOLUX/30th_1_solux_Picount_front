@@ -186,6 +186,9 @@ export default function InfoSteps() {
           totalAmount,
           budgetAllocationList: budgetPlans,
         });
+        localStorage.setItem("budgetStartDate", startDate);
+        localStorage.setItem("budgetEndDate", endDate);
+        localStorage.setItem("budgetTotalAmount", totalAmount.toString());
         console.log("예산 & 세부예산계획 수정 완료!!", res.data);
           // 완료 처리
         localStorage.setItem("budgetId", budgetId);

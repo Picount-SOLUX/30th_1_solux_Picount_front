@@ -3,7 +3,11 @@ import axios from "axios";
 import styles from "./InputModal.module.css";
 import CategoryModal from "./CategoryModal";
 import api from "../../../api/axiosInstance";
-import { getCategories } from "../../../api/BudgetAPI";
+import {
+  getCategories,
+  createCalendarRecord,
+  updateCalendarRecord,
+} from "../../../api/BudgetAPI";
 
 export default function InputModal({
   onClose,
@@ -44,6 +48,9 @@ export default function InputModal({
   const getCategoryId = (type, name) => {
     const list = fetchedCategories?.[type] || [];
     const match = list.find((c) => c.name === name);
+    console.log(
+      `[DEBUG] 찾은 카테고리 (${type}) - 이름: ${name}, ID: ${match?.id}`
+    );
     return match?.id || null;
   };
 
@@ -81,19 +88,18 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
-    const ownerId = localStorage.getItem("userId");
-
+    const memberId = localStorage.getItem("userId");
+    console.log(memberId);
     try {
       let prevIncomeList = [];
       let prevExpenseList = [];
-
-      if (isEditMode) {
-        const fetchRes = await api.get(`/calendar/record`, {
-          params: { date },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        });
+      console.log(isEditMode);
+      if (!isEditMode) {
+        // 수정 모드가 아닌 입력 모드일 때
+        const fetchRes = await api.get(
+          `/calendar/record?date=${date}&memberId=${memberId}`
+        );
+        console.log("개헷갈리네getAPI되냐", fetchRes);
         const prevData = fetchRes.data?.data || {};
         prevIncomeList = prevData.incomes || [];
         prevExpenseList = prevData.expenses || [];
@@ -101,22 +107,36 @@ export default function InputModal({
 
       const newIncomeList = incomeRows
         .filter((row) => row.category && row.amount)
-        .map((row) => ({
-          categoryId: getCategoryId("income", row.category),
-          categoryName: row.category,
-          amount: Number(row.amount.replace(/,/g, "")),
-        }));
+        .map((row) => {
+          const id = getCategoryId("income", row.category);
+          if (!id)
+            throw new Error(
+              `수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`
+            );
+          return {
+            categoryId: id,
+            //categoryName: row.category,
+            amount: Number(row.amount.replace(/,/g, "")),
+          };
+        });
 
       const newExpenseList = expenseRows
         .filter((row) => row.category && row.amount)
-        .map((row) => ({
-          categoryId: getCategoryId("expense", row.category),
-          categoryName: row.category,
-          amount: Number(row.amount.replace(/,/g, "")),
-        }));
+        .map((row) => {
+          const id = getCategoryId("expense", row.category);
+          if (!id)
+            throw new Error(
+              `지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`
+            );
+          return {
+            categoryId: id,
+            //categoryName: row.category,
+            amount: Number(row.amount.replace(/,/g, "")),
+          };
+        });
 
       const formData = new FormData();
-      formData.append("ownerId", ownerId);
+      //formData.append("memberId", memberId);
       formData.append("entryDate", date);
       formData.append("memo", memo);
       formData.append(
@@ -133,25 +153,32 @@ export default function InputModal({
       );
       if (photo) formData.append("photos", photo);
 
-      const res = isEditMode
-        ? await api.patch(`/calendar/record`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-            params: { date },
-          })
-        : await api.post("/calendar/record", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          });
+      console.log("📦 전송할 FormData:", {
+        entryDate: date,
+        //memberId,
+        memo,
+        incomeList: isEditMode
+          ? [...prevIncomeList, ...newIncomeList]
+          : newIncomeList,
+        expenseList: isEditMode
+          ? [...prevExpenseList, ...newExpenseList]
+          : newExpenseList,
+      });
+      console.log(isEditMode);
 
-      const formattedDate = new Date(date).toISOString().split("T")[0];
+      if (isEditMode) {
+        const res = await updateCalendarRecord(date, formData);
+        console.log("📬 서버 응답:", res);
+      } else {
+        console.log("여까진 들어오는겨?");
+        const res = await createCalendarRecord(formData);
+        console.log("📬 서버 응답:", res);
+      }
+
+      //const formattedDate = new Date(date).toISOString().split("T")[0];
 
       const updatedData = {
-        date: formattedDate,
+        date,
         memo,
         photo: photo ? URL.createObjectURL(photo) : preview,
         entries: [
@@ -168,6 +195,7 @@ export default function InputModal({
         ],
       };
 
+      console.log("🧪 updatedData.date:", updatedData.date);
       onSubmit?.(updatedData);
       onClose();
     } catch (e) {
@@ -219,14 +247,11 @@ export default function InputModal({
 
   useEffect(() => {
     const fetchExistingData = async () => {
-      const ownerId = localStorage.getItem("userId");
+      const memberId = localStorage.getItem("userId");
       try {
-        const res = await api.get(`/calendar/record`, {
-          params: { date: inputDate },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        });
+        const res = await api.get(
+          `/calendar/record?date=${inputDate}&memberId=${memberId}`
+        );
         const result = res.data;
 
         if (result.success && result.data) {
@@ -271,11 +296,17 @@ export default function InputModal({
   });
   useEffect(() => {
     const fetchCategories = async () => {
+      // const ownerId = localStorage.getItem("userId");
+
       try {
         const res = await getCategories();
+        console.log("카테고리 GET API 응답:", res);
         const categoryList = res.data?.data || [];
-        const categoriesArray = categoryList.categories || [];
+        console.log("categoryList:", categoryList);
 
+        const categoriesArray = categoryList.categories || [];
+        console.log("categoriesArray", categoriesArray);
+        // 수입/지출 분류
         const income = categoriesArray
           .filter((c) => c.type === "INCOME")
           .map((c) => ({ id: c.categoryId, name: c.categoryName }));
@@ -284,6 +315,8 @@ export default function InputModal({
           .filter((c) => c.type === "EXPENSE")
           .map((c) => ({ id: c.categoryId, name: c.categoryName }));
 
+        console.log("income:", income);
+        console.log("expense:", expense);
         setFetchedCategories({ income, expense });
       } catch (e) {
         console.error("카테고리 불러오기 실패:", e);
@@ -296,135 +329,131 @@ export default function InputModal({
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContainer} ref={containerRef}>
-        <div className={styles.modalOverlay} onClick={handleOverlayClick}>
-          <div className={styles.modalContainer} ref={containerRef}>
-            <div className={styles.tabGroup}>
-              <button
-                className={
-                  type === "income" ? styles.tabActive : styles.tabInactive
-                }
-                onClick={() => setType("income")}
-              >
-                수입
-              </button>
-              <button
-                className={
-                  type === "expense" ? styles.tabActive : styles.tabInactive
-                }
-                onClick={() => setType("expense")}
-              >
-                지출
-              </button>
-            </div>
+        <div className={styles.tabGroup}>
+          <button
+            className={
+              type === "income" ? styles.tabActive : styles.tabInactive
+            }
+            onClick={() => setType("income")}
+          >
+            수입
+          </button>
+          <button
+            className={
+              type === "expense" ? styles.tabActive : styles.tabInactive
+            }
+            onClick={() => setType("expense")}
+          >
+            지출
+          </button>
+        </div>
 
-            <label className={styles.label}>날짜</label>
-            <input
-              type="date"
-              value={inputDate}
-              onChange={(e) => {
-                setInputDate(e.target.value);
-                setDate(e.target.value);
-              }}
-              disabled={!isEditMode}
-            />
+        <label className={styles.label}>날짜</label>
+        <input
+          type="date"
+          value={inputDate}
+          onChange={(e) => {
+            setInputDate(e.target.value);
+            setDate(e.target.value);
+          }}
+          disabled={isEditMode}
+        />
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                marginBottom: "8px",
-              }}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            marginBottom: "8px",
+          }}
+        >
+          <button
+            className={styles.categoryEditBtn}
+            onClick={handleOpenCategoryModal}
+          >
+            카테고리 수정/추가/삭제
+          </button>
+        </div>
+
+        {rows.map((row, idx) => (
+          <div key={idx} className={styles.amountRow}>
+            <select
+              value={row.category}
+              onChange={(e) => handleCategoryChange(idx, e.target.value)}
             >
+              <option value="">카테고리</option>
+              {fetchedCategories[type].length === 0 ? (
+                <option disabled>카테고리 불러오는 중...</option>
+              ) : (
+                fetchedCategories[type].map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))
+              )}
+            </select>
+
+            <input
+              className={styles.amountInput}
+              value={row.amount}
+              onChange={(e) => handleAmountChange(idx, e.target.value)}
+            />
+            <span className={styles.won}>원</span>
+            {[100, 1000, 10000].map((amt) => (
               <button
-                className={styles.categoryEditBtn}
-                onClick={handleOpenCategoryModal}
+                key={amt}
+                className={styles.plusBtn}
+                onClick={() => handleAddAmount(idx, amt)}
               >
-                카테고리 수정/추가/삭제
+                +{amt.toLocaleString()}
               </button>
-            </div>
-
-            {rows.map((row, idx) => (
-              <div key={idx} className={styles.amountRow}>
-                <select
-                  value={row.category}
-                  onChange={(e) => handleCategoryChange(idx, e.target.value)}
-                >
-                  <option value="">카테고리</option>
-                  {fetchedCategories[type].length === 0 ? (
-                    <option disabled>카테고리 불러오는 중...</option>
-                  ) : (
-                    fetchedCategories[type].map((cat) => (
-                      <option key={cat.id} value={cat.name}>
-                        {cat.name}
-                      </option>
-                    ))
-                  )}
-                </select>
-
-                <input
-                  className={styles.amountInput}
-                  value={row.amount}
-                  onChange={(e) => handleAmountChange(idx, e.target.value)}
-                />
-                <span className={styles.won}>원</span>
-                {[100, 1000, 10000].map((amt) => (
-                  <button
-                    key={amt}
-                    className={styles.plusBtn}
-                    onClick={() => handleAddAmount(idx, amt)}
-                  >
-                    +{amt.toLocaleString()}
-                  </button>
-                ))}
-
-                {isEditMode &&
-                  !(
-                    rows.length === 1 &&
-                    row.category === "" &&
-                    row.amount === ""
-                  ) && (
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={() => handleDeleteRow(idx)}
-                    >
-                      <span className={styles.deleteCircle}>–</span>
-                    </button>
-                  )}
-              </div>
             ))}
 
-            <button className={styles.addRowBtn} onClick={handleAddRow}>
-              +
-            </button>
-
-            <textarea
-              className={styles.memo}
-              placeholder="메모"
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-            ></textarea>
-
-            <div className={styles.photoBox}>
-              {preview && (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className={styles.previewImage}
-                />
+            {!isEditMode &&
+              !(
+                rows.length === 1 &&
+                row.category === "" &&
+                row.amount === ""
+              ) && (
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => handleDeleteRow(idx)}
+                >
+                  <span className={styles.deleteCircle}>–</span>
+                </button>
               )}
-              <input
-                id="upload-photo"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                style={{ display: "none" }}
-              />
-              <label htmlFor="upload-photo" className={styles.photoBtn}>
-                사진 업로드 ⬆
-              </label>
-            </div>
+          </div>
+        ))}
 
-            {/* {isEditMode && preview && (
+        {!isEditMode && (
+          <button className={styles.addRowBtn} onClick={handleAddRow}>
+            +
+          </button>
+        )}
+
+        <textarea
+          className={styles.memo}
+          placeholder="메모"
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+        ></textarea>
+
+        <div className={styles.photoBox}>
+          {preview && (
+            <img src={preview} alt="preview" className={styles.previewImage} />
+          )}
+          <input
+            id="upload-photo"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="upload-photo" className={styles.photoBtn}>
+            사진 업로드 ⬆
+          </label>
+        </div>
+
+        {/* {isEditMode && preview && (
           <div className={styles.photoBox}>
             <img
               src={preview}
@@ -443,17 +472,15 @@ export default function InputModal({
           </label>
         )} */}
 
-            <div className={styles.submitRow}>
-              <button className={styles.submitBtn} onClick={handleSubmit}>
-                입력
-              </button>
-            </div>
-
-            <button className={styles.closeBtn} onClick={onClose}>
-              ✕
-            </button>
-          </div>
+        <div className={styles.submitRow}>
+          <button className={styles.submitBtn} onClick={handleSubmit}>
+            입력
+          </button>
         </div>
+
+        <button className={styles.closeBtn} onClick={onClose}>
+          ✕
+        </button>
       </div>
     </div>
   );

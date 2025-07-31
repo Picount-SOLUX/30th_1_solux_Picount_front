@@ -116,7 +116,19 @@
   font-weight: bold;
   font-size: 1rem;
   color: #e25b45;
-  margin-bottom: 10px;
+  margin-top: 15px;
+  margin-left: 7px;
+  margin-bottom: -20px;
+}
+
+.guestbook-title {
+  font-weight: 600;
+  margin-left: 25px;
+  margin-top: 0px;
+}
+
+.guestbook-separator {
+  margin: 0 4px;
 }
 
 .view-record-btn {
