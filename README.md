@@ -21,7 +21,8 @@
 | 김다은 | [@Daeun-Kim701](https://github.com/Daeun-Kim701) | - |
 | 조시은 | [@singnyee](https://github.com/singnyee) | - |
 <br/>
-## 🛠️ Tech Stack
+
+## **🛠️** Tech Stack
 
 
 | 구분          | 기술            |
