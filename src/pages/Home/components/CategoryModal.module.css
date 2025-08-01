@@ -1,3 +1,8 @@
+.modalOverlay {
+  margin-left: 70px;
+  margin-top: 20px;
+}
+
 .row {
   display: flex;
   align-items: center;
