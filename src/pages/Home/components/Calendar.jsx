@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import InputModal from "./InputModal";
 import ViewModal from "./ViewModal";
 import styles from "./calendar.module.css";
@@ -7,7 +6,6 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableDay from "./DroppableDay";
 import StickerItem from "./StickerItem";
-// import themeStyles from "../../../styles/CalendarThemes.module.css";
 import useTheme from "../../../hooks/useTheme";
 import { useEffect } from "react";
 import "../../../styles/CalendarThemes.css";
@@ -152,9 +150,7 @@ function Calendar() {
   };
 
   const [editData, setEditData] = useState(null);
-
   const { themeKey, updateTheme } = useTheme();
-
   const [reportData, setReportData] = useState(null);
   const [showReport, setShowReport] = useState(false);
 
@@ -510,25 +506,13 @@ function Calendar() {
               />
             )}
 
-            {isInputOpen && (
-              <InputModal
+            {showCategoryModal && (
+              <CategoryModal
+                onClose={() => setShowCategoryModal(false)}
                 categories={categories}
-                initialData={editData}
-                isEditMode={!editData}
-                calendarData={calendarData}
-                onClose={() => {
-                  setEditData(null);
-                  setIsInputOpen(false);
-                }}
-                onSubmit={handleModalSubmit}
-                onOpenCategoryModal={() => {
-                  setShowInputModal(false);
-                  setIsInputOpen(false);
-                  setShowCategoryModal(true);
-                }}
+                setCategories={setCategories}
               />
             )}
-
             {/* ReportModal */}
             {showReport && reportData && (
               <ReportModal
@@ -544,21 +528,20 @@ function Calendar() {
           </DndProvider>
         </div>
         <FrameSelector />
+        <button
+          className="edit-skin-btn"
+          onClick={() => setIsSkinModalOpen(true)}
+        >
+          스킨 변경
+        </button>
+
+        {isSkinModalOpen && (
+          <CalendarSkinModal
+            onClose={() => setIsSkinModalOpen(false)}
+            onApply={(skin) => setCalendarSkin(skin)}
+          />
+        )}
       </div>
-
-      <button
-        className="edit-skin-btn"
-        onClick={() => setIsSkinModalOpen(true)}
-      >
-        스킨 변경
-      </button>
-
-      {isSkinModalOpen && (
-        <CalendarSkinModal
-          onClose={() => setIsSkinModalOpen(false)}
-          onApply={(skin) => setCalendarSkin(skin)}
-        />
-      )}
     </div>
   );
 }

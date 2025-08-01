@@ -1,10 +1,24 @@
+.modalOverlay {
+  margin-left: 70px;
+  margin-top: 20px;
+}
+
+.innerModalOverlay {
+  margin-left: 70px;
+}
+
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-  gap: 10px;
-  padding: 0 6px; /* ✅ 좌우 여백 동일하게 */
+  margin-bottom: 0px;
+  gap: 3px;
+  padding: 0px 15px;
+  border-bottom: 1px solid #e0e0e0; /* 구분선 추가 */
+}
+
+.row:last-of-type {
+  border-bottom: none; /* 마지막 행은 구분선 제거 */
 }
 
 /* 삭제 버튼 스타일 */
@@ -12,135 +26,140 @@
   background: none;
   border: none;
   padding: 0;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+  margin-right: 8px; /* 오른쪽 여백 추가 */
 }
 
 .tabGroup {
-  margin-right: auto;
+  display: flex;
+  margin-bottom: 0px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .tabInactive {
-  width: 100px;
+  width: 80px;
+  height: 40px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: #999;
+  padding: 8px 16px;
 }
 
 .tabActive {
-  width: 100px;
+  width: 80px;
+  height: 40px;
+  background: linear-gradient(to top, #FEBBB3, #FFFFFF);
+  border: 1px solid #DD938A;
+  border-bottom: 2px solid #ff6b6b;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 16px;
 }
 
 .deleteCircle {
-  background-color: #ff4d4f;
+  background-color: #ff6b6b;
   color: white;
   border-radius: 50%;
   display: inline-block;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   text-align: center;
-  line-height: 22px;
-  font-size: 14px;
+  line-height: 18px;
+  font-size: 12px;
   font-weight: bold;
 }
-
 
 /* 카테고리 이름 */
 .name {
   flex: 1;
-  font-size: 0.95rem;
+  font-size: 15px;
   color: #333;
-  padding-left: 4px;
+  padding-left: 12px;
+  text-align: left;
 }
 
 /* 연필 버튼 스타일 */
 .editBtn {
   background: none;
   border: none;
-  width: 22px;
-  height: 22px;
-  font-size: 14px;
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
   color: #666;
+  margin-right: 12px;
 }
 
 .editBtn:hover {
-  background-color: #f0f0f0;
-  color: black;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  color: #333;
 }
 
-/* 추가 버튼 왼쪽 정렬 + 사이즈 줄임 */
+/* 추가 버튼 */
 .addRow {
   display: flex;
   justify-content: flex-start;
-  padding-left: 6px; /* ✅ 삭제 버튼 라인 맞춤 */
-  margin-bottom: 20px;
+  padding-left: 15px;
+  margin: 10px 0;
 }
 
 .addBtn {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  font-size: 1.2rem;
-  width: 80px;
-  padding: 4px 10px;
+  background: white;
+  color: rgb(75, 72, 72);
+  border: 1px solid #847c7b;
+  border-radius: 5px;
   cursor: pointer;
-  color: #333;
-  height: 40px;
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0px;
+  margin-left: -5px;
 }
 
 .addBtn:hover {
-  background-color: #f5f5f5;
+  background: #ffe0e0;
 }
 
-/* 완료 버튼 우측 정렬 + 줄이기 */
+/* 완료 버튼 */
 .doneBtn {
-  padding: 4px 12px;
-  font-size: 0.85rem;
-  padding: 8px 16px;
-  width: 70px;
+  padding: 8px 20px;
+  font-size: 14px;
   background: linear-gradient(to top, #FEBBB3, #FFFFFF);
   border: 1px solid #DD938A;
   border-radius: 20px;
   color: black;
-  font-weight: bold;
+  width: 80px;
+  font-weight: 600;
   cursor: pointer;
   display: block;
-  margin-left: auto; /* ✅ 오른쪽 정렬 */
-  margin-right: 6px; /* ✅ 연필 버튼 라인 맞춤 */
+  margin-left: auto;
+  margin-right: 17px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .doneBtn:hover {
-  background-color: #e19e9c;
+  background: #ffe0e0;
+
 }
+
 .modalOverlay {
-  position: fixed; /* 화면 전체 덮기 */
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.3); /* 배경 흐리게 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999; /* ✅ 최상단에 뜨도록 */
-}
-
-.modalContainer {
-  background-color: white;
-  border-radius: 12px;
-  width: 500px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
-  font-family: "Noto Sans KR", sans-serif;
-  font-size: 0.9rem;
-}
-
-.innerModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -150,44 +169,88 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 9999;
+}
+
+.modalContainer {
+  background-color: white;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 90vw;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  position: relative;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+.innerModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
 }
 
 .innerModal {
   background: white;
-  padding: 20px;
+  padding: 24px;
   border-radius: 12px;
-  width: 260px;
+  width: 300px;
   text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  width: 95%;
+  padding: 12px;
+  margin-bottom: 0px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 
 .modalButtons {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .confirmBtn,
 .cancelBtn {
-  all: unset;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid #aaa;
-  font-size: 0.85rem;
+  background: linear-gradient(to top, #FEBBB3, #FFFFFF);
+  border: 1px solid #DD938A;
+  padding: 8px 20px;
+  width: 0px;
+  border-radius: 20px;
+  font-size: 14px;
   cursor: pointer;
+  font-weight: 600;
+  min-width: 80px;
 }
 
-.confirmBtn {
-  background-color: #f3b8b5;
+.confirmBtn:hover {
+  background: #ffe0e0;
 }
+
 .cancelBtn {
-  background-color: #eee;
+  background-color: #f5f5f5;
+  color: black;
+}
+
+.cancelBtn:hover {
+  background-color: #e0e0e0;
 }

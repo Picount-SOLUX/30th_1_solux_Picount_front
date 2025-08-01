@@ -8,6 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 70px;
   z-index: 999;
 }
 
@@ -166,12 +167,12 @@
   left: 50%;
   transform: translateX(-50%);
   background-color: #ffbebe;
-  border: none;
+  border: 1px solid #DD938A;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   font-size: 18px;
-  color: white;
+  color: rgb(109, 104, 104);
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -180,7 +181,7 @@
 }
 
 .closeBtn:hover {
-  background-color: #ff9c9c;
+  background: #ffe0e0;
 }
 
 .addRowBtn {

@@ -40,26 +40,17 @@ export const deleteCategory = async (categoryId) => {
 
 
 
+
 // 수입/지출 기록 입력
-export const createCalendarRecord = async (formData) => {
-  console.log("📤 createCalendarRecord - formData 준비됨:", formData);
-  try {
-    const res = await api.post("/calendar/record", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log("📬 API 응답 성공:", res);
-    return res;
-  } catch (e) {
-    console.error("❌ API 요청 실패:", e);
-    throw e; // 다시 던져서 바깥 catch로 가게 하기
-  }
+export const createCalendarRecord = (formData) => {
+  return api.post("/calendar/record", formData)
+    
+  
 };
 
 // 수입/지출 기록 수정
-export const updateCalendarRecord = async (date, formData) => {
-  return await api.patch(`/calendar/record?date=${date}`, formData, {
+export const updateCalendarRecord = (date, formData) => {
+  return api.patch(`/calendar/record?date=${date}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

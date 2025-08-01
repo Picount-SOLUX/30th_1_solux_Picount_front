@@ -96,9 +96,15 @@ export default function InputModal({
       console.log(isEditMode);
       if (!isEditMode) {
         // 수정 모드가 아닌 입력 모드일 때
-        const fetchRes = await api.get(
-          `/calendar/record?date=${date}&memberId=${memberId}`
-        );
+        const fetchRes = await api.get("/calendar/record", {
+          params: {
+            date: inputDate, // inputDate는 "2025-08-01" 형식
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        // 이거 가계부 상세 조회 API임
         console.log("개헷갈리네getAPI되냐", fetchRes);
         const prevData = fetchRes.data?.data || {};
         prevIncomeList = prevData.incomes || [];
@@ -363,7 +369,8 @@ export default function InputModal({
           style={{
             display: "flex",
             justifyContent: "flex-start",
-            marginBottom: "8px",
+            marginTop: "10px",
+            marginBottom: "3px",
           }}
         >
           <button
