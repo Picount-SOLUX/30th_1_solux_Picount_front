@@ -22,6 +22,7 @@ function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [isInputOpen, setIsInputOpen] = useState(false);
   const [viewData, setViewData] = useState(null);
+  const [localCalendarData, setLocalCalendarData] = useState({});
 
   const [placedStickers, setPlacedStickers] = useState({});
   const [calendarData, setCalendarData] = useState({});
@@ -204,6 +205,18 @@ function Calendar() {
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
   const handleDayClick = async (dateStr) => {
+    // 🟡 로컬 데이터 불러오기
+    const localData = JSON.parse(localStorage.getItem("localEntries") || "{}");
+    const localRecord = localData[dateStr];
+
+    const localEntriesForDate = Array.isArray(localRecord?.entries)
+      ? localRecord.entries
+      : [];
+
+    // 초기 memo, photo도 로컬에서 설정
+    let memo = localRecord?.memo || "";
+    let photo = localRecord?.photo || null;
+
     try {
       const res = await api.get(
         `/calendar/record?date=${dateStr}&ownerId=${ownerId}`
@@ -211,9 +224,9 @@ function Calendar() {
       const result = res.data;
 
       if (result.success && result.data) {
-        const { memo, incomes, expenses, imageUrls } = result.data;
+        const { incomes, expenses, imageUrls, memo: serverMemo } = result.data;
 
-        // 🟡 서버 데이터 가공 (null 방지 처리)
+        // 서버 데이터 가공
         const serverEntries = [
           ...(Array.isArray(incomes)
             ? incomes.map((item) => ({
@@ -230,38 +243,37 @@ function Calendar() {
               }))
             : []),
         ];
-        console.log("이거 확인!!", localStorage.getItem("localEntries"));
 
-        // 🟡 로컬 데이터 불러오기
-        const localData = JSON.parse(
-          localStorage.getItem("localEntries") || "{}"
-        );
-        console.log("이거 확인!!", localData);
+        // 서버 메모/이미지 우선 적용
+        memo = serverMemo ?? memo;
+        photo = imageUrls?.[0] || photo;
 
-        const localRecord = localData[dateStr];
-
-        const localEntriesForDate = Array.isArray(localRecord?.entries)
-          ? localRecord.entries
-          : [];
-        console.log("이거 확인!!", localEntriesForDate);
-
-        // ✅ 서버 + 로컬 결합
+        // 서버 + 로컬 데이터 결합
         const combinedEntries = [...serverEntries, ...localEntriesForDate];
 
-        console.log("서버 entries:", serverEntries);
-        console.log("로컬 entries:", localEntriesForDate);
-        console.log("합쳐진 entries:", combinedEntries);
-
-        // ✅ ViewModal에 넘길 데이터 설정
         setViewData({
           date: dateStr,
           memo,
-          photo: imageUrls?.[0] || null,
+          photo,
           entries: combinedEntries,
         });
+
+        return; // 성공 시 여기서 끝
       }
     } catch (e) {
-      console.error("해당 날짜 가계부 불러오기 실패", e);
+      console.warn("서버 가계부 불러오기 실패. 로컬 데이터만 사용합니다.", e);
+    }
+
+    // 서버 실패 시에도 로컬 데이터만으로 뷰 표시
+    if (localEntriesForDate.length > 0 || memo || photo) {
+      setViewData({
+        date: dateStr,
+        memo,
+        photo,
+        entries: localEntriesForDate,
+      });
+    } else {
+      console.log("서버/로컬 모두 데이터 없음.");
     }
   };
 
@@ -327,6 +339,13 @@ function Calendar() {
     const stored = getLocalCalendarData();
     setCalendarData(stored); // 예: 상태로 관리
   }, []);
+
+  useEffect(() => {
+  if (calendarData && Object.keys(calendarData).length > 0) {
+    localStorage.setItem("calendarData", JSON.stringify(calendarData));
+  }
+}, [calendarData]);
+
   ///////////////여기까지 로컬에 저장하는 로직///////////////////
 
   const fetchEmotionReport = async () => {

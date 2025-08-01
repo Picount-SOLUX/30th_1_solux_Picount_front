@@ -89,124 +89,136 @@ export default function InputModal({
   const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
   const handleSubmit = async () => {
-  try {
-    let prevIncomeList = [];
-    let prevExpenseList = [];
+    try {
+      let prevIncomeList = [];
+      let prevExpenseList = [];
 
-    if (!isEditMode && useBackend) {
-      // ✅ 백엔드가 켜져 있을 때만 요청
-      const fetchRes = await api.get("/calendar/record", {
-        params: { date: inputDate },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
+      if (!isEditMode && useBackend) {
+        // ✅ 백엔드가 켜져 있을 때만 요청
+        const fetchRes = await api.get("/calendar/record", {
+          params: { date: inputDate },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        const prevData = fetchRes.data?.data || {};
+        prevIncomeList = prevData.incomes || [];
+        prevExpenseList = prevData.expenses || [];
+      }
+
+      const newIncomeList = incomeRows
+        .filter((row) => row.category && row.amount)
+        .map((row) => {
+          const id = getCategoryId("income", row.category);
+          if (!id)
+            throw new Error(
+              `수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`
+            );
+          return {
+            categoryId: id,
+            categoryName: row.category,
+            amount: Number(row.amount.replace(/,/g, "")),
+          };
+        });
+
+      const newExpenseList = expenseRows
+        .filter((row) => row.category && row.amount)
+        .map((row) => {
+          const id = getCategoryId("expense", row.category);
+          if (!id)
+            throw new Error(
+              `지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`
+            );
+          return {
+            categoryId: id,
+            categoryName: row.category,
+            amount: Number(row.amount.replace(/,/g, "")),
+          };
+        });
+
+      const formData = new FormData();
+      formData.append("entryDate", date);
+      formData.append("memo", memo);
+      formData.append(
+        "incomeList",
+        JSON.stringify(
+          isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList
+        )
+      );
+      formData.append(
+        "expenseList",
+        JSON.stringify(
+          isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList
+        )
+      );
+      if (photo) formData.append("photos", photo);
+
+      console.log("📦 전송할 FormData:", {
+        entryDate: date,
+        memo,
+        incomeList: isEditMode
+          ? [...prevIncomeList, ...newIncomeList]
+          : newIncomeList,
+        expenseList: isEditMode
+          ? [...prevExpenseList, ...newExpenseList]
+          : newExpenseList,
       });
-      const prevData = fetchRes.data?.data || {};
-      prevIncomeList = prevData.incomes || [];
-      prevExpenseList = prevData.expenses || [];
-    }
 
-    const newIncomeList = incomeRows
-      .filter((row) => row.category && row.amount)
-      .map((row) => {
-        const id = getCategoryId("income", row.category);
-        if (!id) throw new Error(`수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
-        return {
-          categoryId: id,
-          categoryName: row.category,
-          amount: Number(row.amount.replace(/,/g, "")),
-        };
-      });
+      // ✅ 백엔드가 켜진 경우에만 API 호출
+      if (useBackend) {
+        if (isEditMode) {
+          const res = await updateCalendarRecord(date, formData);
+          console.log("📬 서버 응답:", res);
+        } else {
+          console.log("여까진 들어오는겨?");
+          const res = await createCalendarRecord(formData);
+          console.log("📬 서버 응답:", res);
+        }
+      }
 
-    const newExpenseList = expenseRows
-      .filter((row) => row.category && row.amount)
-      .map((row) => {
-        const id = getCategoryId("expense", row.category);
-        if (!id) throw new Error(`지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
-        return {
-          categoryId: id,
-          categoryName: row.category,
-          amount: Number(row.amount.replace(/,/g, "")),
-        };
-      });
+      // ✅ 로컬 저장용 데이터 구성
+      const updatedData = {
+        date,
+        memo,
+        photo: photo ? URL.createObjectURL(photo) : preview,
+        entries: [
+          ...newIncomeList.map((item) => ({
+            type: "income",
+            category: item.categoryName,
+            amount: item.amount,
+          })),
+          ...newExpenseList.map((item) => ({
+            type: "expense",
+            category: item.categoryName,
+            amount: item.amount,
+          })),
+        ],
+      };
 
-    const formData = new FormData();
-    formData.append("entryDate", date);
-    formData.append("memo", memo);
-    formData.append(
-      "incomeList",
-      JSON.stringify(isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList)
-    );
-    formData.append(
-      "expenseList",
-      JSON.stringify(isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList)
-    );
-    if (photo) formData.append("photos", photo);
+      // ✅ localStorage 저장
+      const localData = JSON.parse(
+        localStorage.getItem("localEntries") || "{}"
+      );
+      localData[date] = {
+        memo: updatedData.memo,
+        photo: updatedData.photo,
+        entries: updatedData.entries,
+      };
+      localStorage.setItem("localEntries", JSON.stringify(localData));
 
-    console.log("📦 전송할 FormData:", {
-      entryDate: date,
-      memo,
-      incomeList: isEditMode
-        ? [...prevIncomeList, ...newIncomeList]
-        : newIncomeList,
-      expenseList: isEditMode
-        ? [...prevExpenseList, ...newExpenseList]
-        : newExpenseList,
-    });
+      console.log("🧪 저장된 로컬 데이터:", localData[date]);
 
-    // ✅ 백엔드가 켜진 경우에만 API 호출
-    if (useBackend) {
-      if (isEditMode) {
-        const res = await updateCalendarRecord(date, formData);
-        console.log("📬 서버 응답:", res);
+      onSubmit?.(updatedData);
+      onClose();
+    } catch (e) {
+      if (e.response?.status === 401) {
+        console.warn("⚠️ 401 에러 발생 - 무시하고 진행합니다.");
+        onClose();
       } else {
-        console.log("여까진 들어오는겨?");
-        const res = await createCalendarRecord(formData);
-        console.log("📬 서버 응답:", res);
+        console.error("가계부 저장 실패:", e);
       }
     }
-
-    // ✅ 로컬 저장용 데이터 구성
-    const updatedData = {
-      date,
-      memo,
-      photo: photo ? URL.createObjectURL(photo) : preview,
-      entries: [
-        ...newIncomeList.map((item) => ({
-          type: "income",
-          category: item.categoryName,
-          amount: item.amount,
-        })),
-        ...newExpenseList.map((item) => ({
-          type: "expense",
-          category: item.categoryName,
-          amount: item.amount,
-        })),
-      ],
-    };
-
-    // ✅ localStorage 저장
-    const localData = JSON.parse(localStorage.getItem("localEntries") || "{}");
-    localData[date] = {
-      memo: updatedData.memo,
-      photo: updatedData.photo,
-      entries: updatedData.entries,
-    };
-    localStorage.setItem("localEntries", JSON.stringify(localData));
-
-    console.log("🧪 저장된 로컬 데이터:", localData[date]);
-
-    onSubmit?.(updatedData);
-    onClose();
-  } catch (e) {
-    if (e.response?.status === 401) {
-      console.warn("⚠️ 401 에러 발생 - 무시하고 진행합니다.");
-      onClose();
-    } else {
-      console.error("가계부 저장 실패:", e);
-    }
-  }
-};
+  };
 
   const handleDeleteRow = (index) => {
     const updated = [...rows];
@@ -254,9 +266,7 @@ export default function InputModal({
     const fetchExistingData = async () => {
       //const memberId = localStorage.getItem("userId");
       try {
-        const res = await api.get(
-          `/calendar/record?date=${inputDate}`
-        );
+        const res = await api.get(`/calendar/record?date=${inputDate}`);
         const result = res.data;
 
         if (result.success && result.data) {
@@ -355,7 +365,7 @@ export default function InputModal({
 
         <label className={styles.label}>날짜</label>
         <input
-          type="date"
+          type='date'
           value={inputDate}
           onChange={(e) => {
             setInputDate(e.target.value);
@@ -386,7 +396,7 @@ export default function InputModal({
               value={row.category}
               onChange={(e) => handleCategoryChange(idx, e.target.value)}
             >
-              <option value="">카테고리</option>
+              <option value=''>카테고리</option>
               {fetchedCategories[type].length === 0 ? (
                 <option disabled>카테고리 불러오는 중...</option>
               ) : (
@@ -438,23 +448,23 @@ export default function InputModal({
 
         <textarea
           className={styles.memo}
-          placeholder="메모"
+          placeholder='메모'
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
         ></textarea>
 
         <div className={styles.photoBox}>
           {preview && (
-            <img src={preview} alt="preview" className={styles.previewImage} />
+            <img src={preview} alt='preview' className={styles.previewImage} />
           )}
           <input
-            id="upload-photo"
-            type="file"
-            accept="image/*"
+            id='upload-photo'
+            type='file'
+            accept='image/*'
             onChange={handleFileChange}
             style={{ display: "none" }}
           />
-          <label htmlFor="upload-photo" className={styles.photoBtn}>
+          <label htmlFor='upload-photo' className={styles.photoBtn}>
             사진 업로드 ⬆
           </label>
         </div>
