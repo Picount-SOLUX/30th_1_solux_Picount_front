@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import InputModal from "./InputModal";
 import ViewModal from "./ViewModal";
 import styles from "./calendar.module.css";
@@ -7,7 +6,6 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableDay from "./DroppableDay";
 import StickerItem from "./StickerItem";
-// import themeStyles from "../../../styles/CalendarThemes.module.css";
 import useTheme from "../../../hooks/useTheme";
 import { useEffect } from "react";
 import "../../../styles/CalendarThemes.css";
@@ -149,9 +147,7 @@ function Calendar() {
   };
 
   const [editData, setEditData] = useState(null);
-
   const { themeKey, updateTheme } = useTheme();
-
   const [reportData, setReportData] = useState(null);
   const [showReport, setShowReport] = useState(false);
 
@@ -221,21 +217,6 @@ function Calendar() {
       console.error("해당 날짜 가계부 불러오기 실패", e);
     }
   };
-
-  // useEffect(() => {
-  //   setCalendarSkinUrl({
-
-  //     frameUrl: "cal_chang_frame.png",
-  //   });
-  // }, [setCalendarSkinUrl]);
-
-  // useEffect(() => {
-  //   setCalendarSkinUrl({
-  //     backgroundUrl: "",
-  //     frameUrl: "cal_tomato_frame.png",
-  //     frameSize: "contain",
-  //   });
-  // }, [setCalendarSkinUrl]);
 
   useEffect(() => {
     setCalendarSkinUrl({
@@ -498,14 +479,7 @@ function Calendar() {
                 setIsInputOpen(false);
                 setEditData(null);
               }}
-              onSubmit={(data) => {
-                setCalendarData((prev) => ({
-                  ...prev,
-                  [data.date]: data,
-                }));
-                setIsInputOpen(false);
-                setEditData(null);
-              }}
+              onSubmit={handleModalSubmit}
               onOpenCategoryModal={() => {
                 setShowInputModal(false);
                 setIsInputOpen(false);
@@ -528,7 +502,7 @@ function Calendar() {
           )}
 
 
-            {isInputOpen && (
+            {/* {isInputOpen && (
               <InputModal
                 categories={categories}
                 initialData={editData}
@@ -545,8 +519,15 @@ function Calendar() {
                   setShowCategoryModal(true);
                 }}
               />
-            )}
+            )} */}
 
+          {showCategoryModal && (
+              <CategoryModal
+                onClose={() => setShowCategoryModal(false)}
+                categories={categories}
+                setCategories={setCategories}
+              />
+            )}
           {/* ReportModal */}
           {showReport && reportData && (
             <ReportModal

@@ -12,7 +12,6 @@ import api from "../../api/axiosInstance";
 
 export default function Home() {
   const navigate = useNavigate();
-  const ownerId = localStorage.getItem("memberId"); // 또는 getOwnerId() 사용
 
   // 예산 데이터 가져오기
   const savedCategories =
@@ -37,7 +36,7 @@ export default function Home() {
   useEffect(() => {
     const fetchGuestbooks = async () => {
       try {
-        const ownerId = localStorage.getItem("memberId");
+        const ownerId = localStorage.getItem("userId");
         if (!ownerId) {
           console.warn("⛔ ownerId 없음. 로그인 필요");
           return;
@@ -55,7 +54,7 @@ export default function Home() {
         });
 
         if (res.data.success) {
-          console.log("✅ 응답 확인:", res.data.data.content);
+          console.log("방명록 조회 확인:", res.data.data.content);
           const formatted = res.data.data.content.map((item) => ({
             id: item.guestbookId,
             senderNickname: item.writerNickname || "익명", // ✅ 작성자 닉네임
