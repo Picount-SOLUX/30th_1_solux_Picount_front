@@ -131,10 +131,14 @@ function Calendar() {
         };
 
         // calendarData 업데이트
-        setCalendarData((prev) => ({
-          ...prev,
-          [newEntry.date]: updatedData,
-        }));
+        setCalendarData((prev) => {
+          const updated = {
+            ...prev,
+            [newEntry.date]: newEntry,
+          };
+          localStorage.setItem("calendarData", JSON.stringify(updated)); // 이 줄 추가
+          return updated;
+        });
       }
     } catch (error) {
       console.error("데이터 새로고침 실패:", error);
@@ -274,7 +278,7 @@ function Calendar() {
       fetchEmotionReport();
     }
   }, [showReport, currentYear, currentMonth]);
-
+////////////////여기부터 로컬에 저장하는 로직//////////////////
   const getLocalCalendarData = () => {
     return JSON.parse(localStorage.getItem("calendarData")) || {};
   };
@@ -283,7 +287,7 @@ function Calendar() {
     const stored = getLocalCalendarData();
     setCalendarData(stored); // 예: 상태로 관리
   }, []);
-
+///////////////여기까지 로컬에 저장하는 로직///////////////////
   
 
   const fetchEmotionReport = async () => {
@@ -482,7 +486,7 @@ function Calendar() {
               <InputModal
                 categories={categories}
                 initialData={editData}
-                isEditMode={!!editData}
+                isEditMode={!editData}
                 calendarData={calendarData}
                 onClose={() => {
                   setIsInputOpen(false);
