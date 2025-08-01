@@ -3,8 +3,11 @@ import axios from "axios";
 import styles from "./InputModal.module.css";
 import CategoryModal from "./CategoryModal";
 import api from "../../../api/axiosInstance";
-import { getCategories, createCalendarRecord, updateCalendarRecord } from "../../../api/BudgetAPI";
-
+import {
+  getCategories,
+  createCalendarRecord,
+  updateCalendarRecord,
+} from "../../../api/BudgetAPI";
 
 export default function InputModal({
   onClose,
@@ -45,7 +48,9 @@ export default function InputModal({
   const getCategoryId = (type, name) => {
     const list = fetchedCategories?.[type] || [];
     const match = list.find((c) => c.name === name);
-    console.log(`[DEBUG] 찾은 카테고리 (${type}) - 이름: ${name}, ID: ${match?.id}`);
+    console.log(
+      `[DEBUG] 찾은 카테고리 (${type}) - 이름: ${name}, ID: ${match?.id}`
+    );
     return match?.id || null;
   };
 
@@ -92,12 +97,14 @@ export default function InputModal({
     };
 
     const memberId = localStorage.getItem("userId");
-    console.log(memberId)
+    console.log(memberId);
     try {
       let prevIncomeList = [];
       let prevExpenseList = [];
       console.log(isEditMode);
-      if (isEditMode) { // 수정 모드가 아닌 입력 모드일 때
+
+      if (!isEditMode) {
+        // 수정 모드가 아닌 입력 모드일 때
         const fetchRes = await api.get("/calendar/record", {
           params: {
             date: inputDate, // inputDate는 "2025-08-01" 형식
@@ -107,7 +114,7 @@ export default function InputModal({
           },
         });
         // 이거 가계부 상세 조회 API임
-        console.log("개헷갈리네getAPI되냐", fetchRes)
+        console.log("개헷갈리네getAPI되냐", fetchRes);
         const prevData = fetchRes.data?.data || {};
         prevIncomeList = prevData.incomes || [];
         prevExpenseList = prevData.expenses || [];
@@ -117,7 +124,10 @@ export default function InputModal({
         .filter((row) => row.category && row.amount)
         .map((row) => {
           const id = getCategoryId("income", row.category);
-          if (!id) throw new Error(`수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
+          if (!id)
+            throw new Error(
+              `수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`
+            );
           return {
             categoryId: id,
             //categoryName: row.category,
@@ -129,7 +139,10 @@ export default function InputModal({
         .filter((row) => row.category && row.amount)
         .map((row) => {
           const id = getCategoryId("expense", row.category);
-          if (!id) throw new Error(`지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
+          if (!id)
+            throw new Error(
+              `지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`
+            );
           return {
             categoryId: id,
             //categoryName: row.category,
@@ -159,21 +172,24 @@ export default function InputModal({
         entryDate: date,
         //memberId,
         memo,
-        incomeList: isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList,
-        expenseList: isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList,
+        incomeList: isEditMode
+          ? [...prevIncomeList, ...newIncomeList]
+          : newIncomeList,
+        expenseList: isEditMode
+          ? [...prevExpenseList, ...newExpenseList]
+          : newExpenseList,
       });
       console.log(isEditMode);
-      
+
       if (isEditMode) {
-        
         const res = await updateCalendarRecord(date, formData);
         console.log("📬 서버 응답:", res);
       } else {
-        console.log("여까진 들어오는겨?")
+        console.log("여까진 들어오는겨?");
         const res = await createCalendarRecord(formData);
         console.log("📬 서버 응답:", res);
       }
-      
+
       //const formattedDate = new Date(date).toISOString().split("T")[0];
 
       const updatedData = {
@@ -303,7 +319,10 @@ export default function InputModal({
     if (file) setPreview(URL.createObjectURL(file));
   };
 
-  const [fetchedCategories, setFetchedCategories] = useState({ income: [], expense: [] });
+  const [fetchedCategories, setFetchedCategories] = useState({
+    income: [],
+    expense: [],
+  });
   useEffect(() => {
     const fetchCategories = async () => {
       // const ownerId = localStorage.getItem("userId");
@@ -315,7 +334,7 @@ export default function InputModal({
         console.log("categoryList:", categoryList);
 
         const categoriesArray = categoryList.categories || [];
-        console.log("categoriesArray", categoriesArray)
+        console.log("categoriesArray", categoriesArray);
         // 수입/지출 분류
         const income = categoriesArray
           .filter((c) => c.type === "INCOME")

@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import { ThemeContext } from "./ThemeContext";
 
 export const ThemeProvider = ({ children }) => {
-  const [themeKey, setThemeKey] = useState("angel");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("calendarTheme");
-    if (saved) setThemeKey(saved);
-  }, []);
+  const [themeKey, setThemeKey] = useState("");
 
   const updateTheme = (key) => {
     setThemeKey(key);

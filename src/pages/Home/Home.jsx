@@ -76,20 +76,45 @@ export default function Home() {
     fetchGuestbooks();
   }, []);
 
+  const [mySkins, setMySkins] = useState([]);
+
+  const applySkin = (skin) => {
+    localStorage.setItem("calendarSkin", skin.previewImageUrl);
+    window.location.reload(); // 또는 Context API 쓰는 경우엔 setSkin 호출
+  };
+
+  useEffect(() => {
+    const fetchPurchasedSkins = async () => {
+      try {
+        const res = await api.get("/items/purchases/me");
+        if (res.data.success) {
+          const calendarSkins = res.data.data.filter(
+            (item) => item.category === "CALENDAR_SKIN"
+          );
+          setMySkins(calendarSkins);
+        }
+      } catch (err) {
+        console.error("❌ 스킨 목록 불러오기 실패:", err);
+      }
+    };
+
+    fetchPurchasedSkins();
+  }, []);
+
   return (
-    <div className='home-container'>
+    <div className="home-container">
       {/* ===== 상단 그래프 영역 ===== */}
-      <div className='graph-section'>
-        <div className='cake-graph-wrapper'>
-          <h3 className='graph-title'>남은 예산</h3>
-          <div className='cake-graph'>
+      <div className="graph-section">
+        <div className="cake-graph-wrapper">
+          <h3 className="graph-title">남은 예산</h3>
+          <div className="cake-graph">
             <CakeGraph totalBudget={totalBudget} totalSpent={totalSpent} />
           </div>
         </div>
 
-        <div className='bar-graph-wrapper'>
-          <h3 className='graph-title'>카테고리별 지출</h3>
-          <div className='bar-graph'>
+        <div className="bar-graph-wrapper">
+          <h3 className="graph-title">카테고리별 지출</h3>
+          <div className="bar-graph">
             <BarGraph
               categories={categoriesWithSpent}
               totalBudget={totalBudget}
@@ -99,26 +124,47 @@ export default function Home() {
       </div>
 
       {/* ===== 방명록 ===== */}
-      <section className='guestbook-wrapper'>
-        <div className='guestbook-title-wrapper'>
-          <span className='guestbook-title'>나의 방명록</span>
-          <span className='guestbook-separator'>&gt;</span>
+      <section className="guestbook-wrapper">
+        <div className="guestbook-title-wrapper">
+          <span className="guestbook-title">나의 방명록</span>
+          <span className="guestbook-separator">&gt;</span>
           <button
-            className='view-record-btn'
+            className="view-record-btn"
             onClick={() => navigate("/guestbook/history")}
           >
             이전 기록 보기
           </button>
         </div>
 
-        <div className='guestbook-list-wrapper'>
-          <MessageListReadOnly messages={guestbookData} />
+        <div className="guestbook-list-wrapper">
+          {guestbookData.length > 0 ? (
+            <MessageListReadOnly messages={guestbookData} />
+          ) : (
+            <div className="guestbook-empty-box">
+              <div className="empty-text">아직 방명록이 없습니다.</div>
+            </div>
+          )}
         </div>
 
-        <div className='calendar-section'>
+        <div className="calendar-section">
           <Calendar />
         </div>
       </section>
+      <div className="skin-modal">
+        {mySkins.map((skin) => (
+          <div
+            key={skin.itemId}
+            className="skin-item"
+            onClick={() => applySkin(skin)}
+          >
+            <img
+              src={`/assets/ShopItems/CalendarSkin/${skin.previewImageUrl}`}
+              alt={skin.name}
+            />
+            <div>{skin.name}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

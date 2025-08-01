@@ -15,13 +15,6 @@ export default function EditProfilePage() {
     setProfileImage,
   } = useProfile();
 
-  const [skins, setSkins] = useState([
-    { id: 1, name: "생크림", image: "/skins/꾸미기 스킨 1.png" },
-    { id: 2, name: "체리", image: "/skins/꾸미기 스킨 2.png" },
-    { id: 3, name: "꽃", image: "/skins/꾸미기 스킨 3.png" },
-    { id: 4, name: "데코크림", image: "/skins/꾸미기 스킨 4.png" },
-  ]);
-
   const [guestbookList, setGuestbookList] = useState([]);
 
   const handleImageChange = (e) => {
@@ -37,10 +30,6 @@ export default function EditProfilePage() {
 
   const handleResetImage = () => {
     setProfileImage("/assets/profile_default.png"); // ✅ 기본 이미지로 초기화
-  };
-
-  const handleRemoveSkin = (id) => {
-    setSkins((prevSkins) => prevSkins.filter((skin) => skin.id !== id));
   };
 
   const handleDeleteGuestbook = async (id) => {
@@ -162,30 +151,11 @@ export default function EditProfilePage() {
               placeholder="한 줄 소개 입력"
             />
           </label>
-        </div>
-      </div>
-      <button onClick={handleResetImage} className={styles.resetBtn}>
-        기본 이미지로 변경
-      </button>
-
-      <div className={styles.skinSection}>
-        <h3>보유한 꾸미기 스킨</h3>
-        <div className={styles.skinGrid}>
-          {skins.map((skin) => (
-            <div className={styles.skinBox} key={skin.id}>
-              <img
-                src={skin.image}
-                alt={skin.name}
-                className={styles.skinImage}
-              />
-              <button
-                className={styles.removeSkinBtn}
-                onClick={() => handleRemoveSkin(skin.id)}
-              >
-                스킨 제거
-              </button>
-            </div>
-          ))}
+          <div className={styles.resetBtnWrapper}>
+            <button onClick={handleResetImage} className={styles.resetBtn}>
+              기본 이미지로 변경
+            </button>
+          </div>
         </div>
       </div>
 

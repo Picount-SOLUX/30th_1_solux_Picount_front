@@ -4,6 +4,13 @@
   color: #333;
 }
 
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .point-box {
   /* display: flex; */
   width: 120px;
@@ -43,6 +50,21 @@
 .point-value strong {
   font-size: 16px;
   color: #d94a4a;
+}
+
+.preview-btn {
+  background: linear-gradient(to bottom, #ffdede, #ffbcbc);
+  border: 1px solid #ffaaaa;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preview-btn:hover {
+  background: linear-gradient(to bottom, #ffecec, #ffcfcf);
 }
 
 .category-section {
@@ -108,7 +130,7 @@
   cursor: pointer;
 }
 
-.buy-btn:hover {
+/* .buy-btn:hover {
   background-color: #ffe0e0;
 }
 
@@ -120,4 +142,4 @@
   text-align: center;
   border-radius: 8px;
   font-size: 0.95rem;
-}
+} */

@@ -116,12 +116,14 @@ export default function Sidebar() {
 
           <li onClick={handleFriendClick}>
             <div className="menu-item">
-              <img
-                src="src/assets/icons/Friends.png"
-                alt="친구"
-                className="menu-icon-friends"
-              />
-              친구 토글
+              <div className="menu-item-left">
+                <img
+                  src="src/assets/icons/Friends.png"
+                  alt="친구"
+                  className="menu-icon-friends"
+                />
+                친구 토글
+              </div>
               <span className={`arrow ${isFriendOpen ? "open" : ""}`}>▾</span>
             </div>
           </li>
@@ -146,6 +148,15 @@ export default function Sidebar() {
                     className="friend-item"
                     onClick={() => navigate(`/friends/${friend.memberId}`)}
                   >
+                    {/* 🔐 비공개일 때 자물쇠 아이콘 표시 */}
+                    {!friend.isMainVisible && (
+                      <img
+                        src="/assets/icons/lock-icon.png"
+                        alt="비공개"
+                        className="friend-lock"
+                      />
+                    )}
+
                     <img
                       src={friend.profileImageUrl}
                       alt="profile"

@@ -1,0 +1,29 @@
+/* 기본 테마 */
+:root {
+  --weekdays-height: 36px;
+  --weekdays-margin-top: 36px;
+}
+
+/* chang 테마 */
+.chang-theme {
+  --weekdays-height: 120px;
+  --weekdays-margin-top: 120px;
+}
+
+/* angel 테마 */
+.angel-theme {
+  --weekdays-height: 40px;
+  --weekdays-margin-top: 96px;
+}
+
+/* tomato 테마 */
+.tomato-theme {
+  --weekdays-height: 32px;
+  --weekdays-margin-top: 88px;
+}
+
+/* tiara 테마 */
+.tiara-theme {
+  --weekdays-height: 36px;
+  --weekdays-margin-top: 100px;
+}
