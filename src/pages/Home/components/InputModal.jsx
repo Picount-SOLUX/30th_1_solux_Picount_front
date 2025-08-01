@@ -86,93 +86,76 @@ export default function InputModal({
       onClose();
     }
   };
+  const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
   const handleSubmit = async () => {
-    //const memberId = localStorage.getItem("userId");
-    //console.log(memberId)
-    try {
-      let prevIncomeList = [];
-      let prevExpenseList = [];
-      console.log(isEditMode);
+  try {
+    let prevIncomeList = [];
+    let prevExpenseList = [];
 
-      if (!isEditMode) {
-        // 수정 모드가 아닌 입력 모드일 때
-        const fetchRes = await api.get("/calendar/record", {
-          params: {
-            date: inputDate, // inputDate는 "2025-08-01" 형식
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        });
-        // 이거 가계부 상세 조회 API임
-        console.log("개헷갈리네getAPI되냐", fetchRes);
-        const prevData = fetchRes.data?.data || {};
-        prevIncomeList = prevData.incomes || [];
-        prevExpenseList = prevData.expenses || [];
-      }
-
-      const newIncomeList = incomeRows
-        .filter((row) => row.category && row.amount)
-        .map((row) => {
-          const id = getCategoryId("income", row.category);
-          if (!id)
-            throw new Error(
-              `수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`
-            );
-          return {
-            categoryId: id,
-            //categoryName: row.category,
-            amount: Number(row.amount.replace(/,/g, "")),
-          };
-        });
-
-      const newExpenseList = expenseRows
-        .filter((row) => row.category && row.amount)
-        .map((row) => {
-          const id = getCategoryId("expense", row.category);
-          if (!id)
-            throw new Error(
-              `지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`
-            );
-          return {
-            categoryId: id,
-            //categoryName: row.category,
-            amount: Number(row.amount.replace(/,/g, "")),
-          };
-        });
-
-      const formData = new FormData();
-      //formData.append("memberId", memberId);
-      formData.append("entryDate", date);
-      formData.append("memo", memo);
-      formData.append(
-        "incomeList",
-        JSON.stringify(
-          isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList
-        )
-      );
-      formData.append(
-        "expenseList",
-        JSON.stringify(
-          isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList
-        )
-      );
-      if (photo) formData.append("photos", photo);
-
-      console.log("📦 전송할 FormData:", {
-        entryDate: date,
-        //memberId,
-        memo,
-        incomeList: isEditMode
-          ? [...prevIncomeList, ...newIncomeList]
-          : newIncomeList,
-        expenseList: isEditMode
-          ? [...prevExpenseList, ...newExpenseList]
-          : newExpenseList,
+    if (!isEditMode && useBackend) {
+      // ✅ 백엔드가 켜져 있을 때만 요청
+      const fetchRes = await api.get("/calendar/record", {
+        params: { date: inputDate },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
-      console.log(isEditMode);
+      const prevData = fetchRes.data?.data || {};
+      prevIncomeList = prevData.incomes || [];
+      prevExpenseList = prevData.expenses || [];
+    }
 
+    const newIncomeList = incomeRows
+      .filter((row) => row.category && row.amount)
+      .map((row) => {
+        const id = getCategoryId("income", row.category);
+        if (!id) throw new Error(`수입 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
+        return {
+          categoryId: id,
+          categoryName: row.category,
+          amount: Number(row.amount.replace(/,/g, "")),
+        };
+      });
+
+    const newExpenseList = expenseRows
+      .filter((row) => row.category && row.amount)
+      .map((row) => {
+        const id = getCategoryId("expense", row.category);
+        if (!id) throw new Error(`지출 카테고리 "${row.category}"의 ID를 찾을 수 없음`);
+        return {
+          categoryId: id,
+          categoryName: row.category,
+          amount: Number(row.amount.replace(/,/g, "")),
+        };
+      });
+
+    const formData = new FormData();
+    formData.append("entryDate", date);
+    formData.append("memo", memo);
+    formData.append(
+      "incomeList",
+      JSON.stringify(isEditMode ? [...prevIncomeList, ...newIncomeList] : newIncomeList)
+    );
+    formData.append(
+      "expenseList",
+      JSON.stringify(isEditMode ? [...prevExpenseList, ...newExpenseList] : newExpenseList)
+    );
+    if (photo) formData.append("photos", photo);
+
+    console.log("📦 전송할 FormData:", {
+      entryDate: date,
+      memo,
+      incomeList: isEditMode
+        ? [...prevIncomeList, ...newIncomeList]
+        : newIncomeList,
+      expenseList: isEditMode
+        ? [...prevExpenseList, ...newExpenseList]
+        : newExpenseList,
+    });
+
+    // ✅ 백엔드가 켜진 경우에만 API 호출
+    if (useBackend) {
       if (isEditMode) {
         const res = await updateCalendarRecord(date, formData);
         console.log("📬 서버 응답:", res);
@@ -181,41 +164,49 @@ export default function InputModal({
         const res = await createCalendarRecord(formData);
         console.log("📬 서버 응답:", res);
       }
-
-      //const formattedDate = new Date(date).toISOString().split("T")[0];
-
-      const updatedData = {
-        date,
-        memo,
-        photo: photo ? URL.createObjectURL(photo) : preview,
-        entries: [
-          ...newIncomeList.map((item) => ({
-            type: "income",
-            //category: item.categoryName,
-            amount: item.amount.toLocaleString(),
-          })),
-          ...newExpenseList.map((item) => ({
-            type: "expense",
-            //category: item.categoryName,
-            amount: item.amount.toLocaleString(),
-          })),
-        ],
-      };
-      console.log("🧪 updatedData.date:", updatedData);
-      onSubmit?.(updatedData);
-      onClose();
-    } catch (e) {
-      if (e.response?.status === 401) {
-        console.warn("⚠️ 401 에러 발생 - 무시하고 진행합니다.");
-        onClose(); // 모달 닫기만 해도 충분
-      } else {
-        console.error("가계부 저장 실패:", e);
-      }
     }
-    
 
+    // ✅ 로컬 저장용 데이터 구성
+    const updatedData = {
+      date,
+      memo,
+      photo: photo ? URL.createObjectURL(photo) : preview,
+      entries: [
+        ...newIncomeList.map((item) => ({
+          type: "income",
+          category: item.categoryName,
+          amount: item.amount,
+        })),
+        ...newExpenseList.map((item) => ({
+          type: "expense",
+          category: item.categoryName,
+          amount: item.amount,
+        })),
+      ],
+    };
 
-  };
+    // ✅ localStorage 저장
+    const localData = JSON.parse(localStorage.getItem("localEntries") || "{}");
+    localData[date] = {
+      memo: updatedData.memo,
+      photo: updatedData.photo,
+      entries: updatedData.entries,
+    };
+    localStorage.setItem("localEntries", JSON.stringify(localData));
+
+    console.log("🧪 저장된 로컬 데이터:", localData[date]);
+
+    onSubmit?.(updatedData);
+    onClose();
+  } catch (e) {
+    if (e.response?.status === 401) {
+      console.warn("⚠️ 401 에러 발생 - 무시하고 진행합니다.");
+      onClose();
+    } else {
+      console.error("가계부 저장 실패:", e);
+    }
+  }
+};
 
   const handleDeleteRow = (index) => {
     const updated = [...rows];

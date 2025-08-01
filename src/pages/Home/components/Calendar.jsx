@@ -166,7 +166,6 @@ function Calendar() {
     setEditData(null);
   };
 
-
   const [editData, setEditData] = useState(null);
   const { themeKey, updateTheme } = useTheme();
   const [reportData, setReportData] = useState(null);
@@ -214,23 +213,50 @@ function Calendar() {
       if (result.success && result.data) {
         const { memo, incomes, expenses, imageUrls } = result.data;
 
-        const combinedEntries = [
-          ...incomes.map((item) => ({
-            type: "income",
-            category: item.categoryName,
-            amount: item.amount,
-          })),
-          ...expenses.map((item) => ({
-            type: "expense",
-            category: item.categoryName,
-            amount: item.amount,
-          })),
+        // 🟡 서버 데이터 가공 (null 방지 처리)
+        const serverEntries = [
+          ...(Array.isArray(incomes)
+            ? incomes.map((item) => ({
+                type: "income",
+                category: item.categoryName,
+                amount: item.amount,
+              }))
+            : []),
+          ...(Array.isArray(expenses)
+            ? expenses.map((item) => ({
+                type: "expense",
+                category: item.categoryName,
+                amount: item.amount,
+              }))
+            : []),
         ];
+        console.log("이거 확인!!", localStorage.getItem("localEntries"));
 
+        // 🟡 로컬 데이터 불러오기
+        const localData = JSON.parse(
+          localStorage.getItem("localEntries") || "{}"
+        );
+        console.log("이거 확인!!", localData);
+
+        const localRecord = localData[dateStr];
+
+        const localEntriesForDate = Array.isArray(localRecord?.entries)
+          ? localRecord.entries
+          : [];
+        console.log("이거 확인!!", localEntriesForDate);
+
+        // ✅ 서버 + 로컬 결합
+        const combinedEntries = [...serverEntries, ...localEntriesForDate];
+
+        console.log("서버 entries:", serverEntries);
+        console.log("로컬 entries:", localEntriesForDate);
+        console.log("합쳐진 entries:", combinedEntries);
+
+        // ✅ ViewModal에 넘길 데이터 설정
         setViewData({
           date: dateStr,
           memo,
-          photo: imageUrls?.[0] || null, // 첫 번째 이미지만 처리
+          photo: imageUrls?.[0] || null,
           entries: combinedEntries,
         });
       }
@@ -292,7 +318,7 @@ function Calendar() {
       fetchEmotionReport();
     }
   }, [showReport, currentYear, currentMonth]);
-////////////////여기부터 로컬에 저장하는 로직//////////////////
+  ////////////////여기부터 로컬에 저장하는 로직//////////////////
   const getLocalCalendarData = () => {
     return JSON.parse(localStorage.getItem("calendarData")) || {};
   };
@@ -301,8 +327,7 @@ function Calendar() {
     const stored = getLocalCalendarData();
     setCalendarData(stored); // 예: 상태로 관리
   }, []);
-///////////////여기까지 로컬에 저장하는 로직///////////////////
-  
+  ///////////////여기까지 로컬에 저장하는 로직///////////////////
 
   const fetchEmotionReport = async () => {
     try {
@@ -370,7 +395,18 @@ function Calendar() {
 
               if (data?.entries?.length) {
                 data.entries.forEach((entry) => {
-                  const amount = Number(entry.amount.replace(/,/g, "")) || 0;
+                  let amount = 0;
+
+                  if (entry.amount != null) {
+                    if (typeof entry.amount === "string") {
+                      amount = Number(entry.amount.replace(/,/g, ""));
+                    } else if (typeof entry.amount === "number") {
+                      amount = entry.amount;
+                    } else {
+                      // 만약 number나 string 외 타입이면, 안전하게 문자열 변환 후 숫자 변환
+                      amount = Number(String(entry.amount).replace(/,/g, ""));
+                    }
+                  }
                   if (entry.type === "income") totalIncome += amount;
                   else if (entry.type === "expense") totalExpense += amount;
                 });
@@ -396,7 +432,7 @@ function Calendar() {
   };
 
   return (
-    <div className="calendar-wrapper">
+    <div className='calendar-wrapper'>
       <div className={themeKey ? `${themeKey}-theme` : ""}>
         <div
           className={styles.calendarContainer}
@@ -494,7 +530,7 @@ function Calendar() {
             >
               ✏️
             </button>
-    
+
             {/* InputModal */}
             {isInputOpen && (
               <InputModal
@@ -535,7 +571,7 @@ function Calendar() {
               />
             )}
 
-          {showCategoryModal && (
+            {showCategoryModal && (
               <CategoryModal
                 onClose={() => setShowCategoryModal(false)}
                 categories={categories}
@@ -558,7 +594,7 @@ function Calendar() {
         </div>
         <FrameSelector />
         <button
-          className="edit-skin-btn"
+          className='edit-skin-btn'
           onClick={() => setIsSkinModalOpen(true)}
         >
           스킨 변경

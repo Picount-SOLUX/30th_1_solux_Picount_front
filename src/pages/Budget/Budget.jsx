@@ -132,28 +132,28 @@ export default function Budget() {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const fetchActiveBudget = async () => {
-      try {
-        const res = await getActiveBudget();
-        const data = res.data.data;
+  // useEffect(() => {
+  //   const fetchActiveBudget = async () => {
+  //     try {
+  //       const res = await getActiveBudget();
+  //       const data = res.data.data;
 
-        const serverCategories = data.budgetAllocationList.map((item) => ({
-          id: item.budgetAllocationId,
-          name: item.categoryName,
-          amount: item.amount.toString(),
-        }));
+  //       const serverCategories = data.budgetAllocationList.map((item) => ({
+  //         id: item.budgetAllocationId,
+  //         name: item.categoryName,
+  //         amount: item.amount.toString(),
+  //       }));
 
-        setCategories(serverCategories);
-        localStorage.setItem("budgetCategories", JSON.stringify(serverCategories));
-        localStorage.setItem("budgetId", data.budgetId); // PUT용으로 저장
-      } catch (err) {
-        console.error("활성화된 예산 가져오기 실패", err);
-      }
-    };
+  //       setCategories(serverCategories);
+  //       localStorage.setItem("budgetCategories", JSON.stringify(serverCategories));
+  //       localStorage.setItem("budgetId", data.budgetId); // PUT용으로 저장
+  //     } catch (err) {
+  //       console.error("활성화된 예산 가져오기 실패", err);
+  //     }
+  //   };
 
-    fetchActiveBudget();
-  }, []);
+  //   fetchActiveBudget();
+  // }, []);
 
   // 🔥 InfoSteps 값으로 기본 예산 세팅
   useEffect(() => {
@@ -220,8 +220,8 @@ export default function Budget() {
       };
       console.log("보내는 payload", payload.budgetAllocationList);
       console.log("여기까진 오냐?")
-      const res = await updateBudgetPlan(budgetId, payload); // PUT 요청
-      console.log("세부예산 수정 완료:", res)
+      //const res = await updateBudgetPlan(budgetId, payload); // PUT 요청
+      //console.log("세부예산 수정 완료:", res)
       setCategories([...tempCategories]);
       localStorage.setItem("budgetCategories", JSON.stringify(tempCategories));
       setIsEditing(false);
