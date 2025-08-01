@@ -20,4 +20,14 @@
 |------|----------------|------------------------------|
 | 김다은 | [@Daeun-Kim701](https://github.com/Daeun-Kim701) | - |
 | 조시은 | [@singnyee](https://github.com/singnyee) | - |
+<br/>
+## 🛠️ Tech Stack
+
+
+| 구분          | 기술            |
+|---------------|-----------------|
+| **UI 라이브러리** | React           |
+| **스타일링**     | Tailwind CSS    |
+| **상태 관리**    | Zustand         |
+| **차트 라이브러리** | Recharts        |
 
