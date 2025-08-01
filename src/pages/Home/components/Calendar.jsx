@@ -94,29 +94,37 @@ function Calendar() {
 
   // Calendar.jsx
 
-  // 1. handleModalSubmit 함수 수정
   const handleModalSubmit = async (newEntry) => {
-    // 해당 날짜의 최신 데이터를 서버에서 다시 가져오기
-    const ownerId = localStorage.getItem("userId");
+    const localKey = "calendar-records";
+
+    // 1. newEntry 반영 (일단 달력에 보여줌)
+    setCalendarData((prev) => ({
+      ...prev,
+      [newEntry.date]: newEntry,
+    }));
+
+    // 2. 서버 요청
     try {
-      const res = await api.get(
-        `/calendar/record?date=${newEntry.date}&ownerId=${ownerId}`
-      );
+      const res = await api.get(`/calendar/record?date=${newEntry.date}`);
+      console.log("📦 API 응답 데이터:", res.data);
       const result = res.data;
 
-      if (result.success && result.data) {
+      const isValidServerData =
+        result.success &&
+        result.data &&
+        (result.data.incomes?.length > 0 || result.data.expenses?.length > 0);
+
+      if (isValidServerData) {
         const { memo, incomes, expenses, imageUrls } = result.data;
 
         const combinedEntries = [
           ...incomes.map((item) => ({
             type: "income",
-            category: item.categoryName,
-            amount: item.amount.toLocaleString(), // 서버에서 오는 숫자를 포맷
+            amount: item.amount.toLocaleString(),
           })),
           ...expenses.map((item) => ({
             type: "expense",
-            category: item.categoryName,
-            amount: item.amount.toLocaleString(), // 서버에서 오는 숫자를 포맷
+            amount: item.amount.toLocaleString(),
           })),
         ];
 
@@ -127,24 +135,34 @@ function Calendar() {
           entries: combinedEntries,
         };
 
-        // calendarData 업데이트
         setCalendarData((prev) => ({
           ...prev,
           [newEntry.date]: updatedData,
         }));
+
+        return; // 서버 데이터가 유효했으면 여기서 종료
       }
     } catch (error) {
-      console.error("데이터 새로고침 실패:", error);
-      // 실패 시 전달받은 데이터로라도 업데이트
+      console.warn("🌐 서버 새로고침 실패:", error);
+    }
+
+    // 3. 로컬 데이터 fallback
+    const localData = JSON.parse(localStorage.getItem(localKey) || "{}");
+    const fallbackData = localData[newEntry.date];
+
+    if (fallbackData) {
+      console.log("📁 로컬 데이터로 대체:", fallbackData);
       setCalendarData((prev) => ({
         ...prev,
-        [newEntry.date]: newEntry,
+        [newEntry.date]: fallbackData,
       }));
     }
-    // 모달 닫기
+
+    // 4. 모달 닫기
     setIsInputOpen(false);
     setEditData(null);
   };
+
 
   const [editData, setEditData] = useState(null);
   const { themeKey, updateTheme } = useTheme();
@@ -500,26 +518,6 @@ function Calendar() {
               }}
             />
           )}
-
-
-            {/* {isInputOpen && (
-              <InputModal
-                categories={categories}
-                initialData={editData}
-                isEditMode={!editData}
-                calendarData={calendarData}
-                onClose={() => {
-                  setEditData(null);
-                  setIsInputOpen(false);
-                }}
-                onSubmit={handleModalSubmit}
-                onOpenCategoryModal={() => {
-                  setShowInputModal(false);
-                  setIsInputOpen(false);
-                  setShowCategoryModal(true);
-                }}
-              />
-            )} */}
 
           {showCategoryModal && (
               <CategoryModal

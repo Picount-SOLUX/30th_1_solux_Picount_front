@@ -83,8 +83,8 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
-    const memberId = localStorage.getItem("userId");
-    console.log(memberId)
+    //const memberId = localStorage.getItem("userId");
+    //console.log(memberId)
     try {
       let prevIncomeList = [];
       let prevExpenseList = [];
@@ -175,18 +175,18 @@ export default function InputModal({
         entries: [
           ...newIncomeList.map((item) => ({
             type: "income",
-            category: item.categoryName,
+            //category: item.categoryName,
             amount: item.amount.toLocaleString(),
           })),
           ...newExpenseList.map((item) => ({
             type: "expense",
-            category: item.categoryName,
+            //category: item.categoryName,
             amount: item.amount.toLocaleString(),
           })),
         ],
       };
 
-      console.log("🧪 updatedData.date:", updatedData.date);
+      console.log("🧪 updatedData.date:", updatedData);
       onSubmit?.(updatedData);
       onClose();
     } catch (e) {
@@ -238,10 +238,10 @@ export default function InputModal({
 
   useEffect(() => {
     const fetchExistingData = async () => {
-      const memberId = localStorage.getItem("userId");
+      //const memberId = localStorage.getItem("userId");
       try {
         const res = await api.get(
-          `/calendar/record?date=${inputDate}&memberId=${memberId}`
+          `/calendar/record?date=${inputDate}`
         );
         const result = res.data;
 
@@ -382,7 +382,6 @@ export default function InputModal({
               )}
             </select>
 
-
             <input
               className={styles.amountInput}
               value={row.amount}
@@ -443,25 +442,6 @@ export default function InputModal({
             사진 업로드 ⬆
           </label>
         </div>
-
-        {/* {isEditMode && preview && (
-          <div className={styles.photoBox}>
-            <img
-              src={preview}
-              alt="기존 사진 미리보기"
-              className={styles.previewImage}
-            />
-            <label htmlFor="upload-photo" className={styles.changePhotoLabel}>
-              사진 교체하기
-            </label>
-          </div>
-        )}
-
-        {!isEditMode && (
-          <label htmlFor="upload-photo" className={styles.photoBtn}>
-            사진 업로드 ⬆
-          </label>
-        )} */}
 
         <div className={styles.submitRow}>
           <button className={styles.submitBtn} onClick={handleSubmit}>

@@ -1,11 +1,8 @@
 import axios from "axios";
 
-// ✅ 백엔드 연동 여부 확인
-const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
-
 // ✅ 기본 axios 인스턴스 생성
 const api = axios.create({
-  baseURL: useBackend ? import.meta.env.VITE_API_BASE_URL : "",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,22 +15,11 @@ const noAuthUrls = ["/members/signup", "/members/login", "/members/refresh"];
 // ✅ 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
-    if (!useBackend) {
-      console.warn("📭 백엔드 연동 OFF → 요청 차단:", config.url);
-      return Promise.reject({
-        config,
-        message: "백엔드 연동 OFF, 요청 차단됨",
-        isMock: true,
-      });
-    }
-
     const accessToken = localStorage.getItem("accessToken");
     const isNoAuth = noAuthUrls.some((url) => config.url.includes(url));
-
     if (accessToken && !isNoAuth) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-
     return config;
   },
   (error) => Promise.reject(error)
@@ -41,45 +27,24 @@ api.interceptors.request.use(
 
 // ✅ 응답 인터셉터
 api.interceptors.response.use(
-  (response) => response,
+  response => response,
   async (error) => {
     const originalConfig = error.config;
-
-    // ✅ 백엔드 OFF → mock 응답 처리
-    if (!useBackend) {
-      console.info("✅ 백엔드 OFF → mock 응답 반환:", originalConfig.url);
-
-      let mockData = { success: true };
-
-      if (originalConfig.url.includes("/members/signup")) {
-        mockData = {
-          success: true,
-          userId: 123,
-          nickname: "mock-user",
-        };
-      } else if (originalConfig.url.includes("/members/login")) {
-        mockData = {
-          success: true,
-          data: {
-            accessToken: "mock-access-token",
-            refreshToken: "mock-refresh-token",
-            nickname: localStorage.getItem("tempNickname") || "테스트유저",
-          },
-        };
-      }
-
-      return Promise.resolve({
-        data: mockData,
-        status: 200,
-        statusText: "OK",
-        headers: {},
-        config: originalConfig,
-      });
-    }
 
     // ✅ 404 → 무시
     if (error.response?.status === 404) {
       console.warn("📭 404 응답 무시:", originalConfig.url);
+      return Promise.resolve({ data: null });
+    }
+
+    // ✅ 특정 요청 URL에서 401 → 무시하고 응답 null 처리
+    const ignore401Urls = ["/calendar/record"];
+    const isIgnore401 = ignore401Urls.some((url) =>
+      originalConfig?.url?.includes(url)
+    );
+
+    if (error.response?.status === 401 && isIgnore401) {
+      console.warn("📭 401 응답 무시 (ignore401Urls):", originalConfig.url);
       return Promise.resolve({ data: null });
     }
 
@@ -104,14 +69,12 @@ api.interceptors.response.use(
             },
             withCredentials: true,
           }
-        ); // request body 부분
+        );
         console.log("토큰 재발급 성공", res.data);
 
         const { accessToken: newAccessToken } = res.data.data;
-        // 새 accessToken 저장
-        localStorage.setItem("accessToken", newAccessToken); // response body 부분
+        localStorage.setItem("accessToken", newAccessToken);
 
-        // 재시도 요청에 토큰 업데이트
         originalConfig.headers = originalConfig.headers || {};
         originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalConfig); // ✅ 실패한 요청 재시도
@@ -129,5 +92,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default api;
