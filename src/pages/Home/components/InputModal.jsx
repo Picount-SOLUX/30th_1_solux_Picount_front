@@ -88,16 +88,8 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
-    const LOCAL_STORAGE_KEY = "calendarData";
-
-    const saveToLocalStorage = (dateKey, data) => {
-      const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
-      existing[dateKey] = data;
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
-    };
-
-    const memberId = localStorage.getItem("userId");
-    console.log(memberId);
+    //const memberId = localStorage.getItem("userId");
+    //console.log(memberId)
     try {
       let prevIncomeList = [];
       let prevExpenseList = [];
@@ -199,24 +191,17 @@ export default function InputModal({
         entries: [
           ...newIncomeList.map((item) => ({
             type: "income",
-            category: item.categoryName,
+            //category: item.categoryName,
             amount: item.amount.toLocaleString(),
           })),
           ...newExpenseList.map((item) => ({
             type: "expense",
-            category: item.categoryName,
+            //category: item.categoryName,
             amount: item.amount.toLocaleString(),
           })),
         ],
       };
-
-      console.log("🧪 updatedData.date:", updatedData.date);
-      saveToLocalStorage(date, {
-        memo,
-        income: newIncomeList,
-        expense: newExpenseList,
-        photo: photo ? URL.createObjectURL(photo) : preview,
-      });
+      console.log("🧪 updatedData.date:", updatedData);
       onSubmit?.(updatedData);
       onClose();
     } catch (e) {
@@ -276,10 +261,10 @@ export default function InputModal({
 
   useEffect(() => {
     const fetchExistingData = async () => {
-      const memberId = localStorage.getItem("userId");
+      //const memberId = localStorage.getItem("userId");
       try {
         const res = await api.get(
-          `/calendar/record?date=${inputDate}&memberId=${memberId}`
+          `/calendar/record?date=${inputDate}`
         );
         const result = res.data;
 
