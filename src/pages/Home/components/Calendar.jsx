@@ -280,6 +280,17 @@ function Calendar() {
     }
   }, [showReport, currentYear, currentMonth]);
 
+  const getLocalCalendarData = () => {
+    return JSON.parse(localStorage.getItem("calendarData")) || {};
+  };
+
+  useEffect(() => {
+    const stored = getLocalCalendarData();
+    setCalendarData(stored); // 예: 상태로 관리
+  }, []);
+
+  
+
   const fetchEmotionReport = async () => {
     try {
       const res = await api.get(
@@ -500,26 +511,6 @@ function Calendar() {
               }}
             />
           )}
-
-
-            {/* {isInputOpen && (
-              <InputModal
-                categories={categories}
-                initialData={editData}
-                isEditMode={!editData}
-                calendarData={calendarData}
-                onClose={() => {
-                  setEditData(null);
-                  setIsInputOpen(false);
-                }}
-                onSubmit={handleModalSubmit}
-                onOpenCategoryModal={() => {
-                  setShowInputModal(false);
-                  setIsInputOpen(false);
-                  setShowCategoryModal(true);
-                }}
-              />
-            )} */}
 
           {showCategoryModal && (
               <CategoryModal

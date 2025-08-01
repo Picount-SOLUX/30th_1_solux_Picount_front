@@ -83,13 +83,21 @@ export default function InputModal({
   };
 
   const handleSubmit = async () => {
+    const LOCAL_STORAGE_KEY = "calendarData";
+
+    const saveToLocalStorage = (dateKey, data) => {
+      const existing = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+      existing[dateKey] = data;
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing));
+    };
+
     const memberId = localStorage.getItem("userId");
     console.log(memberId)
     try {
       let prevIncomeList = [];
       let prevExpenseList = [];
       console.log(isEditMode);
-      if (!isEditMode) { // 수정 모드가 아닌 입력 모드일 때
+      if (isEditMode) { // 수정 모드가 아닌 입력 모드일 때
         const fetchRes = await api.get("/calendar/record", {
           params: {
             date: inputDate, // inputDate는 "2025-08-01" 형식
@@ -187,11 +195,25 @@ export default function InputModal({
       };
 
       console.log("🧪 updatedData.date:", updatedData.date);
+      saveToLocalStorage(date, {
+        memo,
+        income: newIncomeList,
+        expense: newExpenseList,
+        photo: photo ? URL.createObjectURL(photo) : preview,
+      });
       onSubmit?.(updatedData);
       onClose();
     } catch (e) {
-      console.error("가계부 저장 실패:", e);
+      if (e.response?.status === 401) {
+        console.warn("⚠️ 401 에러 발생 - 무시하고 진행합니다.");
+        onClose(); // 모달 닫기만 해도 충분
+      } else {
+        console.error("가계부 저장 실패:", e);
+      }
     }
+    
+
+
   };
 
   const handleDeleteRow = (index) => {
@@ -314,7 +336,6 @@ export default function InputModal({
     fetchCategories();
   }, []);
 
-
   return (
     <div className={styles.modalOverlay} onClick={handleOverlayClick}>
       <div className={styles.modalContainer} ref={containerRef}>
@@ -382,7 +403,6 @@ export default function InputModal({
               )}
             </select>
 
-
             <input
               className={styles.amountInput}
               value={row.amount}
@@ -443,25 +463,6 @@ export default function InputModal({
             사진 업로드 ⬆
           </label>
         </div>
-
-        {/* {isEditMode && preview && (
-          <div className={styles.photoBox}>
-            <img
-              src={preview}
-              alt="기존 사진 미리보기"
-              className={styles.previewImage}
-            />
-            <label htmlFor="upload-photo" className={styles.changePhotoLabel}>
-              사진 교체하기
-            </label>
-          </div>
-        )}
-
-        {!isEditMode && (
-          <label htmlFor="upload-photo" className={styles.photoBtn}>
-            사진 업로드 ⬆
-          </label>
-        )} */}
 
         <div className={styles.submitRow}>
           <button className={styles.submitBtn} onClick={handleSubmit}>
