@@ -25,7 +25,7 @@ export default function FriendHome() {
         const res = await api.get("/friends/main-page", {
           params: { ownerId: friendId }, // ✅ 쿼리 파라미터는 params로 분리
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
 

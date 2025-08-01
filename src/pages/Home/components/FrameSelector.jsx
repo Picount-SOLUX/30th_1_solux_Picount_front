@@ -6,9 +6,11 @@ export default function FrameSelector() {
   const { setCalendarSkinUrl } = useSkin();
 
   const frames = [
+    { name: "기본", value: null },
     { name: "Chang", value: "cal_chang_frame.png" },
     { name: "Tomato", value: "cal_tomato_frame.png" },
     { name: "Tiara", value: "cal_tiara_frame.png" },
+    { name: "Angel", value: "cal_angel_frame.png" },
   ];
 
   return (

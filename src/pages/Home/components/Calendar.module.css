@@ -146,17 +146,28 @@
 .reportBtn:hover {
   background-color: #f0f0f0;
 }
-
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   position: relative;
-  z-index: 3; /* 프레임 위로 */
-  margin-top: 80px; /* ← 이게 핵심! 프레임 이미지 하단에 요일이 맞게 */
-  height: 36px;
+  z-index: 3;
+  margin-top: var(
+    --weekdays-margin-top,
+    36px
+  ); /* ← 기본값 설정  ← 이게 핵심! 프레임 이미지 하단에 요일이 맞게 */
+  height: var(--weekdays-height, 36px); /* ← 요일 바 높이 변수화 */
 }
 
 .weekday {
+  background-color: var(--weekday-bg, #fcd4cd); /* 기본값: 살구색 */
+  color: var(--weekday-text, #000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.78rem;
+}
+/* .weekday {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +175,7 @@
   font-size: 0.78rem;
   color: #333;
   background-color: transparent;
-}
+} */
 
 /* .weekdays {
   display: grid;

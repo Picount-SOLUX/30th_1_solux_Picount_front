@@ -37,7 +37,7 @@ export default function Home() {
   useEffect(() => {
     const fetchGuestbooks = async () => {
       try {
-        const ownerId = localStorage.getItem("memberId");
+        const ownerId = localStorage.getItem("userId");
         if (!ownerId) {
           console.warn("⛔ ownerId 없음. 로그인 필요");
           return;
@@ -76,6 +76,31 @@ export default function Home() {
     fetchGuestbooks();
   }, []);
 
+  const [mySkins, setMySkins] = useState([]);
+
+  const applySkin = (skin) => {
+    localStorage.setItem("calendarSkin", skin.previewImageUrl);
+    window.location.reload(); // 또는 Context API 쓰는 경우엔 setSkin 호출
+  };
+
+  useEffect(() => {
+    const fetchPurchasedSkins = async () => {
+      try {
+        const res = await api.get("/items/purchases/me");
+        if (res.data.success) {
+          const calendarSkins = res.data.data.filter(
+            (item) => item.category === "CALENDAR_SKIN"
+          );
+          setMySkins(calendarSkins);
+        }
+      } catch (err) {
+        console.error("❌ 스킨 목록 불러오기 실패:", err);
+      }
+    };
+
+    fetchPurchasedSkins();
+  }, []);
+
   return (
     <div className="home-container">
       {/* ===== 상단 그래프 영역 ===== */}
@@ -112,13 +137,34 @@ export default function Home() {
         </div>
 
         <div className="guestbook-list-wrapper">
-          <MessageListReadOnly messages={guestbookData} />
+          {guestbookData.length > 0 ? (
+            <MessageListReadOnly messages={guestbookData} />
+          ) : (
+            <div className="guestbook-empty-box">
+              <div className="empty-text">아직 방명록이 없습니다.</div>
+            </div>
+          )}
         </div>
 
         <div className="calendar-section">
           <Calendar />
         </div>
       </section>
+      <div className="skin-modal">
+        {mySkins.map((skin) => (
+          <div
+            key={skin.itemId}
+            className="skin-item"
+            onClick={() => applySkin(skin)}
+          >
+            <img
+              src={`/assets/ShopItems/CalendarSkin/${skin.previewImageUrl}`}
+              alt={skin.name}
+            />
+            <div>{skin.name}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

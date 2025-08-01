@@ -189,15 +189,7 @@ export default function SettingsPage() {
           <span className={styles.slider}></span>
         </label>
       </li>
-      {/* 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>친구 관리</h2>
-        <ul className={styles.itemList}>
-          <li className={styles.item} onClick={goToFriendManage}>
-            친구 목록 보기 및 삭제
-          </li>
-        </ul>
-      </div> */}
+
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>친구 관리</h2>
         <ul className={styles.friendList}>

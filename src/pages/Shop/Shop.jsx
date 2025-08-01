@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Shop.css";
 import api from "../../api/axiosInstance";
-import PreviewModal from "./PreviewModal";
+import PreviewModal from "./SkinSelectorBook";
 
 function Shop() {
   const [shopItems, setShopItems] = useState([]);
