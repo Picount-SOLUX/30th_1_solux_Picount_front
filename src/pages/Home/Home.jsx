@@ -53,7 +53,8 @@ export default function Home() {
           },
         });
 
-        if (res.data.success) {
+        if (res.success) {
+          console.log("방명록 조회 API 들어가기 직전");
           console.log("방명록 조회 확인:", res.data.data.content);
           const formatted = res.data.data.content.map((item) => ({
             id: item.guestbookId,
@@ -76,19 +77,19 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="home-container">
+    <div className='home-container'>
       {/* ===== 상단 그래프 영역 ===== */}
-      <div className="graph-section">
-        <div className="cake-graph-wrapper">
-          <h3 className="graph-title">남은 예산</h3>
-          <div className="cake-graph">
+      <div className='graph-section'>
+        <div className='cake-graph-wrapper'>
+          <h3 className='graph-title'>남은 예산</h3>
+          <div className='cake-graph'>
             <CakeGraph totalBudget={totalBudget} totalSpent={totalSpent} />
           </div>
         </div>
 
-        <div className="bar-graph-wrapper">
-          <h3 className="graph-title">카테고리별 지출</h3>
-          <div className="bar-graph">
+        <div className='bar-graph-wrapper'>
+          <h3 className='graph-title'>카테고리별 지출</h3>
+          <div className='bar-graph'>
             <BarGraph
               categories={categoriesWithSpent}
               totalBudget={totalBudget}
@@ -98,23 +99,23 @@ export default function Home() {
       </div>
 
       {/* ===== 방명록 ===== */}
-      <section className="guestbook-wrapper">
-        <div className="guestbook-title-wrapper">
-          <span className="guestbook-title">나의 방명록</span>
-          <span className="guestbook-separator">&gt;</span>
+      <section className='guestbook-wrapper'>
+        <div className='guestbook-title-wrapper'>
+          <span className='guestbook-title'>나의 방명록</span>
+          <span className='guestbook-separator'>&gt;</span>
           <button
-            className="view-record-btn"
+            className='view-record-btn'
             onClick={() => navigate("/guestbook/history")}
           >
             이전 기록 보기
           </button>
         </div>
 
-        <div className="guestbook-list-wrapper">
+        <div className='guestbook-list-wrapper'>
           <MessageListReadOnly messages={guestbookData} />
         </div>
 
-        <div className="calendar-section">
+        <div className='calendar-section'>
           <Calendar />
         </div>
       </section>

@@ -93,14 +93,18 @@ api.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-        const refreshUrl = useBackend
-          ? `${import.meta.env.VITE_API_BASE_URL}/api/members/refresh`
-          : "/api/members/refresh";
 
         // refreshToken으로 새 accessToken 발급 요청
-        const res = await api.post("/members/refresh", {
-          refreshToken,
-        }); // request body 부분
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/members/refresh`,
+          { refreshToken },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        ); // request body 부분
         console.log("토큰 재발급 성공", res.data);
 
         const { accessToken: newAccessToken } = res.data.data;
@@ -108,8 +112,10 @@ api.interceptors.response.use(
         localStorage.setItem("accessToken", newAccessToken); // response body 부분
 
         // 재시도 요청에 토큰 업데이트
+        originalConfig.headers = originalConfig.headers || {};
         originalConfig.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalConfig); // ✅ 실패한 요청 재시도
+
       } catch (refreshError) {
         console.error("🔒 리프레시 토큰 만료 → 로그아웃 처리");
         localStorage.removeItem("accessToken");

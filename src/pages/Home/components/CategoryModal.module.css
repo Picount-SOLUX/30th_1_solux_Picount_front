@@ -3,13 +3,17 @@
   margin-top: 20px;
 }
 
+.innerModalOverlay {
+  margin-left: 70px;
+}
+
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0px;
   gap: 3px;
-  padding: 0px 12px;
+  padding: 0px 15px;
   border-bottom: 1px solid #e0e0e0; /* 구분선 추가 */
 }
 
@@ -124,7 +128,7 @@
   align-items: center;
   justify-content: center;
   margin-top: 0px;
-  margin-left: -7px;
+  margin-left: -5px;
 }
 
 .addBtn:hover {
@@ -145,7 +149,7 @@
   display: block;
   margin-left: auto;
   margin-right: 17px;
-  margin-top: 0px;
+  margin-top: -10px;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
