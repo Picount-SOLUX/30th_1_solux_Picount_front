@@ -225,7 +225,7 @@ export default function Budget() {
       setCategories([...tempCategories]);
       localStorage.setItem("budgetCategories", JSON.stringify(tempCategories));
       setIsEditing(false);
-      alert("저장되었습니다.");
+      //alert("저장되었습니다.");
     } catch (error) {
       console.error("예산 저장 실패", error);
       alert("예산 저장 중 오류 발생");
