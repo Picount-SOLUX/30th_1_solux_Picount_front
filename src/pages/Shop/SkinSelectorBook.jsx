@@ -131,7 +131,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
                 ))
               )}
             </div>
-            <button
+            {/* <button
               className="apply-btn"
               onClick={() => {
                 if (tempSkin) {
@@ -141,7 +141,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
               }}
             >
               적용
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -157,8 +157,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
         〉
       </button>
 
-      {/* 닫기 버튼 (오른쪽 상단 고정) */}
-      <button
+      {/* <button
         className="close-btn"
         onClick={(e) => {
           e.stopPropagation();
@@ -166,7 +165,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
         }}
       >
         ✕
-      </button>
+      </button> */}
     </div>
   );
 }

@@ -171,21 +171,3 @@
   height: auto;
   border-radius: 8px;
 }
-
-/* ✅ 적용 버튼 */
-.apply-btn {
-  align-self: flex-end;
-  margin-top: 16px;
-  padding: 6px 18px;
-  background: linear-gradient(to bottom, #fff, #febbb3);
-  border: 1px solid #db968e;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  color: #333;
-}
-
-.apply-btn:hover {
-  background: #ffe0e0;
-}

@@ -3,13 +3,14 @@ import "./BarGraph.css";
 
 export default function BarGraph({ categories }) {
   // categories가 없으면 기본 더미 데이터로 방어
-  const finalCategories = Array.isArray(categories)
-    ? categories
-    : [
+  const isDummy = !Array.isArray(categories);
+  const finalCategories = isDummy
+    ? [
         { id: 1, name: "식비", amount: 50000, spent: 30000 },
         { id: 2, name: "쇼핑", amount: 40000, spent: 15000 },
         { id: 3, name: "교통", amount: 30000, spent: 20000 },
-      ];
+      ]
+    : categories;
   console.log(categories);
   return (
     <div className="bar-graph-container">
@@ -39,10 +40,10 @@ export default function BarGraph({ categories }) {
                 </div>
                 <div className="bar-info">
                   <span className="spent-amount">
-                    {spentAmount.toLocaleString()}원
+                    {isDummy ? "****원" : `${spentAmount.toLocaleString()}원`}
                   </span>
                   <span className="budget-amount">
-                    {budgetAmount.toLocaleString()}원
+                    {isDummy ? "****원" : `${budgetAmount.toLocaleString()}원`}
                   </span>
                 </div>
               </div>
