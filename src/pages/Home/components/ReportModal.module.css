@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999; /* 👈 캘린더보다 충분히 높은 값 */
 }
 
 .modal {

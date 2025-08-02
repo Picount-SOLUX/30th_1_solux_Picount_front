@@ -52,7 +52,7 @@ export default function Home() {
   useEffect(() => {
     const fetchGuestbooks = async () => {
       try {
-        const ownerId = localStorage.getItem("userId");
+        const ownerId = localStorage.getItem("memberId");
         if (!ownerId) {
           console.warn("⛔ ownerId 없음. 로그인 필요");
           return;
@@ -68,10 +68,11 @@ export default function Home() {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
-
-        if (res.success) {
-          console.log("방명록 조회 API 들어가기 직전");
-          console.log("방명록 조회 확인:", res.data.data.content);
+        console.log("📌 ownerId:", ownerId);
+        console.log("📌 accessToken:", localStorage.getItem("accessToken"));
+        console.log("📌 요청 보내는 중...");
+        if (res.data.success) {
+          console.log("✅ 응답 확인:", res.data.data.content);
           const formatted = res.data.data.content.map((item) => ({
             id: item.guestbookId,
             senderNickname: item.writerNickname || "익명", // ✅ 작성자 닉네임

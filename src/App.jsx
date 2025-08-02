@@ -28,6 +28,7 @@ import { ProfileProvider } from "./context/ProfileProvider";
 import GuestbookHistoryPage from "./pages/Friends/GuestbookHistoryPage";
 import FriendHome from "./pages/Friends/FriendHome";
 import FriendManagePage from "./pages/MyPage/components/FriendManagePage";
+import EmotionReportPage from "./pages/Home/components/EmotionReportPage";
 
 import "./styles/App.css";
 
@@ -69,17 +70,17 @@ function App() {
               }}
             >
               <Routes>
-                {/* 로그인 전 페이지 */}
+                {/* 로그인 전 */}
                 <Route path="/" element={<StartingPage />} />
                 <Route path="/join" element={<Join />} />
-                <Route path="/oauth/kakao" element={<OauthKakao />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/callback" element={<Callback />} />
                 <Route path="/welcome" element={<Welcome />} />
                 <Route path="/info-steps" element={<InfoSteps />} />
                 <Route path="/find-password" element={<FindPassword />} />
+                <Route path="/callback" element={<Callback />} />
+                <Route path="/oauth/kakao" element={<OauthKakao />} />
 
-                {/* 로그인 후 페이지 */}
+                {/* 로그인 후 */}
                 <Route path="/home" element={<Home />} />
                 <Route path="/budget" element={<Budget />} />
                 <Route path="/shop" element={<Shop />} />
@@ -87,9 +88,12 @@ function App() {
                 <Route path="/friends/:friendId" element={<FriendHome />} />
                 <Route path="/friends" element={<Friends />} />
                 <Route path="/mypage" element={<MyPage />} />
+
+                {/* ✅ 월말 리포트 경로 추가 */}
+                <Route path="/report" element={<EmotionReportPage />} />
+
                 {/*설정페이지 라우터*/}
-                <Route path="/" element={<Home />} />
-                <Route path="/mypage" element={<MyPage />} />
+
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route
                   path="/settings/edit-profile"

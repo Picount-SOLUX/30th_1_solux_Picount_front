@@ -21,12 +21,10 @@ export const ProfileProvider = ({ children }) => {
     }
     console.log("accessToken", localStorage.getItem("accessToken"));
     console.log("memberId", localStorage.getItem("memberId"));
-    localStorage.setItem("nickname", "sm");
-    localStorage.setItem("intro", "한 줄 소개를 입력하세요");
 
     const fetchProfile = async () => {
       try {
-        const res = await api.get(`/members/{member_id}`, {
+        const res = await api.get(`/members/${memberId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -36,7 +36,7 @@ export default function FriendHome() {
         }
       } catch (err) {
         console.error("❌ 친구 정보 요청 중 오류 발생:", err);
-        setErrorMessage("친구 정보를 불러오는 중 오류가 발생했습니다.");
+        setErrorMessage("가계부를 비공개로 설정한 사용자입니다.");
       }
     };
 
