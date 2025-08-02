@@ -157,10 +157,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
         〉
       </button>
 
-<<<<<<< HEAD
-=======
       {/* 닫기 버튼 (오른쪽 상단 고정) */}
->>>>>>> 5caa30b86e2d46e8e3331aeb90c3b0e35f84ec99
       {/* <button
         className="close-btn"
         onClick={(e) => {

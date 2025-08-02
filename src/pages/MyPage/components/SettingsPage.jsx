@@ -195,7 +195,7 @@ export default function SettingsPage() {
 
       {/* 필요하면 여기에 프로필 이미지, 닉네임, 소개 출력 추가 가능 */}
       {/* 예시: */}
-      <div className={styles.profileSummary}>
+      {/* <div className={styles.profileSummary}>
         <img
           src={profileImage}
           alt='프로필 이미지'
@@ -203,13 +203,13 @@ export default function SettingsPage() {
         />
         <p>닉네임: {nickname}</p>
         <p>한 줄 소개: {intro}</p>
-      </div>
+      </div> */}
 
       <li className={styles.item}>
         <span>가계부 친구 공개 여부</span>
         <label className={styles.toggleSwitch}>
           <input
-            type='checkbox'
+            type="checkbox"
             checked={isMainVisible}
             onChange={async (e) => {
               const newValue = e.target.checked;
@@ -250,7 +250,7 @@ export default function SettingsPage() {
               <li key={friend.memberId} className={styles.friendItem}>
                 <img
                   src={friend.profileImageUrl}
-                  alt='profile'
+                  alt="profile"
                   className={styles.friendAvatar}
                 />
                 <span className={styles.friendName}>{friend.nickname}</span>
