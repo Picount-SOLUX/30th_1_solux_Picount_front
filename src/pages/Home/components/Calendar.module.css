@@ -48,7 +48,7 @@
   align-items: center;
   overflow-x: auto;
   padding: 6px 8px;
-  height: 24px;
+  height: 31px;
   min-width: 320px;
 }
 
@@ -139,6 +139,7 @@
   padding: 6px 12px;
   font-size: 0.85rem;
   border-radius: 8px;
+  margin-left: 10px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }

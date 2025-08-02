@@ -68,127 +68,106 @@ function Calendar() {
     }
   }, [currentYear, currentMonth]);
 
-  const handleStickerDrop = async (dateStr, emotionObj) => {
-    if (!ownerId) {
-      console.error("❌ ownerId가 없습니다. 로그인 정보를 확인하세요.");
-      return;
+  useEffect(() => {
+    const saved = localStorage.getItem("placedStickers");
+    if (saved) {
+      setPlacedStickers(JSON.parse(saved));
     }
+  }, []);
 
-    console.log("📤 POST /calendar/emotion", {
-      date: dateStr,
-      emotion: emotionObj.emotion,
-      ownerId,
-    });
-
-    try {
-      const res = await api.post("/calendar/emotion", {
-        date: dateStr,
-        emotion: emotionObj.emotion,
-        // ownerId 생략 가능
-      });
-
-      const result = res.data;
-
-      if (result.success) {
-        setPlacedStickers((prev) => ({
-          ...prev,
-          [dateStr]: emotionObj.src, // 표시용 src 유지
-        }));
-      } else {
-        console.warn("스티커 등록 실패:", result.message);
-      }
-    } catch (e) {
-      console.error("스티커 등록 실패 (에러)", e);
-    }
-  };
-
-  const handleStickerDelete = async (dateStr) => {
-    try {
-      const res = await api.delete(`/calendar/emotion?date=${dateStr}`);
-      const result = res.data;
-
-      if (result.status === "success") {
-        setPlacedStickers((prev) => {
-          const newData = { ...prev };
-          delete newData[dateStr];
-          return newData;
-        });
-      } else {
-        console.warn("삭제 응답 실패:", result.message);
-      }
-    } catch (e) {
-      console.error("스티커 삭제 실패", e);
-    }
-  };
-
-  const handleModalSubmit = async (newEntry) => {
-    const localKey = "calendar-records";
-
-    // 1. newEntry 반영 (일단 달력에 보여줌)
-    setCalendarData((prev) => ({
-      ...prev,
-      [newEntry.date]: newEntry,
-    }));
-
-    // 2. 서버 요청
-    try {
-      const res = await api.get(`/calendar/record?date=${newEntry.date}`);
-      console.log("📦 API 응답 데이터:", res.data);
-      const result = res.data;
-
-      const isValidServerData =
-        result.success &&
-        result.data &&
-        (result.data.incomes?.length > 0 || result.data.expenses?.length > 0);
-
-      if (isValidServerData) {
-        const { memo, incomes, expenses, imageUrls } = result.data;
-
-        const combinedEntries = [
-          ...incomes.map((item) => ({
-            type: "income",
-            amount: item.amount.toLocaleString(),
-          })),
-          ...expenses.map((item) => ({
-            type: "expense",
-            amount: item.amount.toLocaleString(),
-          })),
-        ];
-
-        const updatedData = {
-          date: newEntry.date,
-          memo,
-          photo: imageUrls?.[0] || null,
-          entries: combinedEntries,
-        };
-
-        setCalendarData((prev) => ({
-          ...prev,
-          [newEntry.date]: updatedData,
-        }));
-
-        return; // 서버 데이터가 유효했으면 여기서 종료
-      }
-    } catch (error) {
-      console.warn("🌐 서버 새로고침 실패:", error);
-    }
-
-    // 3. 로컬 데이터 fallback
-    const localData = JSON.parse(localStorage.getItem(localKey) || "{}");
-    const fallbackData = localData[newEntry.date];
-
-    if (fallbackData) {
-      console.log("📁 로컬 데이터로 대체:", fallbackData);
-      setCalendarData((prev) => ({
+  const handleStickerDrop = (dateStr, emotionObj) => {
+    // placedStickers 상태 업데이트
+    setPlacedStickers((prev) => {
+      const updated = {
         ...prev,
-        [newEntry.date]: fallbackData,
-      }));
-    }
+        [dateStr]: emotionObj.src,
+      };
 
-    // 4. 모달 닫기
-    setIsInputOpen(false);
-    setEditData(null);
+      // localStorage에 저장
+      localStorage.setItem("placedStickers", JSON.stringify(updated));
+      return updated;
+    });
   };
+
+  const handleStickerDelete = (dateStr) => {
+    setPlacedStickers((prev) => {
+      const updated = { ...prev };
+      delete updated[dateStr];
+
+      // localStorage에 반영
+      localStorage.setItem("placedStickers", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  // const handleModalSubmit = async (newEntry) => {
+  //   const localKey = "calendar-records";
+
+  //   // 1. newEntry 반영 (일단 달력에 보여줌)
+  //   setCalendarData((prev) => ({
+  //     ...prev,
+  //     [newEntry.date]: newEntry,
+  //   }));
+
+  //   // 2. 서버 요청
+  //   try {
+  //     const res = await api.get(`/calendar/record?date=${newEntry.date}`);
+  //     console.log("📦 API 응답 데이터:", res.data);
+  //     const result = res.data;
+
+  //     const isValidServerData =
+  //       result.success &&
+  //       result.data &&
+  //       (result.data.incomes?.length > 0 || result.data.expenses?.length > 0);
+
+  //     if (isValidServerData) {
+  //       const { memo, incomes, expenses, imageUrls } = result.data;
+
+  //       const combinedEntries = [
+  //         ...incomes.map((item) => ({
+  //           type: "income",
+  //           amount: item.amount.toLocaleString(),
+  //         })),
+  //         ...expenses.map((item) => ({
+  //           type: "expense",
+  //           amount: item.amount.toLocaleString(),
+  //         })),
+  //       ];
+
+  //       const updatedData = {
+  //         date: newEntry.date,
+  //         memo,
+  //         photo: imageUrls?.[0] || null,
+  //         entries: combinedEntries,
+  //       };
+
+  //       setCalendarData((prev) => ({
+  //         ...prev,
+  //         [newEntry.date]: updatedData,
+  //       }));
+
+  //       return; // 서버 데이터가 유효했으면 여기서 종료
+  //     }
+  //   } catch (error) {
+  //     console.warn("🌐 서버 새로고침 실패:", error);
+  //   }
+
+  //   // 3. 로컬 데이터 fallback
+  //   const localData = JSON.parse(localStorage.getItem(localKey) || "{}");
+  //   const fallbackData = localData[newEntry.date];
+
+  //   if (fallbackData) {
+  //     console.log("📁 로컬 데이터로 대체:", fallbackData);
+  //     setCalendarData((prev) => ({
+  //       ...prev,
+  //       [newEntry.date]: fallbackData,
+  //     }));
+  //   }
+
+  //   // 4. 모달 닫기
+  //   setIsInputOpen(false);
+  //   setEditData(null);
+  // };
 
   const [editData, setEditData] = useState(null);
   const { themeKey, updateTheme } = useTheme();
@@ -461,7 +440,7 @@ function Calendar() {
   }, [showReport, currentYear, currentMonth, fetchEmotionReport]);
 
   return (
-    <div className="calendar-wrapper">
+    <div className='calendar-wrapper'>
       <div className={`${themeKey}-theme`}>
         <div
           className={styles.calendarContainer}
@@ -580,7 +559,7 @@ function Calendar() {
                 setIsInputOpen(true);
               }}
             >
-              <img src="/assets/icons/calInput-button.png" alt="작성" />
+              <img src='/assets/icons/calInput-button.png' alt='작성' />
             </button>
 
             {/* InputModal */}
@@ -647,7 +626,7 @@ function Calendar() {
         </div>
         <FrameSelector />
         <button
-          className="edit-skin-btn"
+          className='edit-skin-btn'
           onClick={() => setIsSkinModalOpen(true)}
         >
           스킨 변경
