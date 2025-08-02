@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import InputModal from "./InputModal";
 import ViewModal from "./ViewModal";
 import styles from "./calendar.module.css";
@@ -7,7 +7,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableDay from "./DroppableDay";
 import StickerItem from "./StickerItem";
 import useTheme from "../../../hooks/useTheme";
-import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../../styles/CalendarThemes.css";
 import CategoryModal from "./CategoryModal";
@@ -25,16 +24,22 @@ function Calendar() {
   const [isInputOpen, setIsInputOpen] = useState(false);
   const [viewData, setViewData] = useState(null);
 
+  // calendarData 상태는 localStorage 'localEntries'에서 초기화 (한번만)
+  const [calendarData, setCalendarData] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("localEntries") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
   const [placedStickers, setPlacedStickers] = useState({});
-  const [calendarData, setCalendarData] = useState({});
   const { setCalendarSkinUrl, calendarSkinUrl } = useSkin();
   const [isSkinModalOpen, setIsSkinModalOpen] = useState(false);
   const [calendarSkin, setCalendarSkin] = useState(null);
   const navigate = useNavigate();
 
-  const [ownerId, setOwnerId] = useState(() =>
-    localStorage.getItem("memberId")
-  );
+  const [ownerId] = useState(() => localStorage.getItem("userId"));
 
   const stickerList = [
     { id: 1, src: "/stickers/감정스티커 1.png", emotion: "행복" },
@@ -79,7 +84,7 @@ function Calendar() {
       const res = await api.post("/calendar/emotion", {
         date: dateStr,
         emotion: emotionObj.emotion,
-        // ownerId 생략 가능!
+        // ownerId 생략 가능
       });
 
       const result = res.data;
@@ -87,7 +92,7 @@ function Calendar() {
       if (result.success) {
         setPlacedStickers((prev) => ({
           ...prev,
-          [dateStr]: emotionObj.src, // 표시용 src는 그대로
+          [dateStr]: emotionObj.src, // 표시용 src 유지
         }));
       } else {
         console.warn("스티커 등록 실패:", result.message);
@@ -116,31 +121,37 @@ function Calendar() {
     }
   };
 
-  // Calendar.jsx
-
-  // 1. handleModalSubmit 함수 수정
   const handleModalSubmit = async (newEntry) => {
-    // 해당 날짜의 최신 데이터를 서버에서 다시 가져오기
-    const ownerId = localStorage.getItem("memberId");
+    const localKey = "calendar-records";
+
+    // 1. newEntry 반영 (일단 달력에 보여줌)
+    setCalendarData((prev) => ({
+      ...prev,
+      [newEntry.date]: newEntry,
+    }));
+
+    // 2. 서버 요청
     try {
-      const res = await api.get(
-        `/calendar/record?date=${newEntry.date}&ownerId=${ownerId}`
-      );
+      const res = await api.get(`/calendar/record?date=${newEntry.date}`);
+      console.log("📦 API 응답 데이터:", res.data);
       const result = res.data;
 
-      if (result.success && result.data) {
+      const isValidServerData =
+        result.success &&
+        result.data &&
+        (result.data.incomes?.length > 0 || result.data.expenses?.length > 0);
+
+      if (isValidServerData) {
         const { memo, incomes, expenses, imageUrls } = result.data;
 
         const combinedEntries = [
           ...incomes.map((item) => ({
             type: "income",
-            category: item.categoryName,
-            amount: item.amount.toLocaleString(), // 서버에서 오는 숫자를 포맷
+            amount: item.amount.toLocaleString(),
           })),
           ...expenses.map((item) => ({
             type: "expense",
-            category: item.categoryName,
-            amount: item.amount.toLocaleString(), // 서버에서 오는 숫자를 포맷
+            amount: item.amount.toLocaleString(),
           })),
         ];
 
@@ -151,21 +162,30 @@ function Calendar() {
           entries: combinedEntries,
         };
 
-        // calendarData 업데이트
         setCalendarData((prev) => ({
           ...prev,
           [newEntry.date]: updatedData,
         }));
+
+        return; // 서버 데이터가 유효했으면 여기서 종료
       }
     } catch (error) {
-      console.error("데이터 새로고침 실패:", error);
-      // 실패 시 전달받은 데이터로라도 업데이트
+      console.warn("🌐 서버 새로고침 실패:", error);
+    }
+
+    // 3. 로컬 데이터 fallback
+    const localData = JSON.parse(localStorage.getItem(localKey) || "{}");
+    const fallbackData = localData[newEntry.date];
+
+    if (fallbackData) {
+      console.log("📁 로컬 데이터로 대체:", fallbackData);
       setCalendarData((prev) => ({
         ...prev,
-        [newEntry.date]: newEntry,
+        [newEntry.date]: fallbackData,
       }));
     }
-    // 모달 닫기
+
+    // 4. 모달 닫기
     setIsInputOpen(false);
     setEditData(null);
   };
@@ -208,6 +228,18 @@ function Calendar() {
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
   const handleDayClick = async (dateStr) => {
+    // 🟡 로컬 데이터 불러오기
+    const localData = JSON.parse(localStorage.getItem("localEntries") || "{}");
+    const localRecord = localData[dateStr];
+
+    const localEntriesForDate = Array.isArray(localRecord?.entries)
+      ? localRecord.entries
+      : [];
+
+    // 초기 memo, photo도 로컬에서 설정
+    let memo = localRecord?.memo || "";
+    let photo = localRecord?.photo || null;
+
     try {
       const res = await api.get(
         `/calendar/record?date=${dateStr}&ownerId=${ownerId}`
@@ -215,39 +247,134 @@ function Calendar() {
       const result = res.data;
 
       if (result.success && result.data) {
-        const { memo, incomes, expenses, imageUrls } = result.data;
+        const { incomes, expenses, imageUrls, memo: serverMemo } = result.data;
 
-        const combinedEntries = [
-          ...incomes.map((item) => ({
-            type: "income",
-            category: item.categoryName,
-            amount: item.amount,
-          })),
-          ...expenses.map((item) => ({
-            type: "expense",
-            category: item.categoryName,
-            amount: item.amount,
-          })),
+        // 서버 데이터 가공
+        const serverEntries = [
+          ...(Array.isArray(incomes)
+            ? incomes.map((item) => ({
+                type: "income",
+                category: item.categoryName,
+                amount: item.amount,
+              }))
+            : []),
+          ...(Array.isArray(expenses)
+            ? expenses.map((item) => ({
+                type: "expense",
+                category: item.categoryName,
+                amount: item.amount,
+              }))
+            : []),
         ];
+
+        // 서버 메모/이미지 우선 적용
+        memo = serverMemo ?? memo;
+        photo = imageUrls?.[0] || photo;
+
+        // 서버 + 로컬 데이터 결합
+        const combinedEntries = [...serverEntries, ...localEntriesForDate];
 
         setViewData({
           date: dateStr,
           memo,
-          photo: imageUrls?.[0] || null, // 첫 번째 이미지만 처리
+          photo,
           entries: combinedEntries,
         });
+
+        return; // 성공 시 여기서 끝
       }
     } catch (e) {
-      console.error("해당 날짜 가계부 불러오기 실패", e);
+      console.warn("서버 가계부 불러오기 실패. 로컬 데이터만 사용합니다.", e);
+    }
+
+    // 서버 실패 시에도 로컬 데이터만으로 뷰 표시
+    if (localEntriesForDate.length > 0 || memo || photo) {
+      setViewData({
+        date: dateStr,
+        memo,
+        photo,
+        entries: localEntriesForDate,
+      });
+    } else {
+      console.log("서버/로컬 모두 데이터 없음.");
     }
   };
+
+  // calendarData 상태가 변경될 때마다 localStorage에 저장 (단일 useEffect)
+  useEffect(() => {
+    if (calendarData && Object.keys(calendarData).length > 0) {
+      localStorage.setItem("localEntries", JSON.stringify(calendarData));
+    }
+  }, [calendarData]);
+
+  // currentYear, currentMonth, ownerId 변경 시 서버에서 요약 데이터 받아와 calendarData에 병합
+  useEffect(() => {
+    if (!ownerId) return;
+
+    const fetchCalendarSummary = async () => {
+      try {
+        const res = await api.get(
+          `/calendar/summary?year=${currentYear}&month=${
+            currentMonth + 1
+          }&ownerId=${ownerId}`
+        );
+
+        const result = res.data;
+
+        if (result.success && result.data?.summary) {
+          const summaryArray = result.data.summary;
+
+          const summaryObj = {};
+          summaryArray.forEach((item) => {
+            summaryObj[item.date] = item;
+          });
+
+          setCalendarData((prev) => ({
+            ...prev,
+            ...summaryObj,
+          }));
+        } else {
+          console.warn("달력 요약 데이터 없음");
+        }
+      } catch (err) {
+        console.error("요약 불러오기 실패", err);
+      }
+    };
+
+    fetchCalendarSummary();
+  }, [ownerId, currentYear, currentMonth]);
+
+  // showReport가 true일 때 감정 리포트 불러오기
+  useEffect(() => {
+    if (showReport) {
+      const fetchEmotionReport = async () => {
+        try {
+          const res = await api.get(
+            `/calendar/report/emotion?year=${currentYear}&month=${
+              currentMonth + 1
+            }`
+          );
+          const result = res.data;
+          if (result.success) {
+            setReportData(result.data);
+          } else {
+            alert("리포트 조회 실패: " + result.message);
+          }
+        } catch (e) {
+          console.error("리포트 조회 중 에러", e);
+        }
+      };
+
+      fetchEmotionReport();
+    }
+  }, [showReport, currentYear, currentMonth]);
 
   const [showInputModal, setShowInputModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categories, setCategories] = useState({
     income: ["월급", "용돈"],
     expense: ["식비", "교통비", "취미", "쇼핑", "고정비", "기타"],
-  }); /* 카테고리 관련을 예산 설정 페이지에서랑 같이 관리하게 될수도 따로 팔수도*/
+  }); /* 카테고리 관련은 예산 설정 페이지와 공유 혹은 별도 관리 가능 */
 
   const renderDays = () => {
     const firstDay = getFirstDayOfMonth();
@@ -292,7 +419,17 @@ function Calendar() {
 
               if (data?.entries?.length) {
                 data.entries.forEach((entry) => {
-                  const amount = Number(entry.amount.replace(/,/g, "")) || 0;
+                  let amount = 0;
+
+                  if (entry.amount != null) {
+                    if (typeof entry.amount === "string") {
+                      amount = Number(entry.amount.replace(/,/g, ""));
+                    } else if (typeof entry.amount === "number") {
+                      amount = entry.amount;
+                    } else {
+                      amount = Number(String(entry.amount).replace(/,/g, ""));
+                    }
+                  }
                   if (entry.type === "income") totalIncome += amount;
                   else if (entry.type === "expense") totalExpense += amount;
                 });
@@ -451,7 +588,7 @@ function Calendar() {
               <InputModal
                 categories={categories}
                 initialData={editData}
-                isEditMode={!!editData}
+                isEditMode={!editData}
                 calendarData={calendarData}
                 onClose={() => {
                   setIsInputOpen(false);
@@ -493,6 +630,7 @@ function Calendar() {
                 setCategories={setCategories}
               />
             )}
+
             {/* ReportModal */}
             {showReport && reportData && (
               <ReportModal

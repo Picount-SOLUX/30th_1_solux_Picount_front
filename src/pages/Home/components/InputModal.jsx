@@ -86,26 +86,21 @@ export default function InputModal({
       onClose();
     }
   };
+  const useBackend = import.meta.env.VITE_USE_BACKEND === "false";
 
   const handleSubmit = async () => {
-    const memberId = localStorage.getItem("userId");
-    console.log(memberId);
     try {
       let prevIncomeList = [];
       let prevExpenseList = [];
-      console.log(isEditMode);
-      if (!isEditMode) {
-        // 수정 모드가 아닌 입력 모드일 때
+
+      if (!isEditMode && useBackend) {
+        // ✅ 백엔드가 켜져 있을 때만 요청
         const fetchRes = await api.get("/calendar/record", {
-          params: {
-            date: inputDate, // inputDate는 "2025-08-01" 형식
-          },
+          params: { date: inputDate },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
-        // 이거 가계부 상세 조회 API임
-        console.log("개헷갈리네getAPI되냐", fetchRes);
         const prevData = fetchRes.data?.data || {};
         prevIncomeList = prevData.incomes || [];
         prevExpenseList = prevData.expenses || [];
@@ -121,7 +116,7 @@ export default function InputModal({
             );
           return {
             categoryId: id,
-            //categoryName: row.category,
+            categoryName: row.category,
             amount: Number(row.amount.replace(/,/g, "")),
           };
         });
@@ -136,13 +131,12 @@ export default function InputModal({
             );
           return {
             categoryId: id,
-            //categoryName: row.category,
+            categoryName: row.category,
             amount: Number(row.amount.replace(/,/g, "")),
           };
         });
 
       const formData = new FormData();
-      //formData.append("memberId", memberId);
       formData.append("entryDate", date);
       formData.append("memo", memo);
       formData.append(
@@ -161,7 +155,6 @@ export default function InputModal({
 
       console.log("📦 전송할 FormData:", {
         entryDate: date,
-        //memberId,
         memo,
         incomeList: isEditMode
           ? [...prevIncomeList, ...newIncomeList]
@@ -170,19 +163,20 @@ export default function InputModal({
           ? [...prevExpenseList, ...newExpenseList]
           : newExpenseList,
       });
-      console.log(isEditMode);
 
-      if (isEditMode) {
-        const res = await updateCalendarRecord(date, formData);
-        console.log("📬 서버 응답:", res);
-      } else {
-        console.log("여까진 들어오는겨?");
-        const res = await createCalendarRecord(formData);
-        console.log("📬 서버 응답:", res);
+      // ✅ 백엔드가 켜진 경우에만 API 호출
+      if (useBackend) {
+        if (isEditMode) {
+          const res = await updateCalendarRecord(date, formData);
+          console.log("📬 서버 응답:", res);
+        } else {
+          console.log("여까진 들어오는겨?");
+          const res = await createCalendarRecord(formData);
+          console.log("📬 서버 응답:", res);
+        }
       }
 
-      //const formattedDate = new Date(date).toISOString().split("T")[0];
-
+      // ✅ 로컬 저장용 데이터 구성
       const updatedData = {
         date,
         memo,
@@ -191,21 +185,38 @@ export default function InputModal({
           ...newIncomeList.map((item) => ({
             type: "income",
             category: item.categoryName,
-            amount: item.amount.toLocaleString(),
+            amount: item.amount,
           })),
           ...newExpenseList.map((item) => ({
             type: "expense",
             category: item.categoryName,
-            amount: item.amount.toLocaleString(),
+            amount: item.amount,
           })),
         ],
       };
 
-      console.log("🧪 updatedData.date:", updatedData.date);
+      // ✅ localStorage 저장
+      const localData = JSON.parse(
+        localStorage.getItem("localEntries") || "{}"
+      );
+      localData[date] = {
+        memo: updatedData.memo,
+        photo: updatedData.photo,
+        entries: updatedData.entries,
+      };
+      localStorage.setItem("localEntries", JSON.stringify(localData));
+
+      console.log("🧪 저장된 로컬 데이터:", localData[date]);
+
       onSubmit?.(updatedData);
       onClose();
     } catch (e) {
-      console.error("가계부 저장 실패:", e);
+      if (e.response?.status === 401) {
+        console.warn("⚠️ 401 에러 발생 - 무시하고 진행합니다.");
+        onClose();
+      } else {
+        console.error("가계부 저장 실패:", e);
+      }
     }
   };
 
@@ -253,11 +264,9 @@ export default function InputModal({
 
   useEffect(() => {
     const fetchExistingData = async () => {
-      const memberId = localStorage.getItem("userId");
+      //const memberId = localStorage.getItem("userId");
       try {
-        const res = await api.get(
-          `/calendar/record?date=${inputDate}&memberId=${memberId}`
-        );
+        const res = await api.get(`/calendar/record?date=${inputDate}`);
         const result = res.data;
 
         if (result.success && result.data) {
@@ -356,7 +365,7 @@ export default function InputModal({
 
         <label className={styles.label}>날짜</label>
         <input
-          type="date"
+          type='date'
           value={inputDate}
           onChange={(e) => {
             setInputDate(e.target.value);
@@ -387,7 +396,7 @@ export default function InputModal({
               value={row.category}
               onChange={(e) => handleCategoryChange(idx, e.target.value)}
             >
-              <option value="">카테고리</option>
+              <option value=''>카테고리</option>
               {fetchedCategories[type].length === 0 ? (
                 <option disabled>카테고리 불러오는 중...</option>
               ) : (
@@ -439,45 +448,26 @@ export default function InputModal({
 
         <textarea
           className={styles.memo}
-          placeholder="메모"
+          placeholder='메모'
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
         ></textarea>
 
         <div className={styles.photoBox}>
           {preview && (
-            <img src={preview} alt="preview" className={styles.previewImage} />
+            <img src={preview} alt='preview' className={styles.previewImage} />
           )}
           <input
-            id="upload-photo"
-            type="file"
-            accept="image/*"
+            id='upload-photo'
+            type='file'
+            accept='image/*'
             onChange={handleFileChange}
             style={{ display: "none" }}
           />
-          <label htmlFor="upload-photo" className={styles.photoBtn}>
+          <label htmlFor='upload-photo' className={styles.photoBtn}>
             사진 업로드 ⬆
           </label>
         </div>
-
-        {/* {isEditMode && preview && (
-          <div className={styles.photoBox}>
-            <img
-              src={preview}
-              alt="기존 사진 미리보기"
-              className={styles.previewImage}
-            />
-            <label htmlFor="upload-photo" className={styles.changePhotoLabel}>
-              사진 교체하기
-            </label>
-          </div>
-        )}
-
-        {!isEditMode && (
-          <label htmlFor="upload-photo" className={styles.photoBtn}>
-            사진 업로드 ⬆
-          </label>
-        )} */}
 
         <div className={styles.submitRow}>
           <button className={styles.submitBtn} onClick={handleSubmit}>

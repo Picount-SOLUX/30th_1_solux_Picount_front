@@ -2,16 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import CakeGraph from "./components/CakeGraph";
-import BarGraph from "./components/BarGraph";
+import BarGraphContainer from "./components/BarGraphContainer"; // ✅ 경로 맞게
 import Calendar from "./components/Calendar";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import MessageListReadOnly from "../Friends/components/MessageListReadOnly";
 import getOwnerId from "../../api/getOwnerId";
 import api from "../../api/axiosInstance";
+import InputModal from "./components/InputModal"; // ✅ 모달 import 추가
 
 export default function Home() {
   const navigate = useNavigate();
+
+  const [reloadKey, setReloadKey] = useState(0); // ✅ BarGraph 리렌더용
+  const [showInputModal, setShowInputModal] = useState(false); // ✅ 모달 제어용
 
   // 예산 데이터 가져오기
   const savedCategories =
@@ -21,16 +25,28 @@ export default function Home() {
     0
   );
 
-  // 달력이 완성되면 spent를 채울 예정
+  // ** 여기가 수정된 부분: localStorage 'localEntries'에서 지출 합산하여 spent 계산 **
+  const localEntries = JSON.parse(localStorage.getItem("localEntries") || "{}");
+  const spentMap = {};
+  Object.values(localEntries).forEach((entry) => {
+    entry.entries?.forEach((item) => {
+      if (item.type === "expense") {
+        spentMap[item.category] = (spentMap[item.category] || 0) + item.amount;
+      }
+    });
+  });
+
   const categoriesWithSpent = savedCategories.map((cat) => ({
     ...cat,
-    spent: 0,
+    spent: spentMap[cat.name] || 0,
   }));
 
   const totalSpent = categoriesWithSpent.reduce(
-    (sum, cat) => sum + parseInt(cat.spent || 0),
+    (sum, cat) => sum + cat.spent,
     0
   );
+
+  // 이하 기존 코드 유지
 
   const [guestbookData, setGuestbookData] = useState([]);
   useEffect(() => {
@@ -116,9 +132,9 @@ export default function Home() {
         <div className="bar-graph-wrapper">
           <h3 className="graph-title">카테고리별 지출</h3>
           <div className="bar-graph">
-            <BarGraph
-              categories={categoriesWithSpent}
-              totalBudget={totalBudget}
+            <BarGraphContainer
+              key={reloadKey} // ✅ reloadKey로 강제 리렌더링
+              budgetCategories={categoriesWithSpent}
             />
           </div>
         </div>
@@ -151,6 +167,7 @@ export default function Home() {
           <Calendar />
         </div>
       </section>
+
       <div className="skin-modal">
         {mySkins.map((skin) => (
           <div
@@ -166,6 +183,17 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      {/* ===== InputModal 모달 추가 부분 (수정) ===== */}
+      {showInputModal && (
+        <InputModal
+          onClose={() => setShowInputModal(false)}
+          onSubmit={() => {
+            setReloadKey((prev) => prev + 1); // BarGraph 리렌더용 갱신 트리거
+            setShowInputModal(false); // 모달 닫기
+          }}
+        />
+      )}
     </div>
   );
 }

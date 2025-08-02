@@ -24,7 +24,7 @@ export default function ViewModal({ onClose, data, onEdit }) {
               .map((item, idx) => (
                 <div key={idx} className={styles.entryRow}>
                   <span>{item.category}</span>
-                  <span>{item.amount} 원</span>
+                  <span>{Number(item.amount).toLocaleString()} 원</span>
                 </div>
               ))}
           </div>
@@ -38,7 +38,7 @@ export default function ViewModal({ onClose, data, onEdit }) {
               .map((item, idx) => (
                 <div key={idx} className={styles.entryRow}>
                   <span>{item.category}</span>
-                  <span>{item.amount} 원</span>
+                  <span>{Number(item.amount).toLocaleString()} 원</span>
                 </div>
               ))}
           </div>
@@ -54,7 +54,7 @@ export default function ViewModal({ onClose, data, onEdit }) {
           {photo ? (
             <img
               className={styles.image}
-              src={URL.createObjectURL(photo)}
+              src={typeof photo === "string" ? photo : URL.createObjectURL(photo)}
               alt="uploaded"
             />
           ) : (

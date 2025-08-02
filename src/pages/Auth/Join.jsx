@@ -36,6 +36,7 @@ export default function Join() {
       console.log("회원가입 성공: ", response.data); // 응답 확인
 
       if (response.data.success) {
+        localStorage.clear();
         const { accessToken, refreshToken } = response.data.data;
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);

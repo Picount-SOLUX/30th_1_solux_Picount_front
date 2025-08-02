@@ -1,8 +1,6 @@
 // src/api/budgetApi.js
 import api from "./axiosInstance";
 
-const useBackend = import.meta.env.VITE_USE_BACKEND === "true";
-
 // 직군 변경 API
 export const updateMemberGroup = (payload) => {
   return api.put("/members/membergrouptype", payload);
@@ -38,14 +36,10 @@ export const deleteCategory = async (categoryId) => {
 };
 
 
-
-
-
 // 수입/지출 기록 입력
 export const createCalendarRecord = (formData) => {
+  console.log("여기가 진짜 호출 직전임")
   return api.post("/calendar/record", formData)
-    
-  
 };
 
 // 수입/지출 기록 수정
