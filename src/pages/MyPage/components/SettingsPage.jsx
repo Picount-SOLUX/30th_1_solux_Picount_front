@@ -129,6 +129,7 @@ export default function SettingsPage() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log("친구 공개 여부 설정 성공", res);
         if (res.data.success) {
           setIsMainVisible(res.data.data); // true 또는 false 설정
         } else {
