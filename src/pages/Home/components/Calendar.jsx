@@ -69,6 +69,15 @@ function Calendar() {
   }, [currentYear, currentMonth]);
 
   useEffect(() => {
+    // 홈 들어가자마자 기본 스킨 적용
+    setCalendarSkinUrl({
+      backgroundUrl: "",
+      frameUrl: "cal_default_frame.png", // 👉 기본 프레임
+      frameSize: "contain",
+    });
+  }, [setCalendarSkinUrl]);
+
+  useEffect(() => {
     const saved = localStorage.getItem("placedStickers");
     if (saved) {
       setPlacedStickers(JSON.parse(saved));

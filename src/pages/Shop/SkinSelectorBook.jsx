@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./SkinSelectorBook.module.css";
+import styles from "./SkinSelectorBook.module.css";
 
 const categories = ["케이크 꾸미기 스킨", "달력 꾸미기 스킨", "테마 색상 변경"];
 
@@ -55,24 +56,39 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
+      {/* 🔸 화살표를 모달 바깥에 배치 */}
+      <button
+        className="arrow left"
+        onClick={(e) => {
+          e.stopPropagation();
+          setPageIndex(
+            (prev) => (prev - 1 + categories.length) % categories.length
+          );
+        }}
+      >
+        〈
+      </button>
       <div className="book-modal" onClick={(e) => e.stopPropagation()}>
-        {/* 좌우 화살표 */}
-        <button
-          className="arrow left"
-          onClick={() =>
-            setPageIndex(
-              (prev) => (prev - 1 + categories.length) % categories.length
-            )
-          }
-        >
-          〈
-        </button>
-
-        <div className="Spring spring1" />
-        <div className="Spring spring2" />
-        <div className="spring spring3" />
-        <div className="spring spring4" />
-
+        <img
+          className={styles.spring1}
+          src="/assets/icons/Spring.png"
+          alt="spring"
+        />
+        <img
+          className={styles.spring2}
+          src="/assets/icons/Spring.png"
+          alt="spring"
+        />
+        <img
+          className={styles.spring3}
+          src="/assets/icons/Spring.png"
+          alt="spring"
+        />
+        <img
+          className={styles.spring4}
+          src="/assets/icons/Spring.png"
+          alt="spring"
+        />
         {/* 책자 내부 페이지 */}
         <div className="pages">
           {/* 왼쪽 페이지 */}
@@ -128,18 +144,29 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
             </button>
           </div>
         </div>
-
-        <button
-          className="arrow right"
-          onClick={() => setPageIndex((prev) => (prev + 1) % categories.length)}
-        >
-          〉
-        </button>
-
-        <button className="close-btn" onClick={onClose}>
-          ✕
-        </button>
       </div>
+
+      {/* 오른쪽 화살표 (모달 바깥) */}
+      <button
+        className="arrow right"
+        onClick={(e) => {
+          e.stopPropagation();
+          setPageIndex((prev) => (prev + 1) % categories.length);
+        }}
+      >
+        〉
+      </button>
+
+      {/* 닫기 버튼 (오른쪽 상단 고정) */}
+      <button
+        className="close-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+      >
+        ✕
+      </button>
     </div>
   );
 }

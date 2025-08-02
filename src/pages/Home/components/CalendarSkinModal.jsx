@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styles from "./CalendarSkinModal.module.css";
 import useSkin from "../../../context/useSkin";
 import api from "../../../api/axiosInstance";
@@ -8,14 +8,25 @@ export default function CalendarSkinModal({ onClose }) {
   //   const [ownedSkins, setOwnedSkins] = useState([]);
   const [selectedSkin, setSelectedSkin] = useState("default");
 
-  const skinMap = {
-    default: "cal_default_frame.png",
-    chang: "cal_chang_frame.png",
-    tomato: "cal_tomato_frame.png",
-    tiara: "cal_tiara_frame.png",
-    angel: "cal_angel_frame.png",
-  };
+  const skinMap = useMemo(
+    () => ({
+      default: "cal_default_frame.png",
+      chang: "cal_chang_frame.png",
+      tomato: "cal_tomato_frame.png",
+      tiara: "cal_tiara_frame.png",
+      angel: "cal_angel_frame.png",
+    }),
+    []
+  );
   const ownedSkins = ["default", "chang", "tomato"];
+
+  //   useEffect(() => {
+  //     setCalendarSkinUrl({
+  //       backgroundUrl: "",
+  //       frameUrl: skinMap["default"],
+  //       frameSize: "contain",
+  //     });
+  //   }, [setCalendarSkinUrl, skinMap]);
 
   //   useEffect(() => {
   //     const fetchOwnedSkins = async () => {
@@ -49,22 +60,22 @@ export default function CalendarSkinModal({ onClose }) {
         {/* 스프링 4줄 */}
         <img
           className={styles.spring1}
-          src="/assets/cakes/Spring.png"
+          src="/assets/icons/Spring.png"
           alt="spring"
         />
         <img
           className={styles.spring2}
-          src="/assets/cakes/Spring.png"
+          src="/assets/icons/Spring.png"
           alt="spring"
         />
         <img
           className={styles.spring3}
-          src="/assets/cakes/Spring.png"
+          src="/assets/icons/Spring.png"
           alt="spring"
         />
         <img
           className={styles.spring4}
-          src="/assets/cakes/Spring.png"
+          src="/assets/icons/Spring.png"
           alt="spring"
         />
 
@@ -130,9 +141,9 @@ export default function CalendarSkinModal({ onClose }) {
           </div>
         </div>
 
-        <button className={styles.closeBtn} onClick={onClose}>
+        {/* <button className={styles.closeBtn} onClick={onClose}>
           ✕
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+/* 📘 모달 전체 오버레이 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -14,29 +15,74 @@
 /* 📘 책자 모달 */
 .book-modal {
   position: relative;
-  width: 880px; /* ✅ 와이드 고정 */
-  height: 500px; /* ✅ 높이도 고정 */
+  width: 950px; /* ✅ 와이드 고정 */
+  height: 550px; /* ✅ 높이 고정 */
   background: #9b958e;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 40px;
+  padding: 0;
   overflow: hidden;
 }
 
+/* 📄 내부 페이지 구조 */
+.pages {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  padding: 0 50px; /* 내부 페이지 패딩 */
+}
+
+.book-page {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+  height: 360px;
+  overflow: hidden;
+}
+
+.left-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 220px;
+  max-height: 420px;
+  padding: 16px;
+}
+
+.right-page h3 {
+  font-size: 1rem;
+  color: #e74c3c;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
 /* 📎 스프링 */
-.spring {
+.spring1,
+.spring2,
+.spring3,
+.spring4 {
   position: absolute;
   left: 50%;
-  width: 40px;
-  height: 12px;
-  background-color: #888;
-  border-radius: 4px;
   transform: translateX(-50%);
+  width: 50px;
+  height: auto;
   z-index: 5;
+  pointer-events: none;
 }
+
 .spring1 {
   top: 8%;
 }
@@ -50,81 +96,60 @@
   top: 90%;
 }
 
-/* 🔄 화살표 버튼 */
+/* ⬅️➡️ 좌우 화살표 */
 .arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   font-size: 2.5rem;
   font-weight: bold;
-  background: none; /* ✅ 투명 */
+  background: none;
   border: none;
-  color: #fff; /* 흰색 글자 */
+  color: #fff;
   cursor: pointer;
-  z-index: 10;
-  transition: color 0.2s ease;
-}
-.arrow.left {
-  left: -40px;
-}
-.arrow.right {
-  right: -40px;
+  z-index: 1001;
 }
 
+.arrow.left {
+  left: calc(50% - 500px);
+}
+.arrow.right {
+  right: calc(50% - 500px);
+}
 .arrow:hover {
   color: #ffdbdb;
 }
 
-/* 📄 페이지 구조 */
-.pages {
-  display: flex;
-  width: 100%;
-  gap: 16px;
+/* ❌ 닫기 버튼 */
+.close-btn {
+  position: absolute;
+  top: 30px;
+  right: calc(50% - 440px);
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 1001;
 }
 
-.book-page {
-  flex: 1;
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-sizing: border-box;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-  height: 360px;
-  overflow: hidden;
-}
-
-.left-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.book-cake-image {
-  width: 220px;
-  height: auto;
-}
-
-/* 오른쪽 페이지 */
-.right-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.right-page h3 {
-  font-size: 1rem;
-  color: #e74c3c;
-  margin-bottom: 8px;
-  text-align: left;
-}
-
-/* 스킨 리스트 */
+/* 📦 스킨 리스트 */
 .skin-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   flex-grow: 1;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.skin-list::-webkit-scrollbar {
+  width: 6px;
+}
+.skin-list::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
 }
 
 .skin-item {
@@ -136,7 +161,6 @@
   transition: all 0.3s;
   background: #fff;
 }
-
 .skin-item.selected {
   border-color: #ff8c8c;
   background-color: #fff3f3;
@@ -148,7 +172,7 @@
   border-radius: 8px;
 }
 
-/* 버튼 */
+/* ✅ 적용 버튼 */
 .apply-btn {
   align-self: flex-end;
   margin-top: 16px;
@@ -164,16 +188,4 @@
 
 .apply-btn:hover {
   background: #ffe0e0;
-}
-
-/* 닫기 버튼 */
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
 }
