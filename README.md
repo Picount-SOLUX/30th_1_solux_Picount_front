@@ -20,7 +20,7 @@
 | 이름 | GitHub 프로필 | 작업내용 |
 |------|----------------|------------------------------|
 | 김다은 | [@Daeun-Kim701](https://github.com/Daeun-Kim701) | 로그인/회원가입, 예산 및 세부 예산 기능, 카테고리 기능, 케이크/막대 그래프, 챌린지/포인트 기능 |
-| 조시은 | [@singnyee](https://github.com/singnyee) | - |
+| 조시은 | [@singnyee](https://github.com/singnyee) | 캘린더 기능, 상점 기능, 마이페이지 기능, 방명록 기능 |
 <br/>
 
 ## **🛠️** Tech Stack
