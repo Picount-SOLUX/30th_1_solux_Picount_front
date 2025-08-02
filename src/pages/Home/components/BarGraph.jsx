@@ -10,7 +10,7 @@ export default function BarGraph({ categories }) {
         { id: 2, name: "쇼핑", amount: 40000, spent: 15000 },
         { id: 3, name: "교통", amount: 30000, spent: 20000 },
       ];
-
+  console.log(categories);
   return (
     <div className="bar-graph-container">
       <div className="bar-graph-content">
