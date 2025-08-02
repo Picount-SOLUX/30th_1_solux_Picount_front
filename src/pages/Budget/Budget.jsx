@@ -250,7 +250,7 @@ export default function Budget() {
         tempCategories={tempCategories}
         totalBudget={totalBudget}
         jobInfo={jobInfo}
-        showHelp={showHelp}
+        showHelp={!showHelp}
         toggleHelp={toggleHelp}
       />
 
