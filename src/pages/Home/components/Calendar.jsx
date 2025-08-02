@@ -645,19 +645,16 @@ function Calendar() {
             )}
           </DndProvider>
         </div>
-        <FrameSelector />
+        {/* <FrameSelector /> */}
+        {/* ✅ 여기에 스킨 설정 버튼 추가 */}
         <button
-          className="edit-skin-btn"
+          className={styles.skinBtn}
           onClick={() => setIsSkinModalOpen(true)}
         >
-          스킨 변경
+          🎨 스킨 설정
         </button>
-
         {isSkinModalOpen && (
-          <CalendarSkinModal
-            onClose={() => setIsSkinModalOpen(false)}
-            onApply={(skin) => setCalendarSkin(skin)}
-          />
+          <CalendarSkinModal onClose={() => setIsSkinModalOpen(false)} />
         )}
       </div>
     </div>

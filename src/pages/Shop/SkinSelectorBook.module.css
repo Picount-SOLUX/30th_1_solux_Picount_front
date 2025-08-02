@@ -1,0 +1,179 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* 📘 책자 모달 */
+.book-modal {
+  position: relative;
+  width: 880px; /* ✅ 와이드 고정 */
+  height: 500px; /* ✅ 높이도 고정 */
+  background: #9b958e;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+  overflow: hidden;
+}
+
+/* 📎 스프링 */
+.spring {
+  position: absolute;
+  left: 50%;
+  width: 40px;
+  height: 12px;
+  background-color: #888;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+.spring1 {
+  top: 8%;
+}
+.spring2 {
+  top: 13%;
+}
+.spring3 {
+  top: 85%;
+}
+.spring4 {
+  top: 90%;
+}
+
+/* 🔄 화살표 버튼 */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: none; /* ✅ 투명 */
+  border: none;
+  color: #fff; /* 흰색 글자 */
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.2s ease;
+}
+.arrow.left {
+  left: -40px;
+}
+.arrow.right {
+  right: -40px;
+}
+
+.arrow:hover {
+  color: #ffdbdb;
+}
+
+/* 📄 페이지 구조 */
+.pages {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.book-page {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+  height: 360px;
+  overflow: hidden;
+}
+
+.left-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-cake-image {
+  width: 220px;
+  height: auto;
+}
+
+/* 오른쪽 페이지 */
+.right-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.right-page h3 {
+  font-size: 1rem;
+  color: #e74c3c;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+/* 스킨 리스트 */
+.skin-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.skin-item {
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s;
+  background: #fff;
+}
+
+.skin-item.selected {
+  border-color: #ff8c8c;
+  background-color: #fff3f3;
+}
+
+.skin-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* 버튼 */
+.apply-btn {
+  align-self: flex-end;
+  margin-top: 16px;
+  padding: 6px 18px;
+  background: linear-gradient(to bottom, #fff, #febbb3);
+  border: 1px solid #db968e;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+.apply-btn:hover {
+  background: #ffe0e0;
+}
+
+/* 닫기 버튼 */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}

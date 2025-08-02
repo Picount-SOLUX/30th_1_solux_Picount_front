@@ -168,7 +168,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="skin-modal">
+      {/* <div className="skin-modal">
         {mySkins.map((skin) => (
           <div
             key={skin.itemId}
@@ -182,7 +182,7 @@ export default function Home() {
             <div>{skin.name}</div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* ===== InputModal 모달 추가 부분 (수정) ===== */}
       {showInputModal && (

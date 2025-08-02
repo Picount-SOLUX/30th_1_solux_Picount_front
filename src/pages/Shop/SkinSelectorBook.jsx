@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../Home/components/CakeGraph.css"; // 스프링/책자 스타일 재사용
+import "./SkinSelectorBook.module.css";
 
 const categories = ["케이크 꾸미기 스킨", "달력 꾸미기 스킨", "테마 색상 변경"];
 
@@ -9,22 +9,45 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
 
   const category = categories[pageIndex];
 
+  const normalizedCategory = (raw) => {
+    if (raw.includes("케이크")) return "케이크 꾸미기 스킨";
+    if (raw.includes("달력")) return "달력 꾸미기 스킨";
+    if (raw.includes("테마")) return "테마 색상 변경";
+    return raw;
+  };
+
   const itemsForCategory = ownedItems.filter(
-    (item) => item.category === category
+    (item) => normalizedCategory(item.category) === category
   );
+
+  const nameMap = {
+    "체리 케이크": "cherry",
+    "파란색 케이크": "blue",
+    "초코 케이크": "choco",
+    "딸기 케이크": "strawberry",
+    "토마토 달력": "tomato",
+    "천사 달력": "angel",
+    "왕관 달력": "tiara",
+    "창 달력": "chang",
+    "노란색 웹": "yellow",
+    "파란색 웹": "blue",
+    "초록색 웹": "green",
+    "회색 웹": "gray",
+  };
 
   // 🧠 전용 미리보기 이미지 경로 생성 함수
   const getPreviewImage = (item) => {
-    if (!item?.name || !item?.category) return "/previewSkins/default.png";
+    const key = nameMap[item.name];
+    if (!key) return "/previewSkins/default.png";
 
-    const name = item.name.toLowerCase().replace(/\s+/g, "-");
+    const categoryKey = normalizedCategory(item.category);
 
-    if (item.category === "케이크 꾸미기 스킨") {
-      return `/previewSkins/preview-cake-${name}.png`;
-    } else if (item.category === "달력 꾸미기 스킨") {
-      return `/previewSkins/preview-calendar-${name}.png`;
-    } else if (item.category === "테마 색상 변경") {
-      return `/previewSkins/preview-theme-${name}.png`;
+    if (categoryKey === "케이크 꾸미기 스킨") {
+      return `/previewSkins/preview-cake-${key}.png`;
+    } else if (categoryKey === "달력 꾸미기 스킨") {
+      return `/previewSkins/preview-calendar-${key}.png`;
+    } else if (categoryKey === "테마 색상 변경") {
+      return `/previewSkins/preview-theme-${key}.png`;
     }
 
     return "/previewSkins/default.png";
@@ -33,19 +56,26 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="book-modal" onClick={(e) => e.stopPropagation()}>
-        {/* 스프링 이미지 (장식용) */}
-        {[1, 2, 3, 4].map((n) => (
-          <img
-            key={n}
-            className={`spring${n}`}
-            src="src/assets/cakes/Spring.png"
-            alt="spring"
-          />
-        ))}
+        {/* 좌우 화살표 */}
+        <button
+          className="arrow left"
+          onClick={() =>
+            setPageIndex(
+              (prev) => (prev - 1 + categories.length) % categories.length
+            )
+          }
+        >
+          〈
+        </button>
 
-        {/* 책자 내용 */}
+        <div className="Spring spring1" />
+        <div className="Spring spring2" />
+        <div className="spring spring3" />
+        <div className="spring spring4" />
+
+        {/* 책자 내부 페이지 */}
         <div className="pages">
-          {/* 왼쪽 페이지: 전용 미리보기 이미지 */}
+          {/* 왼쪽 페이지 */}
           <div className="book-page left-page">
             {tempSkin ? (
               <img
@@ -61,7 +91,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
             )}
           </div>
 
-          {/* 오른쪽 페이지: 아이템 리스트 + 적용 버튼 */}
+          {/* 오른쪽 페이지 */}
           <div className="book-page right-page">
             <h3>{category}</h3>
             <div className="skin-list">
@@ -99,17 +129,6 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
           </div>
         </div>
 
-        {/* 좌우 화살표 버튼 */}
-        <button
-          className="arrow left"
-          onClick={() =>
-            setPageIndex(
-              (prev) => (prev - 1 + categories.length) % categories.length
-            )
-          }
-        >
-          〈
-        </button>
         <button
           className="arrow right"
           onClick={() => setPageIndex((prev) => (prev + 1) % categories.length)}
@@ -117,7 +136,6 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
           〉
         </button>
 
-        {/* 닫기 버튼 */}
         <button className="close-btn" onClick={onClose}>
           ✕
         </button>

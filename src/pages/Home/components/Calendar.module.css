@@ -155,8 +155,10 @@
   grid-template-columns: repeat(7, 1fr);
   position: relative;
   z-index: 3;
-  margin-top: var(--weekdays-margin-top, 36px);
-  height: var(--weekdays-height, 36px);
+  margin-top: 100px;
+  height: 36px; /* ✅ 높이 올림 */
+  line-height: 48px; /* ✅ 가운데 정렬 */
+  font-size: 0.9rem; /* ✅ 글씨도 약간 키움 */
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   overflow: visible;
