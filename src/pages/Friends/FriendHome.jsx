@@ -6,6 +6,8 @@ import Calendar from "../Home/components/Calendar";
 import Guestbook from "./GuestBooks";
 import styles from "./FriendHome.module.css";
 import api from "../../api/axiosInstance";
+import cake3 from "../../assets/cakes/BasicCake/3.png";
+
 
 export default function FriendHome() {
   // 👇 컴포넌트 상단
@@ -59,7 +61,7 @@ export default function FriendHome() {
 
       <div className={styles.graphSection}>
         <div className={styles.graphRow}>
-          <CakeGraph ownerId={friendId} />
+          <img src={"/assets/icons/image.png"} alt="가짜 케이크 그래프" className={styles.fakeCakeGraph} />
           <BarGraph ownerId={friendId} />
         </div>
       </div>

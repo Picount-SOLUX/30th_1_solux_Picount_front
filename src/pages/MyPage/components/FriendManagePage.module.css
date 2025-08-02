@@ -25,12 +25,12 @@
 .name {
   flex: 1;
 }
-.deleteBtn {
-  background: #ff4d4f;
-  color: white;
-  border: none;
+style.delete_Btn {
+  background: linear-gradient(to top, #FEBBB3, #FFFFFF);
+  color: black;
+  border: 1px solid #DD938A;
+  border-radius: 20px;
   padding: 4px 10px;
-  border-radius: 6px;
   cursor: pointer;
 }
 .backBtn {

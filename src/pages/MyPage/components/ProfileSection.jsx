@@ -5,12 +5,23 @@ import { useProfile } from "../../../context/useProfile";
 import api from "../../../api/axiosInstance";
 
 export default function ProfileSection() {
-  const { intro, profileImage } = useProfile();
+  const { intro: introContext, profileImage: profileImageContext } = useProfile();
   const [friendCode, setFriendCode] = useState("");
   const [error, setError] = useState("");
-  const nickname =
-    location.state?.nickname ||
-    JSON.parse(localStorage.getItem("user"))?.nickname;
+
+  // ✅ 로컬스토리지에서 nickname, intro, profileImage 가져오기
+  const [nickname, setNickname] = useState("");
+  const [intro, setIntro] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setNickname(user.nickname || "없음");
+      setIntro(user.intro || introContext || "없음");
+      setProfileImage(user.profileImage || profileImageContext || "/assets/profile_default.png");
+    }
+  }, [introContext, profileImageContext]);
 
   useEffect(() => {
     const fetchFriendCode = async () => {
@@ -22,9 +33,7 @@ export default function ProfileSection() {
           withCredentials: true,
         });
 
-        console.log("응답 확인:", response.data);
-
-        const code = response.data?.data; // data는 바로 코드 문자열
+        const code = response.data?.data;
         if (code) {
           setFriendCode(code);
         } else {
@@ -36,7 +45,7 @@ export default function ProfileSection() {
       }
     };
 
-    fetchFriendCode(); // ✅ 함수 호출이 useEffect 바깥에 있어야 함
+    fetchFriendCode();
   }, []);
 
   return (

@@ -86,7 +86,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src='src/assets/icons/Home.png'
+                src='public/assets/icons/Home.png'
                 alt='홈'
                 className='menu-icon-home'
               />
@@ -101,7 +101,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src='src/assets/icons/Budget.png'
+                src='public/assets/icons/Budget.png'
                 alt='예산'
                 className='menu-icon-budget'
               />
@@ -116,7 +116,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src='src/assets/icons/Shop.png'
+                src='public/assets/icons/Shop.png'
                 alt='상점'
                 className='menu-icon-shop'
               />
@@ -131,7 +131,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src='src/assets/icons/Challenge.png'
+                src='public/assets/icons/Challenge.png'
                 alt='챌린지'
                 className='menu-icon-challenge'
               />
@@ -143,7 +143,7 @@ export default function Sidebar() {
             <div className='menu-item'>
               <div className='menu-item-left'>
                 <img
-                  src='src/assets/icons/Friends.png'
+                  src='public/assets/icons/Friends.png'
                   alt='친구'
                   className='menu-icon-friends'
                 />
@@ -158,11 +158,7 @@ export default function Sidebar() {
           <div className='friend-list'>
             {isPrivate ? (
               <div className='friend-item'>
-                {/* <img
-                  src='/assets/icons/lock-icon.png'
-                  className='friend-lock'
-                  alt='비공개'
-                /> */}
+                
                 <span className='friend-name'>{friendError}</span>
               </div>
             ) : friends.length === 0 ? (
@@ -174,15 +170,7 @@ export default function Sidebar() {
                   className='friend-item'
                   onClick={() => navigate(`/friends/${friend.memberId}`)}
                 >
-                  <img
-                    // src={
-                    //   friend.isMainVisible
-                    //     ? "/assets/icons/unlock.png"
-                    //     : "/assets/icons/lock-icon.png"
-                    // }
-                    alt={friend.isMainVisible ? "공개" : "비공개"}
-                    className='friend-lock'
-                  />
+                  
 
                   <img
                     src={friend.profileImageUrl}
@@ -209,7 +197,7 @@ export default function Sidebar() {
             }
           >
             <img
-              src='src/assets/icons/MyPage.png'
+              src='public/assets/icons/MyPage.png'
               alt='마이페이지'
               className='menu-icon-mypage'
             />
