@@ -129,6 +129,7 @@ export default function SettingsPage() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log("친구 공개 여부 설정 성공", res);
         if (res.data.success) {
           setIsMainVisible(res.data.data); // true 또는 false 설정
         } else {
@@ -154,6 +155,26 @@ export default function SettingsPage() {
       setProfileImage(userData.profileImage || "/assets/profile_default.png");
     }
   }, []);
+  // useEffect 끝부분에 수정 추가
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    console.log("SettingsPage - userData from localStorage:", userData);
+    if (userData) {
+      setNickname(userData.nickname || "");
+      setIntro(userData.intro || "");
+      setProfileImage(userData.profileImage || "/assets/profile_default.png");
+    }
+  }, []);
+
+  // ✅ 로컬스토리지 업데이트 함수 추가
+  useEffect(() => {
+    const updatedUser = {
+      nickname,
+      intro,
+      profileImage,
+    };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  }, [nickname, intro, profileImage]);
 
   return (
     <div className={styles.container}>
@@ -174,15 +195,15 @@ export default function SettingsPage() {
 
       {/* 필요하면 여기에 프로필 이미지, 닉네임, 소개 출력 추가 가능 */}
       {/* 예시: */}
-      {/* <div className={styles.profileSummary}>
+      <div className={styles.profileSummary}>
         <img
           src={profileImage}
-          alt="프로필 이미지"
+          alt='프로필 이미지'
           className={styles.profileImagePreview}
         />
         <p>닉네임: {nickname}</p>
         <p>한 줄 소개: {intro}</p>
-      </div> */}
+      </div>
 
       <li className={styles.item}>
         <span>가계부 친구 공개 여부</span>

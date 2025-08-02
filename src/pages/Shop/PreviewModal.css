@@ -76,14 +76,14 @@
   cursor: pointer;
   z-index: 1;
 }
-
-.arrow.left {
+/* 
+.arrow-left {
   left: -28px;
 }
 
-.arrow.right {
+.arrow-right {
   right: -28px;
-}
+} */
 
 .apply-btn {
   margin-top: 16px;
@@ -96,7 +96,7 @@
   font-weight: bold;
 }
 
-.close-btn {
+/* .close-btn {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -104,4 +104,4 @@
   font-size: 20px;
   border: none;
   cursor: pointer;
-}
+} */

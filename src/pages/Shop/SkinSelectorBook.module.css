@@ -77,7 +77,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 50px;
+  width: 35px;
   height: auto;
   z-index: 5;
   pointer-events: none;
@@ -110,10 +110,11 @@
   z-index: 1001;
 }
 
-.arrow.left {
+.arrow-left {
   left: calc(50% - 500px);
+  width: 100px;
 }
-.arrow.right {
+.arrow-right {
   right: calc(50% - 500px);
 }
 .arrow:hover {

@@ -63,7 +63,7 @@ export default function FriendManagePage() {
               />
               <span className={styles.name}>{friend.nickname}</span>
               <button
-                className={styles.deleteBtn}
+                className={styles.delete_Btn}
                 onClick={() => handleDeleteFriend(friend.memberId)}
               >
                 삭제

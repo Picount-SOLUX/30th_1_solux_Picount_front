@@ -2,6 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
+  margin-left: 10px;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.4);
@@ -29,9 +30,10 @@
 }
 
 .input {
-  width: 100%;
+  width: 90%;
   padding: 10px 12px;
   margin: 12px 0;
+  margin-right: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -46,16 +48,17 @@
   padding: 8px 20px;
   border: none;
   border-radius: 18px;
-  background: linear-gradient(to right, #fce3e0, #f5b2a7);
+  background: linear-gradient(to top, #febbb3, #ffffff);
+  color: black;
+  border: 1px solid #dd938a;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #333;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 .buttons button:hover {
-  background: linear-gradient(to right, #f8d7d3, #f2a99a);
+  background: #ffe0e0;
 }
 
 .error {

@@ -58,7 +58,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       {/* 🔸 화살표를 모달 바깥에 배치 */}
       <button
-        className="arrow left"
+        className="arrow-left"
         onClick={(e) => {
           e.stopPropagation();
           setPageIndex(
@@ -148,7 +148,7 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
 
       {/* 오른쪽 화살표 (모달 바깥) */}
       <button
-        className="arrow right"
+        className="arrow-right"
         onClick={(e) => {
           e.stopPropagation();
           setPageIndex((prev) => (prev + 1) % categories.length);
@@ -157,6 +157,10 @@ export default function SkinBookModal({ ownedItems, onApply, onClose }) {
         〉
       </button>
 
+<<<<<<< HEAD
+=======
+      {/* 닫기 버튼 (오른쪽 상단 고정) */}
+>>>>>>> 5caa30b86e2d46e8e3331aeb90c3b0e35f84ec99
       {/* <button
         className="close-btn"
         onClick={(e) => {
