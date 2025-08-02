@@ -215,6 +215,7 @@
   font-size: 0.75rem;
 }
 
+
 .expense {
   color: red;
   font-size: 0.75rem;
@@ -242,8 +243,8 @@
 
 .floatingEditBtn {
   position: fixed;
-  bottom: 56px;
-  right: 24px;
+  bottom: 50px;
+  right: 25px;
   width: 64px;
   height: 64px;
   background: transparent;
@@ -256,6 +257,8 @@
 .floatingEditBtn img {
   width: 100%;
   height: 100%;
+  margin-top: 4px;
+  margin-left: 2px;
   object-fit: contain;
   transition: transform 0.2s ease;
 }

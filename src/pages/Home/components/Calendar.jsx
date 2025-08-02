@@ -638,7 +638,7 @@ function Calendar() {
             )}
           </DndProvider>
         </div>
-        <FrameSelector />
+        
         <button
           className='edit-skin-btn'
           onClick={() => setIsSkinModalOpen(true)}
