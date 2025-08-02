@@ -3,7 +3,8 @@
 <p align="center">📌 2025년 1학기 숙명여자대학교 중앙 동아리 SOLUX 웹4팀 📌</p>
 <p align="center">💻 기간: 2025.03.14 ~ 2025.08.04 💻</p>
 
-<img width="1668" height="933" alt="Image" src="https://github.com/user-attachments/assets/7eda948f-4c9e-4a03-a454-9bb4b4911b23" />
+<img width="1668" height="933" alt="p1" src="https://github.com/user-attachments/assets/a7c08f27-5eb2-44dd-aaaf-9ae675cad04d" />
+
 
 <br/>
 
