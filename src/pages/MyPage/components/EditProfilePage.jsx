@@ -16,20 +16,23 @@ export default function EditProfilePage() {
   } = useProfile();
 
   const [guestbookList, setGuestbookList] = useState([]);
+  const [imageFile, setImageFile] = useState(null); // ✅ 실제 업로드할 파일
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result); // base64 저장
+        setProfileImage(reader.result); // ✅ base64는 UI 표시용
+        setImageFile(file); // ✅ File 객체는 FormData용
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleResetImage = () => {
-    setProfileImage("/assets/profile_default.png"); // ✅ 기본 이미지로 초기화
+    setProfileImage("/assets/profile_default.png");
+    setImageFile(null); // ✅ 이미지 초기화
   };
 
   const handleDeleteGuestbook = async (id) => {
@@ -54,15 +57,33 @@ export default function EditProfilePage() {
 
   const handleSave = async () => {
     try {
-      const payload = {
+      const profileInfo = {
         nickname,
         intro,
-        profileImage,
       };
 
-      const res = await api.patch("/members/profile", payload);
+      const formData = new FormData();
+      formData.append(
+        "profileInfo",
+        new Blob([JSON.stringify(profileInfo)], { type: "application/json" })
+      );
+      if (imageFile) {
+        formData.append("profileImage", imageFile);
+      }
+
+      const res = await api.put("/members/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res.data.success) {
+        const updatedUser = {
+          nickname,
+          intro,
+          profileImage: profileImage, // ✅ 서버 응답 이미지 URL 우선
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser)); // ✅ 로컬 저장
         alert("프로필이 성공적으로 수정되었습니다!");
         navigate("/settings");
       } else {
@@ -75,25 +96,40 @@ export default function EditProfilePage() {
   };
 
   useEffect(() => {
-    // ✅ 초기 프로필 정보 불러오기
-    const memberId = localStorage.getItem("memberId");
-    if (memberId) {
-      api
-        .get(`/members/${memberId}`)
-        .then((res) => {
-          const data = res.data.data;
-          setNickname(data.nickname || "");
-          setIntro(data.intro || "");
-          setProfileImage(
-            data.profileImageUrl || "/assets/profile_default.png"
-          );
-        })
-        .catch((err) => {
-          console.error("프로필 정보 불러오기 실패:", err);
-        });
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData) {
+      setNickname(userData.nickname || "");
+      setIntro(userData.intro || "");
+      setProfileImage(userData.profileImage || "/assets/profile_default.png");
+    } else {
+      const memberId = localStorage.getItem("memberId");
+      if (memberId) {
+        api
+          .get(`/members/${memberId}`)
+          .then((res) => {
+            const data = res.data.data;
+            setNickname(data.nickname || "");
+            setIntro(data.intro || "");
+            setProfileImage(
+              data.profileImageUrl || "/assets/profile_default.png"
+            );
+            // ✅ 로컬에도 저장
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                nickname: data.nickname || "",
+                intro: data.intro || "",
+                profileImage:
+                  data.profileImageUrl || "/assets/profile_default.png",
+              })
+            );
+          })
+          .catch((err) => {
+            console.error("프로필 정보 불러오기 실패:", err);
+          });
+      }
     }
 
-    // ✅ 방명록 불러오기
     api.get("/guestbook/my?page=0&size=10").then((res) => {
       if (res.data.success) {
         const formatted = res.data.data.content.map((item) => ({
@@ -118,14 +154,14 @@ export default function EditProfilePage() {
           <div className={styles.profileImage}>
             <img
               src={profileImage || "/assets/profile_default.png"}
-              alt="프로필"
+              alt='프로필'
               className={styles.preview}
             />
             <label className={styles.changeImageBtn}>
               ✎ 프로필 이미지 변경
               <input
-                type="file"
-                accept="image/*"
+                type='file'
+                accept='image/*'
                 onChange={handleImageChange}
                 hidden
               />
@@ -137,10 +173,10 @@ export default function EditProfilePage() {
           <label>
             닉네임 ✎
             <input
-              type="text"
+              type='text'
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder="닉네임 입력"
+              placeholder='닉네임 입력'
             />
           </label>
           <label>
@@ -148,7 +184,7 @@ export default function EditProfilePage() {
             <textarea
               value={intro}
               onChange={(e) => setIntro(e.target.value)}
-              placeholder="한 줄 소개 입력"
+              placeholder='한 줄 소개 입력'
             />
           </label>
           <div className={styles.resetBtnWrapper}>

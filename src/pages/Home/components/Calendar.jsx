@@ -555,7 +555,12 @@ function Calendar() {
               onClick={() => {
                 const todayStr = new Date().toISOString().split("T")[0];
                 const existingData = calendarData[todayStr] || null;
-                setEditData(existingData);
+                setEditData({
+                  date: todayStr,
+                  entries: [],
+                  memo: "",
+                  photo: null,
+                });
                 setIsInputOpen(true);
               }}
             >

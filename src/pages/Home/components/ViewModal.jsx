@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "./ViewModal.module.css";
 import { MdPhotoCamera } from "react-icons/md";
-import api from "../../../api/axiosInstance";
 
 export default function ViewModal({ onClose, data, onEdit }) {
-  const { date, entries = [], memo = "", photo } = data || {};
+  const date = data?.date;
+
+  // ✅ localStorage에서 해당 날짜의 데이터 읽어오기
+  const localData = useMemo(() => {
+    if (!date) return null;
+    try {
+      const stored = localStorage.getItem("calendarData");
+      if (!stored) return null;
+      const parsed = JSON.parse(stored);
+      return parsed[date] || null;
+    } catch (e) {
+      console.error("localStorage 파싱 에러:", e);
+      return null;
+    }
+  }, [date]);
+
+  const entries = data?.entries?.length ? data.entries : localData?.entries || [];
+  const memo = data?.memo ?? localData?.memo ?? "";
+  const photo = data?.photo ?? localData?.photo ?? "";
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>

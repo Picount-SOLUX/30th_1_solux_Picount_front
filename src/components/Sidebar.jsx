@@ -1,19 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axiosInstance";
 import "./Sidebar.css";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isFriendOpen, setIsFriendOpen] = useState(false);
   const [friends, setFriends] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [friendError, setFriendError] = useState("");
   const [isVisible, setIsVisible] = useState(true);
 
-  const nickname =
-    location.state?.nickname ||
-    JSON.parse(localStorage.getItem("user"))?.nickname;
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  //const nickname = location.state?.nickname || user.nickname || "사용자";
+  //const profileImage = user.profileImage || "";
+  const statusMessage = user.statusMessage || "친구들에게 나를 소개해보자!";
+
+  const [nickname, setNickname] = useState("");
+  const [intro, setIntro] = useState("");
+  const [profileImage, setProfileImage] = useState();
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData) {
+      setNickname(userData.nickname || "");
+      setIntro(userData.intro || "");
+      setProfileImage(userData.profileImage);
+    }
+  }, []);
 
   const handleFriendClick = async () => {
     const nextOpen = !isFriendOpen;
@@ -44,103 +58,94 @@ export default function Sidebar() {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchVisibility = async () => {
-  //     try {
-  //       const res = await api.get("/members/visibility/main", {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-  //         },
-  //       });
-  //       if (res.data.success) {
-  //         setIsVisible(res.data.data.isMainVisible); // 서버에서 공개 상태 가져옴
-  //       }
-  //     } catch (err) {
-  //       console.error("❌ 공개 상태 불러오기 실패", err);
-  //     }
-  //   };
-
-  //   fetchVisibility();
-  // }, []);
-
   return (
-    <aside className="sidebar">
-      <div className="profile-section">
-        <div className="profile-image"></div>
-        <p className="profile-name">{nickname}</p>
-        <p className="profile-status">친구들에게 나를 소개해보자!</p>
+    <aside className='sidebar'>
+      <div className='profile-section'>
+        <div className='profile-image'>
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt='프로필'
+              className='sidebar-profile-img'
+            />
+          ) : (
+            <div className='sidebar-profile-placeholder' />
+          )}
+        </div>
+        <p className='profile-name'>{nickname}</p>
+        <p className='profile-status'>{intro}</p>
       </div>
 
-      <nav className="menu">
+      <nav className='menu'>
         <ul>
           <li>
             <NavLink
-              to="/home"
+              to='/home'
               className={({ isActive }) =>
                 isActive ? "menu-item active" : "menu-item"
               }
             >
               <img
-                src="src/assets/icons/Home.png"
-                alt="홈"
-                className="menu-icon-home"
+                src='src/assets/icons/Home.png'
+                alt='홈'
+                className='menu-icon-home'
               />
               홈
             </NavLink>
           </li>
           <li>
             <NavLink
-              to="/budget"
+              to='/budget'
               className={({ isActive }) =>
                 isActive ? "menu-item active" : "menu-item"
               }
             >
               <img
-                src="src/assets/icons/Budget.png"
-                alt="예산"
-                className="menu-icon-budget"
+                src='src/assets/icons/Budget.png'
+                alt='예산'
+                className='menu-icon-budget'
               />
               예산 설정
             </NavLink>
           </li>
           <li>
             <NavLink
-              to="/shop"
+              to='/shop'
               className={({ isActive }) =>
                 isActive ? "menu-item active" : "menu-item"
               }
             >
               <img
-                src="src/assets/icons/Shop.png"
-                alt="상점"
-                className="menu-icon-shop"
+                src='src/assets/icons/Shop.png'
+                alt='상점'
+                className='menu-icon-shop'
               />
               상점
             </NavLink>
           </li>
           <li>
             <NavLink
-              to="/challenge"
+              to='/challenge'
               className={({ isActive }) =>
                 isActive ? "menu-item active" : "menu-item"
               }
             >
               <img
-                src="src/assets/icons/Challenge.png"
-                alt="챌린지"
-                className="menu-icon-challenge"
+                src='src/assets/icons/Challenge.png'
+                alt='챌린지'
+                className='menu-icon-challenge'
               />
               포인트&챌린지
             </NavLink>
           </li>
 
           <li onClick={handleFriendClick}>
-            <div className="menu-item">
-              <div className="menu-item-left">
+            <div className='menu-item'>
+              <div className='menu-item-left'>
                 <img
-                  src="src/assets/icons/Friends.png"
-                  alt="친구"
-                  className="menu-icon-friends"
+                  src='src/assets/icons/Friends.png'
+                  alt='친구'
+                  className='menu-icon-friends'
                 />
                 친구 토글
               </div>
@@ -150,26 +155,25 @@ export default function Sidebar() {
         </ul>
 
         {isFriendOpen && (
-          <div className="friend-list">
+          <div className='friend-list'>
             {isPrivate ? (
-              <div className="friend-item">
+              <div className='friend-item'>
                 <img
-                  src="/assets/icons/lock-icon.png"
-                  className="friend-lock"
-                  alt="비공개"
+                  src='/assets/icons/lock-icon.png'
+                  className='friend-lock'
+                  alt='비공개'
                 />
-                <span className="friend-name">{friendError}</span>
+                <span className='friend-name'>{friendError}</span>
               </div>
             ) : friends.length === 0 ? (
-              <div className="friend-item">친구가 없습니다.</div>
+              <div className='friend-item'>친구가 없습니다.</div>
             ) : (
               friends.map((friend) => (
                 <div
                   key={friend.memberId}
-                  className="friend-item"
+                  className='friend-item'
                   onClick={() => navigate(`/friends/${friend.memberId}`)}
                 >
-                  {/* 🔒🔓 항상 공개/비공개 이미지 표시 */}
                   <img
                     src={
                       friend.isMainVisible
@@ -177,17 +181,17 @@ export default function Sidebar() {
                         : "/assets/icons/lock-icon.png"
                     }
                     alt={friend.isMainVisible ? "공개" : "비공개"}
-                    className="friend-lock"
+                    className='friend-lock'
                   />
 
                   <img
                     src={friend.profileImageUrl}
-                    alt="profile"
-                    className="friend-avatar"
+                    alt='profile'
+                    className='friend-avatar'
                   />
-                  <div className="friend-info">
-                    <span className="friend-name">{friend.nickname}</span>
-                    <span className="friend-status">
+                  <div className='friend-info'>
+                    <span className='friend-name'>{friend.nickname}</span>
+                    <span className='friend-status'>
                       {friend.statusMessage}
                     </span>
                   </div>
@@ -199,15 +203,15 @@ export default function Sidebar() {
 
         <li>
           <NavLink
-            to="/mypage"
+            to='/mypage'
             className={({ isActive }) =>
               isActive ? "menu-item active" : "menu-item"
             }
           >
             <img
-              src="src/assets/icons/MyPage.png"
-              alt="마이페이지"
-              className="menu-icon-mypage"
+              src='src/assets/icons/MyPage.png'
+              alt='마이페이지'
+              className='menu-icon-mypage'
             />
             마이 페이지
           </NavLink>

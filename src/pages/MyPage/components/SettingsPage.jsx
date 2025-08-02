@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SettingsPage.module.css";
 import DeleteAccountModal from "./DeleteAccountModal";
 import DeleteSuccessModal from "./DeleteSuccessModal";
 import { logout, deleteAccount } from "../../../api/AuthAPI"; // ✅ 로그아웃 API 임포트
-import { useEffect } from "react";
 import axios from "axios";
 import api from "../../../api/axiosInstance";
 
@@ -13,6 +12,13 @@ export default function SettingsPage() {
   const [showModal, setShowModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isMainVisible, setIsMainVisible] = useState(null); // 로딩 전 상태는 null
+
+  // ** 새로 추가한 프로필 상태들 **
+  const [nickname, setNickname] = useState("");
+  const [intro, setIntro] = useState("");
+  const [profileImage, setProfileImage] = useState(
+    "/assets/profile_default.png"
+  );
 
   ////////////////////////로그아웃 API////////////////////////////
   const handleLogout = async () => {
@@ -138,6 +144,17 @@ export default function SettingsPage() {
     fetchVisibility();
   }, []);
 
+  // ** 새로 추가한 useEffect: 로컬스토리지에서 프로필 데이터 읽기 **
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    console.log("SettingsPage - userData from localStorage:", userData);
+    if (userData) {
+      setNickname(userData.nickname || "");
+      setIntro(userData.intro || "");
+      setProfileImage(userData.profileImage || "/assets/profile_default.png");
+    }
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>마이페이지 &gt; 설정</div>
@@ -155,11 +172,23 @@ export default function SettingsPage() {
         </ul>
       </div>
 
+      {/* 필요하면 여기에 프로필 이미지, 닉네임, 소개 출력 추가 가능 */}
+      {/* 예시: */}
+      {/* <div className={styles.profileSummary}>
+        <img
+          src={profileImage}
+          alt="프로필 이미지"
+          className={styles.profileImagePreview}
+        />
+        <p>닉네임: {nickname}</p>
+        <p>한 줄 소개: {intro}</p>
+      </div> */}
+
       <li className={styles.item}>
         <span>가계부 친구 공개 여부</span>
         <label className={styles.toggleSwitch}>
           <input
-            type="checkbox"
+            type='checkbox'
             checked={isMainVisible}
             onChange={async (e) => {
               const newValue = e.target.checked;
@@ -200,7 +229,7 @@ export default function SettingsPage() {
               <li key={friend.memberId} className={styles.friendItem}>
                 <img
                   src={friend.profileImageUrl}
-                  alt="profile"
+                  alt='profile'
                   className={styles.friendAvatar}
                 />
                 <span className={styles.friendName}>{friend.nickname}</span>
