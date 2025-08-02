@@ -86,7 +86,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src="public/assets/icons/Home.png"
+                src="/assets/icons/Home.png"
                 alt="홈"
                 className="menu-icon-home"
               />
@@ -101,7 +101,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src="public/assets/icons/Budget.png"
+                src="/assets/icons/Budget.png"
                 alt="예산"
                 className="menu-icon-budget"
               />
@@ -116,7 +116,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src="public/assets/icons/Shop.png"
+                src="/assets/icons/Shop.png"
                 alt="상점"
                 className="menu-icon-shop"
               />
@@ -131,7 +131,7 @@ export default function Sidebar() {
               }
             >
               <img
-                src="public/assets/icons/Challenge.png"
+                src="/assets/icons/Challenge.png"
                 alt="챌린지"
                 className="menu-icon-challenge"
               />
@@ -143,7 +143,7 @@ export default function Sidebar() {
             <div className="menu-item">
               <div className="menu-item-left">
                 <img
-                  src="public/assets/icons/Friends.png"
+                  src="/assets/icons/Friends.png"
                   alt="친구"
                   className="menu-icon-friends"
                 />
@@ -194,7 +194,7 @@ export default function Sidebar() {
             }
           >
             <img
-              src="public/assets/icons/MyPage.png"
+              src="/assets/icons/MyPage.png"
               alt="마이페이지"
               className="menu-icon-mypage"
             />
