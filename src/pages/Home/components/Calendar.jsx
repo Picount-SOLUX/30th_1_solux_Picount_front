@@ -449,7 +449,7 @@ function Calendar() {
   }, [showReport, currentYear, currentMonth, fetchEmotionReport]);
 
   return (
-    <div className='calendar-wrapper'>
+    <div className="calendar-wrapper">
       <div className={`${themeKey}-theme`}>
         <div
           className={styles.calendarContainer}
@@ -573,7 +573,7 @@ function Calendar() {
                 setIsInputOpen(true);
               }}
             >
-              <img src='/assets/icons/calInput-button.png' alt='작성' />
+              <img src="/assets/icons/calInput-button.png" alt="작성" />
             </button>
 
             {/* InputModal */}
@@ -638,9 +638,9 @@ function Calendar() {
             )}
           </DndProvider>
         </div>
-        
+
         <button
-          className='edit-skin-btn'
+          className={styles["edit-skin-btn"]}
           onClick={() => setIsSkinModalOpen(true)}
         >
           스킨 변경
