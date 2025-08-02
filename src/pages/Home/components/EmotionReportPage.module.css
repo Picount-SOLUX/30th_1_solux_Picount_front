@@ -1,0 +1,67 @@
+.page {
+  padding: 24px;
+  font-family: "Noto Sans KR", sans-serif;
+  position: relative; /* ✅ 반드시 필요함 */
+}
+
+.backBtn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: none;
+  border: none;
+  color: #e53935;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.dropdownRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 60px auto 24px auto;
+  justify-content: center;
+}
+
+.dropdownRow select {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background-color: #ffe6e6;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sectionRow {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.stickerGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stickerItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.insight {
+  font-style: italic;
+  color: #555;
+  margin-top: 16px;
+}

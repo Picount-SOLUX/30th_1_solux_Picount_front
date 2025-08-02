@@ -7,7 +7,8 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableDay from "./DroppableDay";
 import StickerItem from "./StickerItem";
 import useTheme from "../../../hooks/useTheme";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../../styles/CalendarThemes.css";
 import CategoryModal from "./CategoryModal";
 import ReportModal from "./ReportModal";
@@ -15,6 +16,7 @@ import useSkin from "../../../context/useSkin";
 import api from "../../../api/axiosInstance";
 import FrameSelector from "./FrameSelector";
 import CalendarSkinModal from "./CalendarSkinModal";
+import "./CalendarTheme.css";
 
 function Calendar() {
   const today = new Date();
@@ -28,8 +30,11 @@ function Calendar() {
   const { setCalendarSkinUrl, calendarSkinUrl } = useSkin();
   const [isSkinModalOpen, setIsSkinModalOpen] = useState(false);
   const [calendarSkin, setCalendarSkin] = useState(null);
+  const navigate = useNavigate();
 
-  const [ownerId, setOwnerId] = useState(() => localStorage.getItem("userId"));
+  const [ownerId, setOwnerId] = useState(() =>
+    localStorage.getItem("memberId")
+  );
 
   const stickerList = [
     { id: 1, src: "/stickers/감정스티커 1.png", emotion: "행복" },
@@ -41,6 +46,22 @@ function Calendar() {
     { id: 7, src: "/stickers/감정스티커 7.png", emotion: "피곤" },
     { id: 8, src: "/stickers/감정스티커 8.png", emotion: "그냥" },
   ];
+
+  const fetchEmotionReport = useCallback(async () => {
+    try {
+      const res = await api.get(
+        `/calendar/report/emotion?year=${currentYear}&month=${currentMonth + 1}`
+      );
+      const result = res.data;
+      if (result.success) {
+        setReportData(result.data);
+      } else {
+        alert("리포트 조회 실패: " + result.message);
+      }
+    } catch (e) {
+      console.error("리포트 조회 중 에러", e);
+    }
+  }, [currentYear, currentMonth]);
 
   const handleStickerDrop = async (dateStr, emotionObj) => {
     if (!ownerId) {
@@ -100,7 +121,7 @@ function Calendar() {
   // 1. handleModalSubmit 함수 수정
   const handleModalSubmit = async (newEntry) => {
     // 해당 날짜의 최신 데이터를 서버에서 다시 가져오기
-    const ownerId = localStorage.getItem("userId");
+    const ownerId = localStorage.getItem("memberId");
     try {
       const res = await api.get(
         `/calendar/record?date=${newEntry.date}&ownerId=${ownerId}`
@@ -221,76 +242,6 @@ function Calendar() {
     }
   };
 
-  useEffect(() => {
-    const fetchCalendarSummary = async () => {
-      try {
-        const res = await api.get(
-          `/calendar/summary?year=${currentYear}&month=${
-            currentMonth + 1
-          }&ownerId=${ownerId}`
-        );
-        const result = res.data;
-
-        if (result.success && result.data?.summary) {
-          const summaryArray = result.data.summary;
-
-          const summaryObj = {};
-          summaryArray.forEach((item) => {
-            summaryObj[item.date] = item;
-          });
-
-          setCalendarData(summaryObj);
-        } else {
-          console.warn("달력 요약 데이터 없음");
-        }
-      } catch (err) {
-        console.error("요약 불러오기 실패", err);
-      }
-    };
-
-    fetchCalendarSummary();
-  }, [ownerId, currentYear, currentMonth]);
-
-  useEffect(() => {
-    if (showReport) {
-      const fetchEmotionReport = async () => {
-        try {
-          const res = await api.get(
-            `/calendar/report/emotion?year=${currentYear}&month=${
-              currentMonth + 1
-            }`
-          );
-          const result = res.data;
-          if (result.success) {
-            setReportData(result.data);
-          } else {
-            alert("리포트 조회 실패: " + result.message);
-          }
-        } catch (e) {
-          console.error("리포트 조회 중 에러", e);
-        }
-      };
-
-      fetchEmotionReport();
-    }
-  }, [showReport, currentYear, currentMonth]);
-
-  const fetchEmotionReport = async () => {
-    try {
-      const res = await api.get(
-        `/calendar/report/emotion?year=${currentYear}&month=${currentMonth + 1}`
-      );
-      const result = res.data;
-      if (result.success) {
-        setReportData(result.data);
-      } else {
-        alert("리포트 조회 실패: " + result.message);
-      }
-    } catch (e) {
-      console.error("리포트 조회 중 에러", e);
-    }
-  };
-
   const [showInputModal, setShowInputModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categories, setCategories] = useState({
@@ -366,9 +317,15 @@ function Calendar() {
     return cells;
   };
 
+  useEffect(() => {
+    if (showReport) {
+      fetchEmotionReport();
+    }
+  }, [showReport, currentYear, currentMonth, fetchEmotionReport]);
+
   return (
     <div className="calendar-wrapper">
-      <div className={themeKey ? `${themeKey}-theme` : ""}>
+      <div className={`${themeKey}-theme`}>
         <div
           className={styles.calendarContainer}
           style={
@@ -419,11 +376,34 @@ function Calendar() {
                 </select>
                 <button
                   className={styles.reportBtn}
-                  onClick={() => setShowReport(true)}
+                  onClick={() => {
+                    navigate(
+                      `/report?year=${currentYear}&month=${currentMonth + 1}`
+                    );
+                  }}
                 >
                   월말 리포트 보기 📝
                 </button>
               </div>
+
+              {showReport && (
+                <ReportModal
+                  year={currentYear}
+                  month={currentMonth + 1}
+                  reportData={
+                    reportData || {
+                      emotionCount: {},
+                      positiveExpense: 0,
+                      negativeExpense: 0,
+                      insight: "데이터가 없습니다.",
+                    }
+                  }
+                  onClose={() => {
+                    setShowReport(false);
+                    setReportData(null);
+                  }}
+                />
+              )}
 
               {/* 오른쪽: 감정 스티커 바 */}
               <div className={styles.stickerBar}>
@@ -463,7 +443,7 @@ function Calendar() {
                 setIsInputOpen(true);
               }}
             >
-              ✏️
+              <img src="/assets/icons/calInput-button.png" alt="작성" />
             </button>
 
             {/* InputModal */}

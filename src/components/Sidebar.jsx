@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import api from "../api/axiosInstance";
 import "./Sidebar.css";
@@ -9,6 +9,7 @@ export default function Sidebar() {
   const [friends, setFriends] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [friendError, setFriendError] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
 
   const nickname =
     location.state?.nickname ||
@@ -42,6 +43,25 @@ export default function Sidebar() {
       }
     }
   };
+
+  // useEffect(() => {
+  //   const fetchVisibility = async () => {
+  //     try {
+  //       const res = await api.get("/members/visibility/main", {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+  //         },
+  //       });
+  //       if (res.data.success) {
+  //         setIsVisible(res.data.data.isMainVisible); // 서버에서 공개 상태 가져옴
+  //       }
+  //     } catch (err) {
+  //       console.error("❌ 공개 상태 불러오기 실패", err);
+  //     }
+  //   };
+
+  //   fetchVisibility();
+  // }, []);
 
   return (
     <aside className="sidebar">
@@ -127,69 +147,71 @@ export default function Sidebar() {
               <span className={`arrow ${isFriendOpen ? "open" : ""}`}>▾</span>
             </div>
           </li>
-
-          {isFriendOpen && (
-            <div className="friend-list">
-              {isPrivate ? (
-                <div className="friend-item">
-                  <img
-                    src="/assets/icons/lock-icon.png"
-                    className="friend-lock"
-                    alt="비공개"
-                  />
-                  <span className="friend-name">{friendError}</span>
-                </div>
-              ) : friends.length === 0 ? (
-                <div className="friend-item">친구가 없습니다.</div>
-              ) : (
-                friends.map((friend) => (
-                  <div
-                    key={friend.memberId}
-                    className="friend-item"
-                    onClick={() => navigate(`/friends/${friend.memberId}`)}
-                  >
-                    {/* 🔐 비공개일 때 자물쇠 아이콘 표시 */}
-                    {!friend.isMainVisible && (
-                      <img
-                        src="/assets/icons/lock-icon.png"
-                        alt="비공개"
-                        className="friend-lock"
-                      />
-                    )}
-
-                    <img
-                      src={friend.profileImageUrl}
-                      alt="profile"
-                      className="friend-avatar"
-                    />
-                    <div className="friend-info">
-                      <span className="friend-name">{friend.nickname}</span>
-                      <span className="friend-status">
-                        {friend.statusMessage}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          <li>
-            <NavLink
-              to="/mypage"
-              className={({ isActive }) =>
-                isActive ? "menu-item active" : "menu-item"
-              }
-            >
-              <img
-                src="src/assets/icons/MyPage.png"
-                alt="마이페이지"
-                className="menu-icon-mypage"
-              />
-              마이 페이지
-            </NavLink>
-          </li>
         </ul>
+
+        {isFriendOpen && (
+          <div className="friend-list">
+            {isPrivate ? (
+              <div className="friend-item">
+                <img
+                  src="/assets/icons/lock-icon.png"
+                  className="friend-lock"
+                  alt="비공개"
+                />
+                <span className="friend-name">{friendError}</span>
+              </div>
+            ) : friends.length === 0 ? (
+              <div className="friend-item">친구가 없습니다.</div>
+            ) : (
+              friends.map((friend) => (
+                <div
+                  key={friend.memberId}
+                  className="friend-item"
+                  onClick={() => navigate(`/friends/${friend.memberId}`)}
+                >
+                  {/* 🔒🔓 항상 공개/비공개 이미지 표시 */}
+                  <img
+                    src={
+                      friend.isMainVisible
+                        ? "/assets/icons/unlock.png"
+                        : "/assets/icons/lock-icon.png"
+                    }
+                    alt={friend.isMainVisible ? "공개" : "비공개"}
+                    className="friend-lock"
+                  />
+
+                  <img
+                    src={friend.profileImageUrl}
+                    alt="profile"
+                    className="friend-avatar"
+                  />
+                  <div className="friend-info">
+                    <span className="friend-name">{friend.nickname}</span>
+                    <span className="friend-status">
+                      {friend.statusMessage}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        <li>
+          <NavLink
+            to="/mypage"
+            className={({ isActive }) =>
+              isActive ? "menu-item active" : "menu-item"
+            }
+          >
+            <img
+              src="src/assets/icons/MyPage.png"
+              alt="마이페이지"
+              className="menu-icon-mypage"
+            />
+            마이 페이지
+          </NavLink>
+        </li>
       </nav>
     </aside>
   );

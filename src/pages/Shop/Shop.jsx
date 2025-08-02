@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Shop.css";
 import api from "../../api/axiosInstance";
-import PreviewModal from "./SkinSelectorBook";
+import SkinBookModal from "./SkinSelectorBook";
 
 function Shop() {
   const [shopItems, setShopItems] = useState([]);
@@ -101,7 +101,10 @@ function Shop() {
       </div>
 
       {previewOpen && (
-        <PreviewModal items={shopItems} onClose={() => setPreviewOpen(false)} />
+        <SkinBookModal
+          ownedItems={shopItems}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
 
       {message && <div className="purchase-message">{message}</div>}

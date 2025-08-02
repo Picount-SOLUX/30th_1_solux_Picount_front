@@ -2,28 +2,33 @@
 :root {
   --weekdays-height: 36px;
   --weekdays-margin-top: 36px;
+  --weekday-bg: #fcd4cd;
 }
 
-/* chang 테마 */
+/* chang 프레임 */
 .chang-theme {
-  --weekdays-height: 120px;
-  --weekdays-margin-top: 120px;
+  --weekdays-height: 120px; /* 프레임 하단 높이와 맞춤 */
+  --weekdays-margin-top: 120px; /* 프레임 하단 기준 위치로 조정 */
+  --weekday-bg: transparent;
 }
 
-/* angel 테마 */
+/* angel 프레임 */
 .angel-theme {
   --weekdays-height: 40px;
   --weekdays-margin-top: 96px;
+  --weekday-bg: transparent;
 }
 
-/* tomato 테마 */
+/* tomato 프레임 */
 .tomato-theme {
   --weekdays-height: 32px;
   --weekdays-margin-top: 88px;
+  --weekday-bg: transparent;
 }
 
-/* tiara 테마 */
+/* tiara 프레임 */
 .tiara-theme {
   --weekdays-height: 36px;
   --weekdays-margin-top: 100px;
+  --weekday-bg: transparent;
 }
