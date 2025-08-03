@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import InputModal from "./InputModal";
 import ViewModal from "./ViewModal";
-import styles from "./calendar.module.css";
+import styles from "./Calendar.module.css";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableDay from "./DroppableDay";
