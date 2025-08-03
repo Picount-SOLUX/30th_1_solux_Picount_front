@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import MessageInput from "./components/MessageInput";
 import MessageList from "./components/MessageList";
-import styles from "./Guestbooks.module.css";
+import styles from "./GuestBooks.module.css";
 import api from "../../api/axiosInstance";
 
 export default function Guestbook({
