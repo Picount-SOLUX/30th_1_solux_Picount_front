@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { useDrop } from "react-dnd";
-import styles from "./calendar.module.css";
+import styles from "./Calendar.module.css";
 
 export default function DroppableDay({
   date,
